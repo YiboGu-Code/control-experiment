@@ -115,3 +115,5 @@ python examples/fixed_loop_demo.py --godot-mcp --output runs/fixed-loop-comparis
 `tests/test_scheduler.py` 使用真实 `platformer-time-loop/instruction.md`，同时明确标记脚本模型、模拟引擎和 mock 图片。覆盖可变角色顺序、轨迹装配后重放、mock 美术阻止交付、错误选择/状态/事项/预算注入拒绝、共享计费、无进展停止、取消和恢复。另有通过真实 Chat 适配器但使用离线 HTTP 响应的服务路由测试，以及两条入口的共同配置指纹测试。
 
 本次审阅材料位于 `runs/scheduler-development-001/`。其中 `offline-review/` 保存调度和全部角色的夹具模型输入输出、状态、工具与决策日志及工程副本；本地预检位于 `preflight-scheduler/` 和 `preflight-fixed/`。线上兼容性和游戏质量留给用户真实运行验证。第六步的系统公平性审计和第七步的多任务正式实验不包含在本次第五步实现内。
+
+遇到 Developer 导入权限错误时，参考 [两种控制器的共同故障诊断](developer_permissions_diagnosis.md)。公共执行器现在会将无法写入输出目录识别为宿主故障并终止运行，Scheduler 不会继续选择 Developer 去修改游戏代码解决权限。模型返回的 `partial` 与当前版本构建是否通过是不同维度，不能直接以 `partial` 次数比较两种范式的游戏质量。

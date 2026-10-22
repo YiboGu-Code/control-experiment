@@ -110,6 +110,21 @@ def test_source_errors_exhaust_allowance_without_running_engine_or_publishing(tm
     assert not executor.state.game_revisions
 
 
+@pytest.mark.parametrize("setting", ['config/use_hidden_project_data_directory=false',
+                                     'config/project_data_dir_name="godotdata"'])
+def test_cache_workarounds_are_rejected_before_engine_and_can_be_repaired(tmp_path, setting):
+    bad, corrected = proposal(), proposal()
+    bad["files"][0]["content"] += setting + "\n"
+    backend = ScriptedSandbox()
+    executor, text = make_run(tmp_path, bad, corrected, backend=backend)
+    outcome = invoke(executor, DeveloperConfig(prompt_version="developer.v3"))
+    assert outcome.status == "partial", outcome.error  # Upstream mock art remains.
+    doc = report(executor)
+    assert len(doc.build_attempts) == 1 and doc.build_attempts[0].model_turn == 2
+    assert "engine_cache_configuration" in json.dumps(text.prompts[1]["proposal_feedback"])
+    assert doc.build_attempts[0].status == "passed"
+
+
 def test_parent_vanished_warning_alone_fails_engine_check_and_is_sent_for_repair(tmp_path):
     warning = 'WARNING: Parent path "./UI/TimelineBar" for node "Marker" has vanished when instantiating: "res://Main.tscn".'
     backend = ScriptedSandbox(ProcessResult(0, "", warning))

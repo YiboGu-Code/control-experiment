@@ -250,3 +250,5 @@ python -m pytest tests/test_fixed_loop_live.py -q -s
 本次 DashScope 适配测试实际执行已安装的原生 SDK，在 HTTP 发送边界拦截网络，核对原生地址、请求体、尺寸格式、密钥隔离与取消行为；同时回归图片处理、计费和 Chat 适配器。未访问用户网关。这些测试验证代码边界，不证明具体网关或模型已经在线可用。
 
 真实入口始终调用 `.env` 文本模型及 Docker Godot；没有离线文本回复或假引擎的自动降级。历史 DeepSeek + mock 生图的验证结果见 [实测与回归记录](fixed_loop_review.md)：已验证真实轨迹装配及新版本重放，当时完整 QA 因调用超时未完成。历史目录保持原样，不代表本次真实生图配置的运行结果。
+
+如果 Developer 持续 `partial`，先查看 `developer_report.json` 中的 `build_attempts` 和 `self_review_completed`。`partial` 本身不会禁止 Player；构建未通过才会阻止实际试玩。关于导入缓存写权限、错误的缓存路径修补及 MCP 完成状态，见 [Fixed Loop / Scheduler 运行诊断](developer_permissions_diagnosis.md)。该文档也给出只用本地 Godot 复查既有项目的命令，不消耗模型额度。

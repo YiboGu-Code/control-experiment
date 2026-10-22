@@ -71,6 +71,14 @@ def source_findings(files):
             for number, statement in _statements(text):
                 if statement.startswith("["):
                     section = statement
+                elif section == "[application]" and re.match(
+                    r"config/(?:project_data_dir_name|use_hidden_project_data_directory)\s*=", statement
+                ):
+                    add(path, number, "engine_cache_configuration",
+                        "Remove project-data cache location/visibility overrides and keep the default .godot directory. "
+                        "The execution contract excludes .godot from authored sources and published artifacts. "
+                        "A visible cache would be mistaken for source changes. Host sandbox permissions, not game "
+                        "configuration, control whether imports can write.")
                 elif section == "[input]" and "=" in statement:
                     try:
                         action = json.loads(statement.split("=", 1)[1])

@@ -21,6 +21,10 @@ class SandboxCleanupFailed(SandboxUnavailable):
     code = "sandbox_cleanup_failed"
 
 
+class SandboxFilesystemError(SandboxUnavailable):
+    code = "sandbox_filesystem_unwritable"
+
+
 class InvalidSubmission(RuntimeViolation):
     code = "invalid_submission"
 

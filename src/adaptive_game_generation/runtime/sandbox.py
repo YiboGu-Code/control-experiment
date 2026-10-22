@@ -4,12 +4,69 @@ from __future__ import annotations
 
 import asyncio
 import os
+import stat
 import uuid
 from dataclasses import dataclass, field
 from typing import Protocol
 
-from .errors import PermissionDenied, SandboxCleanupFailed, SandboxUnavailable
+from .errors import PermissionDenied, SandboxCleanupFailed, SandboxFilesystemError, SandboxUnavailable
 from .workspace import InvocationWorkspace, inspect_tree
+
+
+# Fixed host-owned shell code, never interpolated with a model command or path.
+# The supplied executable/arguments are forwarded verbatim through "$@".
+# Normalize engine-created entries as their owner before returning to the host.
+OUTPUT_BOOTSTRAP = r'''
+umask 000
+check_output() (
+    probe=$(mktemp -d "$1/.gamecraft-write-XXXXXX") || return 1
+    rmdir "$probe" || return 1
+    for entry in "$1"/* "$1"/.[!.]* "$1"/..?*; do
+        if [ -d "$entry" ]; then
+            check_output "$entry" || return 1
+        elif [ -f "$entry" ]; then
+            [ -r "$entry" ] && [ -w "$entry" ] || return 1
+        fi
+    done
+)
+if ! check_output /output; then
+    echo GAMECRAFT_OUTPUT_NOT_WRITABLE >&2
+    exit 73
+fi
+"$@"
+command_status=$?
+# Godot explicitly creates some directories with mode 0755 even under umask 000.
+# Only chmod entries owned by this container UID; host-owned input copies were
+# already prepared. find does not follow symlinks. Host validation rejects links.
+if ! find /output -type d -user "$(id -u)" -exec chmod 0777 {} + ||
+   ! find /output -type f -user "$(id -u)" -exec chmod a+rw {} +; then
+    echo GAMECRAFT_OUTPUT_NOT_WRITABLE >&2
+    exit 73
+fi
+exit "$command_status"
+'''
+
+
+def prepare_output_tree(root):
+    """Open only validated invocation output, before an isolated process starts.
+
+    Both directories and existing files need writes: Godot updates .import files
+    on subsequent imports. Public input is a separate read-only bind mount.
+    """
+    inspect_tree(root)  # Validate the WHOLE tree before the first chmod.
+    for path in (root, *root.rglob("*")):
+        try:
+            mode = stat.S_IMODE(path.stat().st_mode)
+            wanted = 0o777 if path.is_dir() else 0o666 | (mode & 0o111)
+            # A container-created entry can already be writable but owned by
+            # another UID. Do not chmod it unnecessarily (Linux would deny it).
+            if mode != wanted:
+                path.chmod(wanted)
+        except OSError as exc:
+            raise SandboxFilesystemError(
+                "Cannot prepare writable invocation output; check host ownership, ACLs and mount permissions. "
+                "Do not repair this by changing game code or Godot cache paths."
+            ) from exc
 
 
 @dataclass(frozen=True)
@@ -68,7 +125,8 @@ class DockerSandbox:
             "--env", "HOME=/tmp", "--env", "XDG_CACHE_HOME=/tmp/cache",
             "--mount", f"type=bind,src={workspace.public},dst=/workspace,readonly",
             "--mount", f"type=bind,src={workspace.staging},dst=/output",
-            "--workdir", "/output", "--entrypoint", argv[0], self.image, *argv[1:],
+            "--workdir", "/output", "--entrypoint", "/bin/sh", self.image,
+            "-c", OUTPUT_BOOTSTRAP, "gamecraft-output", *argv,
         ]
 
     async def run(self, workspace: InvocationWorkspace, argv: tuple[str, ...], timeout: float) -> ProcessResult:
@@ -76,6 +134,7 @@ class DockerSandbox:
             raise SandboxCleanupFailed("Previous container cleanup failed; this backend is disabled")
         name = "gamecraft-" + uuid.uuid4().hex
         command = self.command(workspace, argv, name)
+        prepare_output_tree(workspace.staging)
         # Credentials are never forwarded to the container. These variables are
         # only for locating the trusted Docker client and its local configuration.
         environment = {key: value for key, value in os.environ.items() if key.upper() in {
@@ -115,6 +174,11 @@ class DockerSandbox:
             result = await asyncio.wait_for(collect(), timeout)
             if result.returncode == 125:
                 raise SandboxUnavailable("Container could not start; check runtime and preloaded image")
+            if result.returncode == 73 and "GAMECRAFT_OUTPUT_NOT_WRITABLE" in result.stderr:
+                raise SandboxFilesystemError(
+                    "Container cannot prepare or release writable invocation output. "
+                    "Check host ownership, ACLs and bind-mount permissions; game code cannot fix this."
+                )
             return result
         finally:
             for reader in readers:

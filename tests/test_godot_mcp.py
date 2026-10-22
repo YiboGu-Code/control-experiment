@@ -285,3 +285,23 @@ def test_passing_preview_does_not_mask_another_failed_scene_check(tmp_path):
     assert [r.result["status"] for r in doc.mcp_inspections] == ["passed", "failed"]
     assert not doc.self_review_completed
     assert any("self-review is incomplete" in text for text in doc.limitations)
+
+
+@pytest.mark.parametrize("remaining,expected", [([], "completed"), (["Gameplay repair still pending"], "partial")])
+def test_finish_supersedes_interim_partial_after_current_review(tmp_path, remaining, expected):
+    # No Art inputs: completion must be tested independently of the mock-art gate.
+    from test_developer import DEMO
+    first = proposal(status="partial", remaining_work=["Review the current MCP preview"])
+    executor, text = make_run(tmp_path, first, {**FINISH, "remaining_work": remaining}, seed=False,
+                            backend=ScriptedSandbox())
+    _, _, _, design_state, design, _, _ = DEMO["load_recorded_inputs"]()
+    asyncio.run(DEMO["HELPERS"]["seed_recorded_designer"](executor, design_state, design))
+    executor = Executor.open(executor.workspace, services=Services(text=text, sandbox=ScriptedSandbox(),
+        godot_mcp=MCPFixture(), vision=VisualFixture()))
+    result = invoke(executor, DeveloperConfig(prompt_version="developer.v4", max_model_turns=3))
+    assert result.status == expected, result.error
+    document = report(executor)
+    assert document.self_review_completed and document.build_attempts[-1].status == "passed"
+    assert "Review the current MCP preview" not in document.limitations
+    assert all(item in document.limitations for item in remaining)
+    assert executor.state.readiness is None  # Developer completion is not QA acceptance.

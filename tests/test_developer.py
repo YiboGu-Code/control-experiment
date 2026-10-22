@@ -10,7 +10,7 @@ import pytest
 from adaptive_game_generation.models import ResourceLimits, RoleResult
 from adaptive_game_generation.roles.developer import Developer, DeveloperConfig, DeveloperReport
 from adaptive_game_generation.runtime import Executor, ProcessResult, RuntimeConfig, Services, TextReply, Workspace
-from adaptive_game_generation.runtime.errors import SandboxCleanupFailed, SandboxUnavailable
+from adaptive_game_generation.runtime.errors import SandboxCleanupFailed, SandboxFilesystemError, SandboxUnavailable
 
 ROOT = Path(__file__).resolve().parents[1]
 DEMO = runpy.run_path(str(ROOT / "examples/developer_demo.py"))
@@ -254,6 +254,17 @@ def test_cleanup_failure_keeps_runtime_terminal_guard(tmp_path):
     outcome = invoke(executor)
     assert outcome.status == "failed" and executor.state.ledger.termination is not None
     assert not executor.state.game_revisions
+
+
+@pytest.mark.parametrize("controller", ["fixed_loop", "adaptive_scheduler"])
+def test_unwritable_sandbox_stops_run_without_spending_patch_retries(tmp_path, controller):
+    executor, text = make_run(tmp_path, proposal(), proposal(), controller=controller,
+        backend=ScriptedSandbox(SandboxFilesystemError("Cannot write invocation output")))
+    outcome = invoke(executor, DeveloperConfig(max_model_turns=8))
+    assert outcome.status == "failed" and outcome.error.code == "sandbox_filesystem_unwritable"
+    assert len(text.prompts) == 1 and not executor.state.game_revisions
+    assert executor.state.ledger.termination.reason == "failed"
+    assert "host filesystem" in executor.state.ledger.termination.summary
 
 
 def test_model_budget_prevents_dispatch(tmp_path):

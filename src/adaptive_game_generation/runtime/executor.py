@@ -21,7 +21,7 @@ from ..models import (
 from ..models.base import Identifier, Model, PositiveCount, Seconds, Text, utc_now
 from .budget import BudgetMeter
 from .commit import merge_updates, validate_artifacts
-from .errors import InvalidSubmission, PermissionDenied, RuntimeViolation, SandboxCleanupFailed
+from .errors import InvalidSubmission, PermissionDenied, RuntimeViolation, SandboxCleanupFailed, SandboxFilesystemError
 from .policy import RolePolicy
 from .store import StateStore, atomic_text
 from .tools import RoleTools, Services
@@ -256,9 +256,11 @@ class Executor:
             )
             self._quarantine_orphan(request.role.value, request.request_id)
             failed = state.revised(ledger=self._event(state.ledger, RoleCallFinished(result=result, usage=meter.snapshot())))
-            if isinstance(failure, SandboxCleanupFailed):
+            if isinstance(failure, (SandboxCleanupFailed, SandboxFilesystemError)):
                 failed = failed.revised(ledger=self._event(failed.ledger, RunEnded(
-                    reason="failed", summary="Isolated process cleanup failed; this run cannot continue",
+                    reason="failed", summary=("Isolated process cleanup failed; this run cannot continue"
+                        if isinstance(failure, SandboxCleanupFailed) else
+                        "Sandbox output is not writable; fix host filesystem permissions before starting a new run."),
                     final_game_revision_id=failed.current_game_revision_id,
                     unresolved_issue_ids=tuple(i.issue_id for i in failed.issues if i.status != "closed"),
                 )))

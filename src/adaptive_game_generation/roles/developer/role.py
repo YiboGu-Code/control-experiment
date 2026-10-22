@@ -11,7 +11,7 @@ from pydantic import ValidationError
 
 from ...models import ArtifactRef, Blocker, EvidenceRecord, GameRevision, ProposedUpdates, RoleResult
 from ...runtime import InvalidSubmission, PermissionDenied, RoleContext, SandboxUnavailable
-from ...runtime.errors import SandboxCleanupFailed
+from ...runtime.errors import SandboxCleanupFailed, SandboxFilesystemError
 from ..art_producer import ArtManifest
 from .contracts import (
     BuildAttempt, BuildStep, DeveloperConfig, DeveloperProposal, DeveloperReport,
@@ -193,7 +193,7 @@ class Developer:
         for name, argv in commands:
             try:
                 result = await tools.run(argv, timeout=self.config.check_timeout_seconds)
-            except SandboxCleanupFailed:
+            except (SandboxCleanupFailed, SandboxFilesystemError):
                 raise
             except SandboxUnavailable as exc:
                 steps.append(BuildStep(name=name, argv=argv, status="not_run", reason=str(exc)))
@@ -356,9 +356,12 @@ class Developer:
             claim_set.update(plan.implemented_requirement_ids)
         claims = tuple(sorted(claim_set))
         status = attempts[-1].status
-        limitations = list(plans[-1].remaining_work)
+        # A successful v4 finish is the latest declaration of remaining work.
+        # Earlier patches often list the very preview that has now completed.
+        remaining = inspection.remaining if inspection and inspection.finished else plans[-1].remaining_work
+        limitations = list(remaining)
         if inspection:
-            limitations.extend(inspection.limitations())
+            limitations.extend(item for item in inspection.limitations() if item not in limitations)
         limitations.append("Basic engine checks do not verify gameplay, visual quality, replay behavior, or official Benchmark acceptance.")
         if any(a.is_mock for a in integrated):
             limitations.append("Integrated Art Producer images are mock placeholders; final artwork and visual acceptance remain pending.")
@@ -388,7 +391,7 @@ class Developer:
             build_status=status, build_evidence_ids=tuple(e.evidence_id for e in evidence))
         updates = tuple(r.revised(status="implemented_unverified", verification=None) for r in state.requirements
                         if status == "passed" and r.requirement_id in claims)
-        partial = status != "passed" or plans[-1].status == "partial" or any(a.is_mock for a in integrated)
+        partial = status != "passed" or bool(remaining) or any(a.is_mock for a in integrated)
         if inspection:
             partial = partial or not inspection.finished or bool(inspection.remaining)
         return self._result(context, "partial" if partial else "completed",

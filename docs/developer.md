@@ -105,6 +105,12 @@ artifacts/developer/<invocation>/
 
 `/output/game` 是隔离容器内部的暂存挂载位置，最终部署目录仍是 instruction 的 `/workspace/game`。工程使用 `res://` 读取资源、`user://` 存储进度，不将本机路径写进游戏。目录映射不会改写 instruction。
 
+Developer v3/v4 保留默认 `.godot` 缓存位置；提交前检查拒绝 `config/project_data_dir_name` 和 `config/use_hidden_project_data_directory` 覆盖项。框架仅将 `.godot` 视为可删除的引擎缓存，改成可见目录会让缓存混入源码完整性检查。导入目录的写权限由公共沙箱负责，不能由模型通过换缓存路径解决。
+
+Developer v4 的成功 `finish` 是本次调用最新的剩余工作声明：当前版本必须已构建通过、有当前版本的有效 MCP 预览和视觉反馈，再用 `finish.remaining_work` 替换此前补丁中的剩余工作。已经完成的预览不会因为早期补丁为 `partial` 而永久阻止 `completed`；仍有剩余工作、mock 美术或未完成的当前自检则仍为 `partial`。Developer 的 `completed` 不代表 QA 就绪，Player 的前置条件检查当前版本的构建结果，而不是强制要求 Developer 返回 `completed`。
+
+Fixed Loop/Scheduler 权限故障的日志、修复和离线复查见 [运行诊断](developer_permissions_diagnosis.md)。
+
 ## 模型与运行环境配置
 
 沿用项目安装方式：

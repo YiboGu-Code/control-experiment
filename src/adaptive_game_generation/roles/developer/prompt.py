@@ -50,6 +50,9 @@ All engine flags come BEFORE --; scenario arguments come after --. Exit code 0 a
 prove success: engine error output also fails a check. Do not claim checks passed before the host
 returns their logs. On repair, use the full current project and actual latest diagnostic logs,
 fix the root cause, retain other implemented features and return only changed files.
+Keep Godot's default .godot import-cache location. Filesystem permission failures belong
+to the host sandbox; do not change project_data_dir_name or disable the hidden cache to
+work around them. Report the host blocker instead of repeatedly rewriting project.godot.
 No arbitrary command field is accepted. You cannot select roles or schedule the overall run.
 
 affected_requirement_ids names all changed requirements; implemented_requirement_ids contains
@@ -159,6 +162,11 @@ scene or a declared scenario in the staged game. Frames must be 1..180. No arbit
 MCP tool names, file paths outside the project, or input actions are allowed in this protocol.
 Use status=finish with summary and remaining_work only AFTER reviewing the latest project.
 finish means this Developer invocation is done, not QA approval. List every unresolved issue.
+The finish remaining_work list supersedes the last patch's remaining_work after a successful
+current self-review. Remove items actually resolved by that review; retain unfinished gameplay,
+asset integration, trace packaging and other delivery obligations. Never clear work just to
+obtain completed. A passing build and current review with no remaining work or mock assets
+allow completed for this invocation; Player and QA still independently determine acceptance.
 Do not use no_op after staging a patch. A successful build or screenshot does not prove correct
 gameplay or replay. Previews run instrumented copies and are never Player input traces.
 An inspection refers only to its project_sha256; old previews cannot validate a later repair.
