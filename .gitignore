@@ -36,7 +36,7 @@ workspace/
 # 单次 Run 的全部输出（prompt、response、状态、诊断材料）
 runs/
 # 第三方 benchmark 仓库克隆与 job 输出
-# benchmark_resources/
+benchmark_resources/
 
 # =========================================================
 # Godot
