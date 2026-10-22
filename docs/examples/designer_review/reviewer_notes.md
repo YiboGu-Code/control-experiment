@@ -1,0 +1,9 @@
+# Review before implementation
+
+These observations are separate from the original model output in `design.md` and `model_response.txt`. The real integration test passed the structure, grounding, language, publication, and accounting checks. It did not certify every design decision or run the game. No captured model text or generated design has been edited to address these observations.
+
+1. **R013: clarify what the four-loop limit counts.** The instruction says up to four loops; the design converts that to four ghosts, potentially adding a fifth active version when the current player is included. It also lists the four-ghost interpretation as an assumption. Resolve whether the current live loop is included, and keep the requirement and assumption consistent before implementing the limit.
+2. **R022: correct the quit-after unit in a later revision.** The acceptance criterion calls `--quit-after 5` a five-second window. Godot defines this argument in engine iterations, not elapsed seconds. Preserve the required command, and verify clean startup/exit without inventing a five-second duration. See the [Godot command-line reference](https://docs.godotengine.org/en/4.5/tutorials/editor/command_line_tutorial.html).
+3. **R027/R032: separate a full ordinary playthrough from a short recorded demo.** The design asks the normal flow to show timer expiry, yet a fresh 30-second loop cannot expire within a trace capped at 600 frames at 30 fps. Use a longer ordinary-entry validation session and a deterministic near-rewind scenario for the short demo; do not shorten the actual gameplay loop to satisfy the demo cap.
+
+These are follow-up design review points, not hidden benchmark criteria or fabricated QA results. Resolve them through a later recorded Designer revision and QA review before treating the specification as implementation-ready.

@@ -1,0 +1,272 @@
+{
+"action": "submit",
+"assets": [
+{
+"affected_scenes": [
+"Main.tscn",
+"scenes/TitleScreen.tscn",
+"scenes/Gameplay.tscn"
+],
+"asset_id": "kenney-player-sprite",
+"columns": 1,
+"filter_mode": "nearest",
+"frame_names": [
+"idle",
+"run_0",
+"run_1",
+"jump",
+"fall",
+"interact"
+],
+"generation_prompt": null,
+"height": 192,
+"integration_notes": "Use as base for player and ghosts. Ghosts: apply modulate alpha (e.g., Color(1,1,1,0.5)) or a shader with translucency to the same sprite frames. Ensure consistent pivot point at bottom-center for platforming physics.",
+"license_handling": "Kenney Simplified Platformer Pack is CC0. No attribution required, but credit is appreciated. License text preserved in assets/LICENSES/kenney-platformer.txt.",
+"purpose": "Primary player character sprite sheet for run, jump, idle, and interaction animations.",
+"requirement_ids": [
+"R006",
+"R007",
+"R003"
+],
+"rows": 6,
+"source": "kenney",
+"source_path": "2D/simplified-platformer-pack/Tilesheet/platformerPack_character.png",
+"target_path": "assets/sprites/player_sheet.png",
+"transparent_background": true,
+"width": 384
+},
+{
+"affected_scenes": [
+"scenes/Gameplay.tscn",
+"scenes/LevelTemplate.tscn"
+],
+"asset_id": "kenney-tileset-sheet",
+"columns": 14,
+"filter_mode": "nearest",
+"frame_names": [
+"tile_00",
+"tile_01",
+"tile_02",
+"tile_03",
+"tile_04",
+"tile_05",
+"tile_06",
+"tile_07",
+"tile_08",
+"tile_09",
+"tile_10",
+"tile_11",
+"tile_12",
+"tile_13",
+"tile_14",
+"tile_15",
+"tile_16",
+"tile_17",
+"tile_18",
+"tile_19",
+"tile_20",
+"tile_21",
+"tile_22",
+"tile_23",
+"tile_24",
+"tile_25",
+"tile_26",
+"tile_27",
+"tile_28",
+"tile_29",
+"tile_30",
+"tile_31",
+"tile_32",
+"tile_33",
+"tile_34",
+"tile_35",
+"tile_36",
+"tile_37",
+"tile_38",
+"tile_39",
+"tile_40",
+"tile_41",
+"tile_42",
+"tile_43",
+"tile_44",
+"tile_45",
+"tile_46",
+"tile_47",
+"tile_48",
+"tile_49",
+"tile_50",
+"tile_51",
+"tile_52",
+"tile_53",
+"tile_54",
+"tile_55",
+"tile_56",
+"tile_57",
+"tile_58",
+"tile_59",
+"tile_60",
+"tile_61",
+"tile_62",
+"tile_63"
+],
+"generation_prompt": null,
+"height": 448,
+"integration_notes": "Standard 64x64 tiles. Use for ground, platforms, walls. Create TileMap resources from this sheet. Specific tiles for switches/plates may need tinting or overlay sprites if not distinct in pack.",
+"license_handling": "Kenney Simplified Platformer Pack is CC0. License text preserved in assets/LICENSES/kenney-platformer.txt.",
+"purpose": "Environment tileset for level construction including ground, platforms, and decorative elements.",
+"requirement_ids": [
+"R001",
+"R004"
+],
+"rows": 7,
+"source": "kenney",
+"source_path": "2D/simplified-platformer-pack/Tilesheet/platformPack_tilesheet.png",
+"target_path": "assets/tiles/platformer_tilesheet.png",
+"transparent_background": false,
+"width": 896
+},
+{
+"affected_scenes": [
+"scenes/UI/ChapterMenu.tscn",
+"scenes/UI/LevelComplete.tscn"
+],
+"asset_id": "kenney-ui-elements",
+"columns": 1,
+"filter_mode": "nearest",
+"frame_names": [
+"button_normal",
+"button_hover",
+"button_pressed",
+"panel_bg",
+"icon_clock",
+"icon_ghost"
+],
+"generation_prompt": null,
+"height": 128,
+"integration_notes": "Extract UI components from Kenney's UI packs if available in library search, otherwise use generic shapes. For now, placeholder IDs. Developer should verify specific paths. If not found, generate simple geometric UI with Godot theme resources.",
+"license_handling": "Assumed Kenney UI Pack (CC0). Verify exact path and license during implementation.",
+"purpose": "UI buttons, panels, and icons for menus and HUD.",
+"requirement_ids": [
+"R005",
+"R009",
+"R012"
+],
+"rows": 6,
+"source": "kenney",
+"source_path": "2D/ui-pack/PNG/Light/ui_button_square.png",
+"target_path": "assets/ui/elements.png",
+"transparent_background": true,
+"width": 128
+},
+{
+"affected_scenes": [
+"scenes/Gameplay.tscn"
+],
+"asset_id": "gen-exit-crystal",
+"columns": 1,
+"filter_mode": "linear",
+"frame_names": [
+"crystal_idle",
+"crystal_glow"
+],
+"generation_prompt": "A glowing, translucent cyan crystal object, pixel art style, 64x64 pixels, centered on transparent background. Should look like a collectible objective in a time-loop puzzle game.",
+"height": 64,
+"integration_notes": "Place at end of each level. Add a subtle pulse animation using scale or modulate color. Collision shape: Area2D for detection.",
+"license_handling": "AI-generated artwork. Subject to image service terms. No independent license verification performed by Art Producer.",
+"purpose": "Visual representation of the exit crystal objective.",
+"requirement_ids": [
+"R010"
+],
+"rows": 2,
+"source": "generate",
+"source_path": null,
+"target_path": "assets/sprites/exit_crystal.png",
+"transparent_background": true,
+"width": 64
+},
+{
+"affected_scenes": [
+"scenes/Gameplay.tscn"
+],
+"asset_id": "gen-switch-lever",
+"columns": 1,
+"filter_mode": "nearest",
+"frame_names": [
+"switch_off",
+"switch_on"
+],
+"generation_prompt": "Two states of a mechanical lever switch, pixel art style, 32x32 pixels each, stacked vertically on transparent background. Top state is 'off' (gray), bottom state is 'on' (green/lit).",
+"height": 64,
+"integration_notes": "Used for pressure plates and interactive switches. Toggle frame based on activation state by Player or Ghost. Visual feedback must be immediate.",
+"license_handling": "AI-generated artwork. Subject to image service terms. No independent license verification performed by Art Producer.",
+"purpose": "Interactive switch mechanism that ghosts can hold down.",
+"requirement_ids": [
+"R003",
+"R010"
+],
+"rows": 2,
+"source": "generate",
+"source_path": null,
+"target_path": "assets/sprites/switch_lever.png",
+"transparent_background": true,
+"width": 32
+},
+{
+"affected_scenes": [
+"scenes/Gameplay.tscn"
+],
+"asset_id": "gen-laser-beam",
+"columns": 1,
+"filter_mode": "linear",
+"frame_names": [
+"laser_horizontal",
+"laser_vertical"
+],
+"generation_prompt": "A thin, bright red laser beam, pixel art style, 16x16 pixels per segment, tiled horizontally and vertically. Transparent background. Glowing effect.",
+"height": 32,
+"integration_notes": "Tile these segments along line nodes. Use additive blend mode for glow. Ghosts blocking lasers should visually interrupt the beam path.",
+"license_handling": "AI-generated artwork. Subject to image service terms. No independent license verification performed by Art Producer.",
+"purpose": "Hazard element that ghosts can block.",
+"requirement_ids": [
+"R003"
+],
+"rows": 2,
+"source": "generate",
+"source_path": null,
+"target_path": "assets/sprites/laser_beam.png",
+"transparent_background": true,
+"width": 16
+},
+{
+"affected_scenes": [
+"scenes/Gameplay.tscn"
+],
+"asset_id": "gen-door-frame",
+"columns": 1,
+"filter_mode": "nearest",
+"frame_names": [
+"door_closed",
+"door_open"
+],
+"generation_prompt": "A heavy metal door frame, pixel art style, 64x128 pixels. Two states: closed (solid gray barrier) and open (retracted into top/bottom). Transparent background.",
+"height": 128,
+"integration_notes": "Animate transition between closed and open states. When open, collision disabled. Ghost holding a button keeps it open.",
+"license_handling": "AI-generated artwork. Subject to image service terms. No independent license verification performed by Art Producer.",
+"purpose": "Door obstacle controlled by switches held by ghosts.",
+"requirement_ids": [
+"R003"
+],
+"rows": 2,
+"source": "generate",
+"source_path": null,
+"target_path": "assets/sprites/door_frame.png",
+"transparent_background": true,
+"width": 64
+}
+],
+"blockers": [],
+"searches": [],
+"status": "completed",
+"style_guide": "Pixel art aesthetic, 16-32px grid alignment. Primary palette: Cool blues/cyans for player/ghosts/time effects; Warm oranges/greens for active states/objectives; Neutral grays for environment. High contrast for readability. Ghosts are always translucent variants of player/enemy sprites.",
+"summary": "Submitted initial asset package for Time Loop. Includes Kenney player and tile sheets (CC0), plus generated sprites for key interactive objects (crystal, switches, lasers, doors) to support core loop mechanics. UI assets marked for verification against Kenney library."
+}

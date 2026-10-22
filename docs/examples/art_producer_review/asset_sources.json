@@ -1,0 +1,40 @@
+{
+  "libraries": [
+    {
+      "library": "kenney",
+      "available": false,
+      "supported_extensions": [
+        ".jpeg",
+        ".jpg",
+        ".ogg",
+        ".otf",
+        ".png",
+        ".ttf",
+        ".wav",
+        ".webp"
+      ],
+      "license_policy": "Original nearby LICENSE.txt required; preserve and review its terms"
+    },
+    {
+      "library": "opengameart",
+      "available": false,
+      "supported_extensions": [
+        ".jpeg",
+        ".jpg",
+        ".ogg",
+        ".otf",
+        ".png",
+        ".ttf",
+        ".wav",
+        ".webp"
+      ],
+      "license_policy": "Original nearby LICENSE.txt required; preserve and review its terms"
+    }
+  ],
+  "image_service": {
+    "provider_id": "mock-image.v1",
+    "is_mock": true,
+    "license": "Synthetic test placeholder; replace before assessing art quality. No third-party artwork used.",
+    "output_format": "png"
+  }
+}

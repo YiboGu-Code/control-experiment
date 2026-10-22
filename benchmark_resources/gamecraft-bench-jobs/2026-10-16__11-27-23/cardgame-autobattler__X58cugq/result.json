@@ -1,0 +1,116 @@
+{
+    "id": "f91a29c8-c52e-4aad-a446-dd83c286a7d3",
+    "task_name": "gamecraft-bench/cardgame-autobattler",
+    "trial_name": "cardgame-autobattler__X58cugq",
+    "trial_uri": "file:///root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq",
+    "task_id": {
+        "path": "tasks/cardgame-autobattler"
+    },
+    "source": null,
+    "task_checksum": "289e756ec72fe718e70dd460b229a6331f8532fdedad114b541f209d4224fdd9",
+    "config": {
+        "task": {
+            "path": "tasks/cardgame-autobattler",
+            "git_url": null,
+            "git_commit_id": null,
+            "name": null,
+            "ref": null,
+            "overwrite": false,
+            "download_dir": null,
+            "source": null
+        },
+        "trial_name": "cardgame-autobattler__X58cugq",
+        "trials_dir": "/root/adaptive_game_generation/benchmark_resources/FreedomIntelligence-gamecraft-bench-a433475/../gamecraft-bench-jobs/2026-10-16__11-27-23",
+        "install_only": false,
+        "timeout_multiplier": 1.0,
+        "agent_timeout_multiplier": null,
+        "verifier_timeout_multiplier": null,
+        "agent_setup_timeout_multiplier": null,
+        "environment_build_timeout_multiplier": null,
+        "agent": {
+            "name": "oracle",
+            "import_path": null,
+            "model_name": null,
+            "n_concurrent": null,
+            "concurrency_group": null,
+            "skills": [],
+            "override_timeout_sec": null,
+            "override_setup_timeout_sec": null,
+            "max_timeout_sec": null,
+            "resume_trajectory": false,
+            "load_trajectory": null,
+            "extra_allowed_hosts": [],
+            "kwargs": {},
+            "mcp_servers": []
+        },
+        "user_agent": null,
+        "environment": {
+            "type": null,
+            "import_path": "gamecraft_bench.local_env:LocalSubprocessEnvironment",
+            "force_build": false,
+            "delete": false,
+            "stream": false,
+            "cpu_enforcement_policy": "auto",
+            "memory_enforcement_policy": "auto",
+            "override_cpus": null,
+            "override_memory_mb": null,
+            "override_storage_mb": null,
+            "override_gpus": null,
+            "override_tpu": null,
+            "mounts": null,
+            "extra_docker_compose": [],
+            "kwargs": {},
+            "extra_allowed_hosts": []
+        },
+        "verifier": {
+            "override_timeout_sec": null,
+            "max_timeout_sec": null,
+            "disable": false
+        },
+        "artifacts": [],
+        "extra_instruction_paths": [],
+        "extra_instructions": [],
+        "job_id": "1f767bce-3fb4-4039-8ac8-02f5d0c1cad8",
+        "source_trial": null
+    },
+    "agent_info": {
+        "name": "oracle",
+        "version": "1.0.0",
+        "model_info": null
+    },
+    "agent_result": {
+        "n_input_tokens": null,
+        "n_cache_tokens": null,
+        "n_output_tokens": null,
+        "cost_usd": null,
+        "model_usage": null,
+        "rollout_details": null,
+        "metadata": null
+    },
+    "verifier_result": {
+        "rewards": {
+            "reward": 0.41875
+        }
+    },
+    "verifier_environment_mode": "shared",
+    "exception_info": null,
+    "started_at": "2026-10-16T03:27:23.267663Z",
+    "finished_at": "2026-10-16T03:37:47.166210Z",
+    "environment_setup": {
+        "started_at": "2026-10-16T03:27:23.287715Z",
+        "finished_at": "2026-10-16T03:27:23.292001Z"
+    },
+    "agent_setup": {
+        "started_at": "2026-10-16T03:27:23.292027Z",
+        "finished_at": "2026-10-16T03:27:23.292074Z"
+    },
+    "agent_execution": {
+        "started_at": "2026-10-16T03:27:23.292129Z",
+        "finished_at": "2026-10-16T03:27:23.331096Z"
+    },
+    "verifier": {
+        "started_at": "2026-10-16T03:27:23.331691Z",
+        "finished_at": "2026-10-16T03:37:47.164732Z"
+    },
+    "step_results": null
+}

@@ -1,0 +1,338 @@
+[
+  {
+    "demo_id": "01_title_flow",
+    "requirement_id": "M1",
+    "score": 0.5,
+    "rationale": "Shop UI, gold costs, board slots, and a FIGHT button are visible but no buying, bench, or placement is demonstrated, and creatures are solid-color squares.",
+    "raw": "{\n  \"scores\": {\"M1\": 0.5, \"M2\": 0.0, \"M3\": 0.0, \"D1\": 0.0, \"D2\": 0.0, \"D3\": 0.5, \"D4\": 0.0, \"V1\": 0.5, \"V2\": 0.0, \"V3\": 0.0, \"A1\": 0.5, \"A2\": 0.5, \"A3\": 0.0, \"A4\": 0.0},\n  \"rationales\": {\"M1\": \"Shop UI, gold costs, board slots, and a FIGHT button are visible but no buying, bench, or placement is demonstrated, and creatures are solid-color squares.\", \"M2\": \"The recording shows only the title and shop screens with no combat phase whatsoever.\", \"M3\": \"Player HP and round counter are displayed but no combat loss, damage, elimination, or placement screen is shown.\", \"D1\": \"Five tribes are listed but the tracker indicates a single threshold of 3 units rather than escalating bonuses at 2/4/6.\", \"D2\": \"Only four unique creature types appear across the visible shop cards, well below the required fifteen.\", \"D3\": \"Gold, interest, level, and level-up cost are displayed in the UI but no mechanics are demonstrated in action.\", \"D4\": \"Front and back row labels exist yet no creature placement or combat occurs to prove positioning has any effect.\", \"V1\": \"Shop stats, board, gold, level, and round are readable and non-overlapping, though rendered with plain text and geometric shapes.\", \"V2\": \"No combat frames are present to evaluate attack animations, ability effects, health bar changes, or death effects.\", \"V3\": \"Only the title screen and a static shop phase are shown; combat, results, elimination, and placement transitions are entirely absent.\", \"A1\": \"A themed title screen with the game name and a FIND MATCH button is present but built from simple rectangles rather than illustrated assets.\", \"A2\": \"Brown and gold styling is consistent across screens, yet every visible element is composed of text and untextured geometric shapes.\", \"A3\": \"Creatures are solid-color primitives, the board is a plain dark fill, and the UI relies on unstyled boxes and labels without authored art.\", \"A4\": \"All frames are completely static with no visible animations, tweens, fade transitions, or smooth state changes anywhere in the recording.\"}\n}",
+    "latency_seconds": 116.178
+  },
+  {
+    "demo_id": "01_title_flow",
+    "requirement_id": "M2",
+    "score": 0.0,
+    "rationale": "The recording shows only the title and shop screens with no combat phase whatsoever.",
+    "raw": "",
+    "latency_seconds": 116.178
+  },
+  {
+    "demo_id": "01_title_flow",
+    "requirement_id": "M3",
+    "score": 0.0,
+    "rationale": "Player HP and round counter are displayed but no combat loss, damage, elimination, or placement screen is shown.",
+    "raw": "",
+    "latency_seconds": 116.178
+  },
+  {
+    "demo_id": "01_title_flow",
+    "requirement_id": "D1",
+    "score": 0.0,
+    "rationale": "Five tribes are listed but the tracker indicates a single threshold of 3 units rather than escalating bonuses at 2/4/6.",
+    "raw": "",
+    "latency_seconds": 116.178
+  },
+  {
+    "demo_id": "01_title_flow",
+    "requirement_id": "D2",
+    "score": 0.0,
+    "rationale": "Only four unique creature types appear across the visible shop cards, well below the required fifteen.",
+    "raw": "",
+    "latency_seconds": 116.178
+  },
+  {
+    "demo_id": "01_title_flow",
+    "requirement_id": "D3",
+    "score": 0.5,
+    "rationale": "Gold, interest, level, and level-up cost are displayed in the UI but no mechanics are demonstrated in action.",
+    "raw": "",
+    "latency_seconds": 116.178
+  },
+  {
+    "demo_id": "01_title_flow",
+    "requirement_id": "D4",
+    "score": 0.0,
+    "rationale": "Front and back row labels exist yet no creature placement or combat occurs to prove positioning has any effect.",
+    "raw": "",
+    "latency_seconds": 116.178
+  },
+  {
+    "demo_id": "01_title_flow",
+    "requirement_id": "V1",
+    "score": 0.5,
+    "rationale": "Shop stats, board, gold, level, and round are readable and non-overlapping, though rendered with plain text and geometric shapes.",
+    "raw": "",
+    "latency_seconds": 116.178
+  },
+  {
+    "demo_id": "01_title_flow",
+    "requirement_id": "V2",
+    "score": 0.0,
+    "rationale": "No combat frames are present to evaluate attack animations, ability effects, health bar changes, or death effects.",
+    "raw": "",
+    "latency_seconds": 116.178
+  },
+  {
+    "demo_id": "01_title_flow",
+    "requirement_id": "V3",
+    "score": 0.0,
+    "rationale": "Only the title screen and a static shop phase are shown; combat, results, elimination, and placement transitions are entirely absent.",
+    "raw": "",
+    "latency_seconds": 116.178
+  },
+  {
+    "demo_id": "01_title_flow",
+    "requirement_id": "A1",
+    "score": 0.5,
+    "rationale": "A themed title screen with the game name and a FIND MATCH button is present but built from simple rectangles rather than illustrated assets.",
+    "raw": "",
+    "latency_seconds": 116.178
+  },
+  {
+    "demo_id": "01_title_flow",
+    "requirement_id": "A2",
+    "score": 0.5,
+    "rationale": "Brown and gold styling is consistent across screens, yet every visible element is composed of text and untextured geometric shapes.",
+    "raw": "",
+    "latency_seconds": 116.178
+  },
+  {
+    "demo_id": "01_title_flow",
+    "requirement_id": "A3",
+    "score": 0.0,
+    "rationale": "Creatures are solid-color primitives, the board is a plain dark fill, and the UI relies on unstyled boxes and labels without authored art.",
+    "raw": "",
+    "latency_seconds": 116.178
+  },
+  {
+    "demo_id": "01_title_flow",
+    "requirement_id": "A4",
+    "score": 0.0,
+    "rationale": "All frames are completely static with no visible animations, tweens, fade transitions, or smooth state changes anywhere in the recording.",
+    "raw": "",
+    "latency_seconds": 116.178
+  },
+  {
+    "demo_id": "02_draft_battle",
+    "requirement_id": "M1",
+    "score": 0.5,
+    "rationale": "Shop buying and board placement work but use solid-color shapes with no selling shown.",
+    "raw": "{\"scores\": {\"M1\": 0.5, \"M2\": 0.5, \"M3\": 0.5, \"D1\": 0.5, \"D2\": 0.5, \"D3\": 0.5, \"D4\": 0.5, \"V1\": 0.5, \"V2\": 0.5, \"V3\": 0.5, \"A1\": 0.0, \"A2\": 0.5, \"A3\": 0.5, \"A4\": 0.0}, \"rationales\": {\"M1\": \"Shop buying and board placement work but use solid-color shapes with no selling shown.\", \"M2\": \"Auto-combat functions with health tracking and death but lacks visible abilities or attack animations.\", \"M3\": \"Player health and round progression are visible but elimination format and damage consequences are not demonstrated.\", \"D1\": \"Synergy tracker displays five tribes but only a single tier threshold instead of escalating 2/4/6 bonuses.\", \"D2\": \"Eleven distinct creature types appear with varied stats but fewer than fifteen and only color-swapped rectangles.\", \"D3\": \"Gold, interest display, and level-up button exist but streak bonuses and clear income escalation are not shown.\", \"D4\": \"Front and back rows exist and Wyrm tanks hits, though dragging and position-dependent abilities are not demonstrated.\", \"V1\": \"All core shop information is clearly readable despite relying on plain text and geometric primitives.\", \"V2\": \"Combat outcome is followable via battle log and health bars without animations or visual effects.\", \"V3\": \"Core loop from shop to combat to next round is shown but title screen, elimination, and placement are missing.\", \"A1\": \"No title screen appears in the recording as gameplay starts directly in round two.\", \"A2\": \"Visual style is consistently minimalist but uses unthemed placeholder shapes rather than a tavern aesthetic.\", \"A3\": \"Every element is rendered as solid-color rectangles or plain UI panels without illustrated sprites or textures.\", \"A4\": \"All state changes are instantaneous hard cuts with no tweens, fades, or sprite animations visible.\"}}",
+    "latency_seconds": 216.278
+  },
+  {
+    "demo_id": "02_draft_battle",
+    "requirement_id": "M2",
+    "score": 0.5,
+    "rationale": "Auto-combat functions with health tracking and death but lacks visible abilities or attack animations.",
+    "raw": "",
+    "latency_seconds": 216.278
+  },
+  {
+    "demo_id": "02_draft_battle",
+    "requirement_id": "M3",
+    "score": 0.5,
+    "rationale": "Player health and round progression are visible but elimination format and damage consequences are not demonstrated.",
+    "raw": "",
+    "latency_seconds": 216.278
+  },
+  {
+    "demo_id": "02_draft_battle",
+    "requirement_id": "D1",
+    "score": 0.5,
+    "rationale": "Synergy tracker displays five tribes but only a single tier threshold instead of escalating 2/4/6 bonuses.",
+    "raw": "",
+    "latency_seconds": 216.278
+  },
+  {
+    "demo_id": "02_draft_battle",
+    "requirement_id": "D2",
+    "score": 0.5,
+    "rationale": "Eleven distinct creature types appear with varied stats but fewer than fifteen and only color-swapped rectangles.",
+    "raw": "",
+    "latency_seconds": 216.278
+  },
+  {
+    "demo_id": "02_draft_battle",
+    "requirement_id": "D3",
+    "score": 0.5,
+    "rationale": "Gold, interest display, and level-up button exist but streak bonuses and clear income escalation are not shown.",
+    "raw": "",
+    "latency_seconds": 216.278
+  },
+  {
+    "demo_id": "02_draft_battle",
+    "requirement_id": "D4",
+    "score": 0.5,
+    "rationale": "Front and back rows exist and Wyrm tanks hits, though dragging and position-dependent abilities are not demonstrated.",
+    "raw": "",
+    "latency_seconds": 216.278
+  },
+  {
+    "demo_id": "02_draft_battle",
+    "requirement_id": "V1",
+    "score": 0.5,
+    "rationale": "All core shop information is clearly readable despite relying on plain text and geometric primitives.",
+    "raw": "",
+    "latency_seconds": 216.278
+  },
+  {
+    "demo_id": "02_draft_battle",
+    "requirement_id": "V2",
+    "score": 0.5,
+    "rationale": "Combat outcome is followable via battle log and health bars without animations or visual effects.",
+    "raw": "",
+    "latency_seconds": 216.278
+  },
+  {
+    "demo_id": "02_draft_battle",
+    "requirement_id": "V3",
+    "score": 0.5,
+    "rationale": "Core loop from shop to combat to next round is shown but title screen, elimination, and placement are missing.",
+    "raw": "",
+    "latency_seconds": 216.278
+  },
+  {
+    "demo_id": "02_draft_battle",
+    "requirement_id": "A1",
+    "score": 0.0,
+    "rationale": "No title screen appears in the recording as gameplay starts directly in round two.",
+    "raw": "",
+    "latency_seconds": 216.278
+  },
+  {
+    "demo_id": "02_draft_battle",
+    "requirement_id": "A2",
+    "score": 0.5,
+    "rationale": "Visual style is consistently minimalist but uses unthemed placeholder shapes rather than a tavern aesthetic.",
+    "raw": "",
+    "latency_seconds": 216.278
+  },
+  {
+    "demo_id": "02_draft_battle",
+    "requirement_id": "A3",
+    "score": 0.5,
+    "rationale": "Every element is rendered as solid-color rectangles or plain UI panels without illustrated sprites or textures.",
+    "raw": "",
+    "latency_seconds": 216.278
+  },
+  {
+    "demo_id": "02_draft_battle",
+    "requirement_id": "A4",
+    "score": 0.0,
+    "rationale": "All state changes are instantaneous hard cuts with no tweens, fades, or sprite animations visible.",
+    "raw": "",
+    "latency_seconds": 216.278
+  },
+  {
+    "demo_id": "03_late_game",
+    "requirement_id": "M1",
+    "score": 0.5,
+    "rationale": "Shop buying and board placement work but creatures are solid-color rectangles and bench/selling are not shown.",
+    "raw": "{\n  \"scores\": {\"M1\": 0.5, \"M2\": 0.5, \"M3\": 0.5, \"D1\": 0.5, \"D2\": 0.5, \"D3\": 0.5, \"D4\": 0.5, \"V1\": 0.5, \"V2\": 0.5, \"V3\": 0.5, \"A1\": 0.0, \"A2\": 0.5, \"A3\": 0.0, \"A4\": 0.0},\n  \"rationales\": {\n    \"M1\": \"Shop buying and board placement work but creatures are solid-color rectangles and bench/selling are not shown.\",\n    \"M2\": \"Combat is automatic with health tracking and death, yet no triggered abilities or attack animations are visible and all units are primitive shapes.\",\n    \"M3\": \"Player health depletes on defeat but elimination format and final placement screen are not demonstrated.\",\n    \"D1\": \"Five tribes and a synergy tracker exist but only a single tier threshold is shown rather than escalating 2/4/6 tiers.\",\n    \"D2\": \"Fourteen distinct named creatures with varied stats appear but art is limited to colored squares and the visible count is under fifteen.\",\n    \"D3\": \"Interest income and levelling are present but streak bonuses are not demonstrated in the recording.\",\n    \"D4\": \"Front and back rows exist and front-line units take damage first, though drag repositioning and position-based abilities are not shown.\",\n    \"V1\": \"All core shop information is readable and non-overlapping but presented through plain text and unstyled geometric shapes.\",\n    \"V2\": \"Combat outcomes are readable via the log and health bars, yet there are no attack animations, ability effects, or smooth tweens.\",\n    \"V3\": \"The core shop-to-combat-to-next-round flow is connected but title, elimination, and final placement are missing from the recording.\",\n    \"A1\": \"No title screen is present; the recording begins directly in a shop phase.\",\n    \"A2\": \"Visual style is uniformly minimal but entirely composed of programmatic shapes and solid-color fills.\",\n    \"A3\": \"Creatures are solid-color primitives, the board is a plain dark fill, and UI relies on unstyled default widgets.\",\n    \"A4\": \"All state changes snap instantly with no visible multi-frame animations, tweens, or transitions.\"\n  }\n}",
+    "latency_seconds": 236.459
+  },
+  {
+    "demo_id": "03_late_game",
+    "requirement_id": "M2",
+    "score": 0.5,
+    "rationale": "Combat is automatic with health tracking and death, yet no triggered abilities or attack animations are visible and all units are primitive shapes.",
+    "raw": "",
+    "latency_seconds": 236.459
+  },
+  {
+    "demo_id": "03_late_game",
+    "requirement_id": "M3",
+    "score": 0.5,
+    "rationale": "Player health depletes on defeat but elimination format and final placement screen are not demonstrated.",
+    "raw": "",
+    "latency_seconds": 236.459
+  },
+  {
+    "demo_id": "03_late_game",
+    "requirement_id": "D1",
+    "score": 0.5,
+    "rationale": "Five tribes and a synergy tracker exist but only a single tier threshold is shown rather than escalating 2/4/6 tiers.",
+    "raw": "",
+    "latency_seconds": 236.459
+  },
+  {
+    "demo_id": "03_late_game",
+    "requirement_id": "D2",
+    "score": 0.5,
+    "rationale": "Fourteen distinct named creatures with varied stats appear but art is limited to colored squares and the visible count is under fifteen.",
+    "raw": "",
+    "latency_seconds": 236.459
+  },
+  {
+    "demo_id": "03_late_game",
+    "requirement_id": "D3",
+    "score": 0.5,
+    "rationale": "Interest income and levelling are present but streak bonuses are not demonstrated in the recording.",
+    "raw": "",
+    "latency_seconds": 236.459
+  },
+  {
+    "demo_id": "03_late_game",
+    "requirement_id": "D4",
+    "score": 0.5,
+    "rationale": "Front and back rows exist and front-line units take damage first, though drag repositioning and position-based abilities are not shown.",
+    "raw": "",
+    "latency_seconds": 236.459
+  },
+  {
+    "demo_id": "03_late_game",
+    "requirement_id": "V1",
+    "score": 0.5,
+    "rationale": "All core shop information is readable and non-overlapping but presented through plain text and unstyled geometric shapes.",
+    "raw": "",
+    "latency_seconds": 236.459
+  },
+  {
+    "demo_id": "03_late_game",
+    "requirement_id": "V2",
+    "score": 0.5,
+    "rationale": "Combat outcomes are readable via the log and health bars, yet there are no attack animations, ability effects, or smooth tweens.",
+    "raw": "",
+    "latency_seconds": 236.459
+  },
+  {
+    "demo_id": "03_late_game",
+    "requirement_id": "V3",
+    "score": 0.5,
+    "rationale": "The core shop-to-combat-to-next-round flow is connected but title, elimination, and final placement are missing from the recording.",
+    "raw": "",
+    "latency_seconds": 236.459
+  },
+  {
+    "demo_id": "03_late_game",
+    "requirement_id": "A1",
+    "score": 0.0,
+    "rationale": "No title screen is present; the recording begins directly in a shop phase.",
+    "raw": "",
+    "latency_seconds": 236.459
+  },
+  {
+    "demo_id": "03_late_game",
+    "requirement_id": "A2",
+    "score": 0.5,
+    "rationale": "Visual style is uniformly minimal but entirely composed of programmatic shapes and solid-color fills.",
+    "raw": "",
+    "latency_seconds": 236.459
+  },
+  {
+    "demo_id": "03_late_game",
+    "requirement_id": "A3",
+    "score": 0.0,
+    "rationale": "Creatures are solid-color primitives, the board is a plain dark fill, and UI relies on unstyled default widgets.",
+    "raw": "",
+    "latency_seconds": 236.459
+  },
+  {
+    "demo_id": "03_late_game",
+    "requirement_id": "A4",
+    "score": 0.0,
+    "rationale": "All state changes snap instantly with no visible multi-frame animations, tweens, or transitions.",
+    "raw": "",
+    "latency_seconds": 236.459
+  }
+]

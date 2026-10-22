@@ -1,0 +1,15 @@
+{
+  "adapter": "openai-compatible.v1",
+  "model": "deepseek-flash",
+  "timeout_seconds": 240.0,
+  "max_output_tokens": 8192,
+  "token_parameter": "max_tokens",
+  "json_mode": true,
+  "stream": false,
+  "reasoning_effort": null,
+  "thinking": "disabled",
+  "input_token_margin": 1024,
+  "max_retries": 0,
+  "connect_timeout_seconds": 10.0,
+  "input_token_bound": "UTF-8 bytes of complete messages plus configured margin"
+}

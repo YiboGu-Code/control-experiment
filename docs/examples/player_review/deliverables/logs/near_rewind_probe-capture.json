@@ -1,0 +1,217 @@
+{
+  "session_id": "near_rewind_probe-capture",
+  "mode": "capture",
+  "argv": [
+    "python3",
+    "/opt/gamecraft/player_driver.py",
+    "--project",
+    "/workspace/artifacts/developer/8ce726a9ecad90a140719624/game",
+    "--request",
+    "/output/requests/near_rewind_probe-capture.json",
+    "--output",
+    "/output/sessions/near_rewind_probe-capture"
+  ],
+  "status": "passed",
+  "reason": "Real frame-indexed input capture completed; gameplay objectives and QA acceptance are separate",
+  "process": {
+    "returncode": 0,
+    "stdout": "{\"status\": \"passed\", \"steps\": 2, \"authored_files_unchanged\": true}\n",
+    "stderr": ""
+  },
+  "driver": {
+    "driver_version": "godot-player.v1",
+    "status": "passed",
+    "project_sha256": "eb929b96a5bdd894db35ea59191e8f109a38221372d62b6d5d28a8ab4f244d22",
+    "fresh_process": true,
+    "fresh_user_data": true,
+    "network": "none",
+    "steps": [
+      {
+        "name": "import",
+        "argv": [
+          "godot",
+          "--headless",
+          "--path",
+          "/tmp/player-2sarnajn/game",
+          "--import"
+        ],
+        "returncode": 0,
+        "stdout": "Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org\n\n[   0% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | Started Project initialization (5 steps)\u001b[39m\u001b[0m\n[   0% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | Scanning file structure...\u001b[39m\u001b[0m\n[  16% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | Loading global class names...\u001b[39m\u001b[0m\n[  33% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | Verifying GDExtensions...\u001b[39m\u001b[0m\n[  50% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | Creating autoload scripts...\u001b[39m\u001b[0m\n[  66% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | Initializing plugins...\u001b[39m\u001b[0m\n[  83% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | Starting file scan...\u001b[39m\u001b[0m\n\u001b[92m[ DONE ]\u001b[39m \u001b[1mfirst_scan_filesystem\u001b[22m\n\u001b[0m\n[   0% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | Started Registering global classes... (9 steps)\u001b[39m\u001b[0m\n[   0% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | \u001b[39m\u001b[0m\n[  10% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | \u001b[39m\u001b[0m\n[  20% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | \u001b[39m\u001b[0m\n[  30% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | \u001b[39m\u001b[0m\n[  40% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | \u001b[39m\u001b[0m\n[  50% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | \u001b[39m\u001b[0m\n[  60% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | \u001b[39m\u001b[0m\n[  70% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | \u001b[39m\u001b[0m\n[  80% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | \u001b[39m\u001b[0m\n\u001b[92m[ DONE ]\u001b[39m \u001b[1mupdate_scripts_classes\u001b[22m\n\u001b[0m\n[   0% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | Started Scanning actions... (12 steps)\u001b[39m\u001b[0m\n[   0% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | door_gate.png\u001b[39m\u001b[0m\n[   7% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | exit_crystal.png\u001b[39m\u001b[0m\n[  15% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | laser_hazard.png\u001b[39m\u001b[0m\n[  23% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | pressure_plate.png\u001b[39m\u001b[0m\n[  30% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | switch_button.png\u001b[39m\u001b[0m\n[  38% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | enemy_patroller.png\u001b[39m\u001b[0m\n[  46% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | ghost_sheet.png\u001b[39m\u001b[0m\n[  53% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | player_sheet.png\u001b[39m\u001b[0m\n[  61% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | tileset_platform.png\u001b[39m\u001b[0m\n[  69% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | hud_panel.png\u001b[39m\u001b[0m\n[  76% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | title_backdrop.png\u001b[39m\u001b[0m\n[  84% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | ui_controls.png\u001b[39m\u001b[0m\n\u001b[92m[ DONE ]\u001b[39m \u001b[1m_update_scan_actions\u001b[22m\n\u001b[0m\n[   0% ] \u001b[90m\u001b[1mreimport\u001b[22m | Started (Re)Importing Assets (12 steps)\u001b[39m\u001b[0m\n[   0% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[   7% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  15% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  23% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  30% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  38% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  46% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  53% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  61% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  69% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  76% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  84% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[   0% ] \u001b[90m\u001b[1mreimport\u001b[22m | Executing pre-reimport operations...\u001b[39m\u001b[0m\n[   0% ] \u001b[90m\u001b[1mreimport\u001b[22m | door_gate.png\u001b[39m\u001b[0m\n[   7% ] \u001b[90m\u001b[1mreimport\u001b[22m | exit_crystal.png\u001b[39m\u001b[0m\n[  15% ] \u001b[90m\u001b[1mreimport\u001b[22m | laser_hazard.png\u001b[39m\u001b[0m\n[  23% ] \u001b[90m\u001b[1mreimport\u001b[22m | pressure_plate.png\u001b[39m\u001b[0m\n[  30% ] \u001b[90m\u001b[1mreimport\u001b[22m | switch_button.png\u001b[39m\u001b[0m\n[  38% ] \u001b[90m\u001b[1mreimport\u001b[22m | enemy_patroller.png\u001b[39m\u001b[0m\n[  46% ] \u001b[90m\u001b[1mreimport\u001b[22m | ghost_sheet.png\u001b[39m\u001b[0m\n[  53% ] \u001b[90m\u001b[1mreimport\u001b[22m | player_sheet.png\u001b[39m\u001b[0m\n[  61% ] \u001b[90m\u001b[1mreimport\u001b[22m | tileset_platform.png\u001b[39m\u001b[0m\n[  69% ] \u001b[90m\u001b[1mreimport\u001b[22m | hud_panel.png\u001b[39m\u001b[0m\n[  76% ] \u001b[90m\u001b[1mreimport\u001b[22m | title_backdrop.png\u001b[39m\u001b[0m\n[  84% ] \u001b[90m\u001b[1mreimport\u001b[22m | ui_controls.png\u001b[39m\u001b[0m\n[  92% ] \u001b[90m\u001b[1mreimport\u001b[22m | Finalizing Asset Import...\u001b[39m\u001b[0m\n\u001b[92m[ DONE ]\u001b[39m \u001b[1mreimport\u001b[22m\n\u001b[0m\n[   0% ] \u001b[90m\u001b[1mreimport\u001b[22m | Started (Re)Importing Assets (12 steps)\u001b[39m\u001b[0m\n[   0% ] \u001b[90m\u001b[1mreimport\u001b[22m | Executing post-reimport operations...\u001b[39m\u001b[0m\n\u001b[92m[ DONE ]\u001b[39m \u001b[1mreimport\u001b[22m\n\u001b[0m\n[   0% ] \u001b[90m\u001b[1mloading_editor_layout\u001b[22m | Started Loading editor (5 steps)\u001b[39m\u001b[0m\n[   0% ] \u001b[90m\u001b[1mloading_editor_layout\u001b[22m | Loading editor layout...\u001b[39m\u001b[0m\n\u001b[92m[ DONE ]\u001b[39m \u001b[1mloading_editor_layout\u001b[22m\n\u001b[0m\n",
+        "stderr": "",
+        "passed": true
+      },
+      {
+        "name": "play",
+        "argv": [
+          "xvfb-run",
+          "-a",
+          "-s",
+          "-screen 0 1280x720x24 -nolisten tcp",
+          "godot",
+          "--path",
+          "/tmp/player-2sarnajn/game",
+          "--rendering-method",
+          "gl_compatibility",
+          "--audio-driver",
+          "Dummy",
+          "--fixed-fps",
+          "30",
+          "--disable-vsync",
+          "--resolution",
+          "1280x720",
+          "--script",
+          "/opt/gamecraft/player_harness.gd",
+          "--",
+          "--player-job",
+          "/tmp/player-2sarnajn/job.json",
+          "--scenario",
+          "near_rewind"
+        ],
+        "returncode": 0,
+        "stdout": "Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org\nOpenGL API 4.5 (Core Profile) Mesa 22.3.6 - Compatibility - Using Device: Mesa/X.org - llvmpipe (LLVM 15.0.6, 256 bits)\n\n",
+        "stderr": "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.\n     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)\n",
+        "passed": true
+      }
+    ],
+    "authored_files_unchanged": true,
+    "modified_source_paths": [],
+    "original_project_unchanged": true
+  },
+  "runtime_files": [
+    {
+      "artifact_id": "player-near_rewind_probe-capture-driver-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-capture/driver.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "2d2fb43c4a0d8d375903205965b3a7d2e9acf9f64cb7ea41350c7e61c412c137"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-capture-events-jsonl",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-capture/events.jsonl",
+      "created_by": "player",
+      "media_type": "application/x-ndjson",
+      "sha256": "f49065971c05db974511790518b68b2abba5003058cd03fc0923723352805be2"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-capture-executed_trace-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-capture/executed_trace.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "72e81cad1558abb29514e90c42b1440b2bbedba4c9ebbffad07a3a0e7cbc3029"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-capture-frame_0000-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-capture/frame_0000.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "70673cdbef56c9337b96f4f594b22674d68dbab7ee455f461999e97defb69925"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-capture-frame_0000-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-capture/frame_0000.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "f2d149af71f74608e31e20563daf7b756bfe447150109b9a8d0391e24e8d3d1a"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-capture-frame_0180-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-capture/frame_0180.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "dd2e372bc4d8eea7c03ac09ddc12da08f50d8dc1d2962442d5fb2f4e9c962949"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-capture-frame_0180-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-capture/frame_0180.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "ba0a91d6f2d5067ef64998157428da93af67cf8b694ed8e04f8b921fd4e10d9e"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-capture-frame_0240-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-capture/frame_0240.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "799c0d454f32ce980d43cf0f43f1ee00166c376ce64460c143d68ac7d879d1d4"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-capture-frame_0240-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-capture/frame_0240.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "91f632411bcd8774fb23d21652e8fa99bc33d15bf0dfb189dd89176ce4830ad5"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-capture-frame_0500-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-capture/frame_0500.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "1fe4885173f211bb4b7e09f1b804186f4262b2b9577aaced152db56fffa67f67"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-capture-frame_0500-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-capture/frame_0500.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "236b1c2e354dda7a141b2ffee7bd23faa9df54e0a53bd3b2de3760ea81373f1f"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-capture-frame_0599-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-capture/frame_0599.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "a891908b02ccf1e83856d388548c96d86ad42e070a945c9d565cb71d1434f3c4"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-capture-frame_0599-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-capture/frame_0599.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "aac04f26304de9e73a0dd67b1289916efb4484ad6cc84210f65ad06983af7d28"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-capture-frames-jsonl",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-capture/frames.jsonl",
+      "created_by": "player",
+      "media_type": "application/x-ndjson",
+      "sha256": "1e97a0d7e018b32549047b44084829a0e840d073f236517289dc6d5476040b42"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-capture-receipt-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-capture/receipt.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "b98a72d1d5ca2a8bfa593e33f9ec91ee7434fc6e24e55f56a069f5bca7a1bd2d"
+    }
+  ]
+}

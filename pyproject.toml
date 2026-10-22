@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "adaptive-game-generation"
+version = "0.1.0"
+description = "Shared contracts for comparing fixed-loop and adaptive game generation."
+requires-python = ">=3.10"
+dependencies = ["pydantic>=2.10,<3", "Pillow>=10,<13"]
+
+[project.optional-dependencies]
+test = ["pytest>=8,<9"]
+live = ["openai>=2,<3", "python-dotenv>=1,<2", "httpx>=0.27,<1", "dashscope>=1.25.17,<2"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-ra"
+markers = ["live: opt-in real model or isolated engine test; see each role's GAMECRAFT_*_TESTS switch"]

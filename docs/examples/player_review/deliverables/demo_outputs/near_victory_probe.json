@@ -1,0 +1,66 @@
+{
+  "scenario": "near_victory",
+  "duration_frames": 600,
+  "events": [
+    {
+      "frame": 10,
+      "type": "wait"
+    },
+    {
+      "frame": 30,
+      "type": "key_down",
+      "keycode": "D"
+    },
+    {
+      "frame": 120,
+      "type": "key_up",
+      "keycode": "D"
+    },
+    {
+      "frame": 140,
+      "type": "key_down",
+      "keycode": "SPACE"
+    },
+    {
+      "frame": 141,
+      "type": "key_up",
+      "keycode": "SPACE"
+    },
+    {
+      "frame": 170,
+      "type": "key_down",
+      "keycode": "D"
+    },
+    {
+      "frame": 260,
+      "type": "key_up",
+      "keycode": "D"
+    },
+    {
+      "frame": 280,
+      "type": "key_down",
+      "keycode": "E"
+    },
+    {
+      "frame": 281,
+      "type": "key_up",
+      "keycode": "E"
+    },
+    {
+      "frame": 320,
+      "type": "wait"
+    },
+    {
+      "frame": 360,
+      "type": "wait"
+    },
+    {
+      "frame": 420,
+      "type": "wait"
+    },
+    {
+      "frame": 500,
+      "type": "wait"
+    }
+  ]
+}

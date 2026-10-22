@@ -1,0 +1,25 @@
+{
+  "schema_version": "1.0",
+  "request_id": "qa-initial",
+  "run_id": "qa-live",
+  "task_id": "platformer-time-loop",
+  "role": "qa_reviewer",
+  "work_item_ids": [],
+  "objective": "Review Time Loop against the original Benchmark instruction using actual current evidence",
+  "completion_criteria": [
+    "Cover every acceptance criterion, audit design omissions and conflicts, and cite inspected evidence",
+    "Publish actionable issues and a justified delivery readiness decision without modifying the game",
+    "Distinguish observed defects, missing tests, exact replay differences and mock-art limitations"
+  ],
+  "state_revision": 4,
+  "artifact_refs": [],
+  "limits": {
+    "max_model_calls": 4,
+    "max_input_tokens": 4000000,
+    "max_output_tokens": 96000,
+    "max_image_calls": 0,
+    "max_tool_calls": 3000,
+    "max_tool_seconds": 1600.0,
+    "max_wall_seconds": 1800.0
+  }
+}

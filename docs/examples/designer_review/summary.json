@@ -1,0 +1,34 @@
+{
+  "mode": "live",
+  "model": "deepseek-flash",
+  "response_model": "deepseek-flash",
+  "response_id": "bfa53838-14e6-415b-b3af-1362b28e3505",
+  "role_status": "completed",
+  "finish_reason": "stop",
+  "reasoning_tokens": 14749,
+  "status": "completed",
+  "requirements": 37,
+  "sections": 8,
+  "state_revision": 1,
+  "usage": {
+    "model_calls": 1,
+    "input_tokens": 3685,
+    "cached_input_tokens": 0,
+    "output_tokens": 21909,
+    "image_calls": 0,
+    "tool_calls": 4,
+    "tool_seconds": 91.92199999999139,
+    "wall_seconds": 92.11000000000058,
+    "token_usage_complete": true
+  },
+  "checks": {
+    "model_completed": true,
+    "original_instruction_unchanged": true,
+    "initial_design_committed": true,
+    "all_eight_sections": true,
+    "no_fabricated_implementation": true,
+    "english_output_no_cjk": true,
+    "usage_matches_provider": true
+  },
+  "error": null
+}

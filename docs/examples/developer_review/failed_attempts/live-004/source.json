@@ -1,0 +1,17 @@
+{
+  "benchmark": "GameCraft-Bench",
+  "snapshot": "FreedomIntelligence-gamecraft-bench-a433475",
+  "task_id": "platformer-time-loop",
+  "instruction_path": "benchmark_resources/FreedomIntelligence-gamecraft-bench-a433475/tasks/platformer-time-loop/instruction.md",
+  "instruction_sha256": "dcb85ce30a25d88a5e0a12b6a0f91a8783e896d6816cdcb88d6b8432e5c10969",
+  "designer": {
+    "source": "docs/examples/designer_review/design.json",
+    "sha256": "060ef8850723b647440e0fe92ee871f83a46595a068eacea5a07b188a8ce3a39"
+  },
+  "art": {
+    "source": "docs/examples/art_producer_review/deliverables/asset_manifest.json",
+    "sha256": "d837be1e49b787c7c60213d6b8c2b1c575271052a7693174de3bd3a084f076bf",
+    "images": "Previously generated mock placeholders"
+  },
+  "preconditions": "Prior real Designer and Art plans are imported; only references are rebased. No new upstream model or image calls."
+}

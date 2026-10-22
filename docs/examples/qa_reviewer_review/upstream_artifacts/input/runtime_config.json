@@ -1,0 +1,25 @@
+{
+  "role_limits": {
+    "max_model_calls": 4,
+    "max_input_tokens": 4000000,
+    "max_output_tokens": 96000,
+    "max_image_calls": 0,
+    "max_tool_calls": 3000,
+    "max_tool_seconds": 1600.0,
+    "max_wall_seconds": 1800.0
+  },
+  "scheduler_limits": {
+    "max_model_calls": 1,
+    "max_input_tokens": 32000,
+    "max_output_tokens": 2000,
+    "max_image_calls": null,
+    "max_tool_calls": 10,
+    "max_tool_seconds": 60.0,
+    "max_wall_seconds": 90.0
+  },
+  "max_file_bytes": 33554432,
+  "max_output_bytes": 268435456,
+  "tool_timeout_seconds": 300.0,
+  "invocation_timeout_seconds": 1800.0,
+  "service_configuration_id": "live-text-2af8f79893f40853:qa"
+}

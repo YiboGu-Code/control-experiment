@@ -1,0 +1,40 @@
+{
+  "mode": "live-text/real-isolated-godot/recorded-mock-art",
+  "status": "failed",
+  "role_status": "failed",
+  "model": "deepseek-flash",
+  "game_revision": null,
+  "build_status": "not_run",
+  "model_calls": 1,
+  "build_attempts": 0,
+  "integrated_assets": 0,
+  "source_files": 0,
+  "usage": {
+    "model_calls": 1,
+    "input_tokens": 38844,
+    "cached_input_tokens": 38656,
+    "output_tokens": 65536,
+    "image_calls": 0,
+    "tool_calls": 31,
+    "tool_seconds": 236.73700000003737,
+    "wall_seconds": 237.57800000000861,
+    "token_usage_complete": true
+  },
+  "checks": {
+    "original_instruction_unchanged": true,
+    "actual_model_completed": false,
+    "game_revision_committed": false,
+    "real_basic_build_passed": false,
+    "upstream_artifacts_unchanged": true,
+    "no_qa_or_play_claims": true,
+    "mock_art_preserved": false,
+    "no_developer_image_calls": true,
+    "usage_matches_provider": true,
+    "english_output_no_cjk": true
+  },
+  "error": {
+    "code": "invalid_submission",
+    "message": "Developer returned an invalid JSON proposal",
+    "retryable": false
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "harness_version": "godot-player.v1",
+  "trace": {
+    "duration_frames": 6,
+    "events": []
+  },
+  "checkpoints": [
+    0,
+    5
+  ],
+  "project_sha256": "eb929b96a5bdd894db35ea59191e8f109a38221372d62b6d5d28a8ab4f244d22",
+  "seed": 1337
+}

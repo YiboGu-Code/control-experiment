@@ -1,0 +1,305 @@
+{
+  "reward": 0.41874999999999996,
+  "formula": "BUILD * (0.15*((M1+M2+M3)/3) + 0.35*((D1+D2+D3+D4)/4) + 0.15*((V1+V2+V3)/3) + 0.35*((A1+A2+A3+A4)/4))",
+  "build_ok": true,
+  "judge": {
+    "name": "OpenAIJudge",
+    "model": "kimi-k2.6"
+  },
+  "variables": {
+    "BUILD": 1.0,
+    "M1": 0.5,
+    "M2": 0.5,
+    "M3": 0.5,
+    "D1": 0.5,
+    "D2": 0.5,
+    "D3": 0.5,
+    "D4": 0.5,
+    "V1": 0.5,
+    "V2": 0.3333333333333333,
+    "V3": 0.5,
+    "A1": 0.5,
+    "A2": 0.5,
+    "A3": 0.16666666666666666,
+    "A4": 0.0
+  },
+  "requirements": [
+    {
+      "id": "M1",
+      "description": "Each round has a shop phase where the player buys creatures from a randomized shop using gold. Creatures can be placed on a board (limited slots) or held on a bench. Selling creatures refunds partial gold. A timer or ready button transitions to the fight phase. Score 0 if there is no shop, if creatures cannot be bought/sold, or if there is no board placement. Score 1 requires the mechanic to be presented in a visually authored context with real sprites or illustrated assets. Score 0.5 at most if the mechanic works but is represented entirely by programmatic shapes, solid-color fills, or default Godot widgets.",
+      "agg": "max",
+      "aggregated": 0.5,
+      "per_demo": {
+        "01_title_flow": 0.5,
+        "02_draft_battle": 0.5,
+        "03_late_game": 0.5
+      }
+    },
+    {
+      "id": "M2",
+      "description": "Combat is automatic: placed creatures fight the opponent's creatures without player input. Creatures attack in order, targeting the nearest enemy. Abilities trigger based on conditions (on-attack, on-death, start-of-combat). Health bars deplete and creatures die when health reaches zero. Score 0 if combat requires player input, if there are no abilities, or if health is not tracked. Score 1 requires the mechanic to be presented in a visually authored context with real sprites or illustrated assets. Score 0.5 at most if the mechanic works but is represented entirely by programmatic shapes, solid-color fills, or default Godot widgets.",
+      "agg": "max",
+      "aggregated": 0.5,
+      "per_demo": {
+        "01_title_flow": 0.0,
+        "02_draft_battle": 0.5,
+        "03_late_game": 0.5
+      }
+    },
+    {
+      "id": "M3",
+      "description": "The player has a health pool that depletes when they lose a round (damage proportional to surviving enemy creatures). Last player standing wins. An elimination format with at least 4 AI opponents creates escalating pressure. A placement screen shows final ranking. Score 0 if there is no player health, if losing has no consequence, or if there is no elimination format. Score 1 requires the mechanic to be presented in a visually authored context with real sprites or illustrated assets. Score 0.5 at most if the mechanic works but is represented entirely by programmatic shapes, solid-color fills, or default Godot widgets.",
+      "agg": "max",
+      "aggregated": 0.5,
+      "per_demo": {
+        "01_title_flow": 0.0,
+        "02_draft_battle": 0.5,
+        "03_late_game": 0.5
+      }
+    },
+    {
+      "id": "D1",
+      "description": "At least 5 tribal synergies (Beast, Undead, Mech, Dragon, Elemental) with escalating bonuses at 2/4/6 units of the same tribe. A synergy tracker panel shows active and potential synergies. Synergies provide meaningful combat bonuses (attack, health, special effects). Score 0 if there are fewer than 5 tribes, if synergies have no escalating tiers, or if there is no synergy tracker. Score 1 requires content variants to be visually distinct with real authored art (different sprites, illustrated elements). Score 0.5 at most if variants exist but are represented by programmatic shapes, color swaps, or text labels without real asset differences.",
+      "agg": "max",
+      "aggregated": 0.5,
+      "per_demo": {
+        "01_title_flow": 0.0,
+        "02_draft_battle": 0.5,
+        "03_late_game": 0.5
+      }
+    },
+    {
+      "id": "D2",
+      "description": "At least 15 distinct creature types with different stats, abilities, tribes, and visual designs. Creatures range from cheap fodder to expensive powerhouses. Each creature has a unique sprite and name. Score 0 if there are fewer than 15 creatures, if they share identical stats, or if they have no unique art. Score 1 requires content variants to be visually distinct with real authored art (different sprites, illustrated elements). Score 0.5 at most if variants exist but are represented by programmatic shapes, color swaps, or text labels without real asset differences.",
+      "agg": "max",
+      "aggregated": 0.5,
+      "per_demo": {
+        "01_title_flow": 0.0,
+        "02_draft_battle": 0.5,
+        "03_late_game": 0.5
+      }
+    },
+    {
+      "id": "D3",
+      "description": "An economy system with gold income that increases each round, streak bonuses (win or lose streaks grant extra gold), and interest on saved gold (1 per 10 saved). Levelling up costs gold but increases board size and shop quality. Score 0 if income is flat, if there are no streaks or interest, or if levelling is absent. Score 1 requires content variants to be visually distinct with real authored art (different sprites, illustrated elements). Score 0.5 at most if variants exist but are represented by programmatic shapes, color swaps, or text labels without real asset differences.",
+      "agg": "max",
+      "aggregated": 0.5,
+      "per_demo": {
+        "01_title_flow": 0.5,
+        "02_draft_battle": 0.5,
+        "03_late_game": 0.5
+      }
+    },
+    {
+      "id": "D4",
+      "description": "Board positioning matters: front-row creatures are attacked first; back-row creatures with ranged abilities stay safe longer. The player can drag creatures between positions. At least some creatures have position-dependent abilities. Score 0 if positioning has no effect, if creatures cannot be rearranged, or if there is no front/back distinction. Score 1 requires content variants to be visually distinct with real authored art (different sprites, illustrated elements). Score 0.5 at most if variants exist but are represented by programmatic shapes, color swaps, or text labels without real asset differences.",
+      "agg": "max",
+      "aggregated": 0.5,
+      "per_demo": {
+        "01_title_flow": 0.0,
+        "02_draft_battle": 0.5,
+        "03_late_game": 0.5
+      }
+    },
+    {
+      "id": "V1",
+      "description": "The shop phase clearly shows: available creatures with stats and tribe, the player's board and bench, gold amount, level, and round number. All elements are readable and non-overlapping at 1280x720. Tribal affiliations are visually indicated on creature cards. Score 0 if any core element is missing or unreadable. Score 1 requires the information to be presented through themed, styled UI with real assets. Score 0.5 at most if readability relies on plain text, unstyled labels, or raw geometric shapes.",
+      "agg": "mean",
+      "aggregated": 0.5,
+      "per_demo": {
+        "01_title_flow": 0.5,
+        "02_draft_battle": 0.5,
+        "03_late_game": 0.5
+      }
+    },
+    {
+      "id": "V2",
+      "description": "Auto-combat is visually readable: creatures attack with animations, abilities trigger with visual effects, health bars deplete smoothly, and defeated creatures disappear with a death effect. The player can follow the fight outcome from visual cues. Score 0 if combat has no animations, if abilities trigger invisibly, or if health changes are instant. Score 1 requires the information to be presented through themed, styled UI with real assets. Score 0.5 at most if readability relies on plain text, unstyled labels, or raw geometric shapes.",
+      "agg": "mean",
+      "aggregated": 0.3333333333333333,
+      "per_demo": {
+        "01_title_flow": 0.0,
+        "02_draft_battle": 0.5,
+        "03_late_game": 0.5
+      }
+    },
+    {
+      "id": "V3",
+      "description": "The full game loop is connected: Title -> Start match -> Shop phase -> Combat phase -> Results -> Next round -> Elimination -> Final placement. The player can experience every node without restarting. Score 0 if any transition in the chain is missing or broken. Score 1 requires the information to be presented through themed, styled UI with real assets. Score 0.5 at most if readability relies on plain text, unstyled labels, or raw geometric shapes.",
+      "agg": "max",
+      "aggregated": 0.5,
+      "per_demo": {
+        "01_title_flow": 0.0,
+        "02_draft_battle": 0.5,
+        "03_late_game": 0.5
+      }
+    },
+    {
+      "id": "A1",
+      "description": "A title screen is present and styled: it shows the game name in a custom or themed font, has at minimum a play button that is interactive and transitions to the game, and uses a non-default background (tavern interior, creature silhouettes, or fantasy arena) \u2014 not plain Godot grey or a solid-colour fill. Score 0 if the game launches directly into gameplay with no title screen, or if the start button is non-functional. Score 0.5 at most if the game uses programmatic shapes (ColorRect, solid fills, or untextured geometry) instead of real illustrated or pixel-art assets.",
+      "agg": "max",
+      "aggregated": 0.5,
+      "per_demo": {
+        "01_title_flow": 0.5,
+        "02_draft_battle": 0.0,
+        "03_late_game": 0.0
+      }
+    },
+    {
+      "id": "A2",
+      "description": "Overall art-style coherence: every visible element \u2014 creature sprites, board, shop UI, synergy icons, combat effects \u2014 belongs to a single consistent visual language. The palette is warm and tavern-themed (wood tones, gold accents); no clashing styles. Score 0 if the screen mixes incompatible styles, or if elements are obviously unthemed placeholder shapes. Score 0.5 at most if the game uses programmatic shapes (ColorRect, solid fills, or untextured geometry) instead of real illustrated or pixel-art assets.",
+      "agg": "mean",
+      "aggregated": 0.5,
+      "per_demo": {
+        "01_title_flow": 0.5,
+        "02_draft_battle": 0.5,
+        "03_late_game": 0.5
+      }
+    },
+    {
+      "id": "A3",
+      "description": "Creatures have distinct illustrated sprites per type with tribal visual identity; the board has a textured surface; shop items have card-style presentation with art; synergy icons are distinct per tribe; UI uses styled themed widgets. Score 0 if creatures are solid-colour primitives, if the board is a plain fill, or if UI is unstyled defaults. Score 0.5 at most if the game uses programmatic shapes (ColorRect, solid fills, or untextured geometry) instead of real illustrated or pixel-art assets.",
+      "agg": "mean",
+      "aggregated": 0.16666666666666666,
+      "per_demo": {
+        "01_title_flow": 0.0,
+        "02_draft_battle": 0.5,
+        "03_late_game": 0.0
+      }
+    },
+    {
+      "id": "A4",
+      "description": "Animation continuity and polish: creature placement, shop refresh, combat attacks, ability triggers, death effects, health bar changes, round transitions, and elimination announcements each play as smooth multi-frame tweens or sprite animations. No element snaps to its new state in a single frame. Transitions use fades or slides. Score 0 if any of these moments is instantaneous, or if transitions are hard cuts. Score 0.5 at most if the game uses programmatic shapes (ColorRect, solid fills, or untextured geometry) instead of real illustrated or pixel-art assets.",
+      "agg": "mean",
+      "aggregated": 0.0,
+      "per_demo": {
+        "01_title_flow": 0.0,
+        "02_draft_battle": 0.0,
+        "03_late_game": 0.0
+      }
+    }
+  ],
+  "demos": [
+    {
+      "demo_id": "01_title_flow",
+      "trace": "/workspace/game/demo_outputs/01_title_flow.json",
+      "mp4": "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/01_title_flow/01_title_flow.mp4",
+      "duration_seconds": 10.0,
+      "frames": [
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/01_title_flow/frames/frame_0001.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/01_title_flow/frames/frame_0002.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/01_title_flow/frames/frame_0003.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/01_title_flow/frames/frame_0004.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/01_title_flow/frames/frame_0005.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/01_title_flow/frames/frame_0006.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/01_title_flow/frames/frame_0007.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/01_title_flow/frames/frame_0008.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/01_title_flow/frames/frame_0009.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/01_title_flow/frames/frame_0010.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/01_title_flow/frames/frame_0011.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/01_title_flow/frames/frame_0012.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/01_title_flow/frames/frame_0013.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/01_title_flow/frames/frame_0014.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/01_title_flow/frames/frame_0015.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/01_title_flow/frames/frame_0016.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/01_title_flow/frames/frame_0017.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/01_title_flow/frames/frame_0018.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/01_title_flow/frames/frame_0019.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/01_title_flow/frames/frame_0020.png"
+      ]
+    },
+    {
+      "demo_id": "02_draft_battle",
+      "trace": "/workspace/game/demo_outputs/02_draft_battle.json",
+      "mp4": "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/02_draft_battle/02_draft_battle.mp4",
+      "duration_seconds": 18.0,
+      "frames": [
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/02_draft_battle/frames/frame_0001.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/02_draft_battle/frames/frame_0002.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/02_draft_battle/frames/frame_0003.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/02_draft_battle/frames/frame_0004.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/02_draft_battle/frames/frame_0005.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/02_draft_battle/frames/frame_0006.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/02_draft_battle/frames/frame_0007.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/02_draft_battle/frames/frame_0008.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/02_draft_battle/frames/frame_0009.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/02_draft_battle/frames/frame_0010.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/02_draft_battle/frames/frame_0011.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/02_draft_battle/frames/frame_0012.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/02_draft_battle/frames/frame_0013.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/02_draft_battle/frames/frame_0014.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/02_draft_battle/frames/frame_0015.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/02_draft_battle/frames/frame_0016.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/02_draft_battle/frames/frame_0017.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/02_draft_battle/frames/frame_0018.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/02_draft_battle/frames/frame_0019.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/02_draft_battle/frames/frame_0020.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/02_draft_battle/frames/frame_0021.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/02_draft_battle/frames/frame_0022.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/02_draft_battle/frames/frame_0023.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/02_draft_battle/frames/frame_0024.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/02_draft_battle/frames/frame_0025.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/02_draft_battle/frames/frame_0026.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/02_draft_battle/frames/frame_0027.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/02_draft_battle/frames/frame_0028.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/02_draft_battle/frames/frame_0029.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/02_draft_battle/frames/frame_0030.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/02_draft_battle/frames/frame_0031.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/02_draft_battle/frames/frame_0032.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/02_draft_battle/frames/frame_0033.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/02_draft_battle/frames/frame_0034.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/02_draft_battle/frames/frame_0035.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/02_draft_battle/frames/frame_0036.png"
+      ]
+    },
+    {
+      "demo_id": "03_late_game",
+      "trace": "/workspace/game/demo_outputs/03_late_game.json",
+      "mp4": "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/03_late_game/03_late_game.mp4",
+      "duration_seconds": 20.0,
+      "frames": [
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/03_late_game/frames/frame_0001.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/03_late_game/frames/frame_0002.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/03_late_game/frames/frame_0003.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/03_late_game/frames/frame_0004.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/03_late_game/frames/frame_0005.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/03_late_game/frames/frame_0006.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/03_late_game/frames/frame_0007.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/03_late_game/frames/frame_0008.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/03_late_game/frames/frame_0009.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/03_late_game/frames/frame_0010.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/03_late_game/frames/frame_0011.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/03_late_game/frames/frame_0012.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/03_late_game/frames/frame_0013.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/03_late_game/frames/frame_0014.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/03_late_game/frames/frame_0015.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/03_late_game/frames/frame_0016.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/03_late_game/frames/frame_0017.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/03_late_game/frames/frame_0018.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/03_late_game/frames/frame_0019.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/03_late_game/frames/frame_0020.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/03_late_game/frames/frame_0021.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/03_late_game/frames/frame_0022.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/03_late_game/frames/frame_0023.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/03_late_game/frames/frame_0024.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/03_late_game/frames/frame_0025.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/03_late_game/frames/frame_0026.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/03_late_game/frames/frame_0027.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/03_late_game/frames/frame_0028.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/03_late_game/frames/frame_0029.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/03_late_game/frames/frame_0030.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/03_late_game/frames/frame_0031.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/03_late_game/frames/frame_0032.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/03_late_game/frames/frame_0033.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/03_late_game/frames/frame_0034.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/03_late_game/frames/frame_0035.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/03_late_game/frames/frame_0036.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/03_late_game/frames/frame_0037.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/03_late_game/frames/frame_0038.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/03_late_game/frames/frame_0039.png",
+        "/root/adaptive_game_generation/benchmark_resources/gamecraft-bench-jobs/2026-10-16__11-27-23/cardgame-autobattler__X58cugq/verifier/demos/03_late_game/frames/frame_0040.png"
+      ]
+    }
+  ],
+  "errors": []
+}

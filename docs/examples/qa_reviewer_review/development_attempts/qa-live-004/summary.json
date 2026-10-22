@@ -1,0 +1,23 @@
+{
+  "mode": "live-QA/recorded-real-play/mock-art",
+  "status": "failed",
+  "stage": "import-recorded-player",
+  "model_calls": 0,
+  "usage": {
+    "model_calls": 0,
+    "input_tokens": 0,
+    "cached_input_tokens": 0,
+    "output_tokens": 0,
+    "image_calls": 0,
+    "tool_calls": 236,
+    "tool_seconds": 7.225999999966007,
+    "wall_seconds": 16.172000000005937,
+    "token_usage_complete": true
+  },
+  "error": {
+    "code": "execution_error",
+    "message": "Invocation failed (PermissionError)",
+    "retryable": false
+  },
+  "note": "Player artifact import failed before QA or any paid model call. The subsequent fix retries only the atomic directory rename for transient Windows lock errors."
+}

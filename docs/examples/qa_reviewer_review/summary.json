@@ -1,0 +1,39 @@
+{
+  "mode": "live-QA/recorded-real-play/mock-art",
+  "status": "completed",
+  "role_status": "completed",
+  "model": "deepseek-flash",
+  "ready": false,
+  "criteria": 116,
+  "issues": 12,
+  "requirement_statuses": {
+    "verified_pass": 0,
+    "verified_fail": 7,
+    "implemented_unverified": 20,
+    "not_implemented": 10
+  },
+  "usage": {
+    "model_calls": 2,
+    "input_tokens": 211551,
+    "cached_input_tokens": 195072,
+    "output_tokens": 28953,
+    "image_calls": 0,
+    "tool_calls": 425,
+    "tool_seconds": 111.39200000005076,
+    "wall_seconds": 128.37500000001455,
+    "token_usage_complete": true
+  },
+  "checks": {
+    "original_instruction_unchanged": true,
+    "real_model_completed": true,
+    "review_committed": true,
+    "all_criteria_reviewed": true,
+    "raw_play_evidence_checked": true,
+    "honest_not_ready": true,
+    "game_and_evidence_unchanged": true,
+    "design_and_art_unchanged": true,
+    "usage_matches_provider": true,
+    "english_model_output": true
+  },
+  "error": null
+}

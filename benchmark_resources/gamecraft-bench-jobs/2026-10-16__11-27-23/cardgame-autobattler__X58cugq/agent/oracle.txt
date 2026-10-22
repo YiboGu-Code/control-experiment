@@ -1,0 +1,5 @@
+oracle wrote project to /workspace/game
+demo_outputs
+project.godot
+scenes
+scripts

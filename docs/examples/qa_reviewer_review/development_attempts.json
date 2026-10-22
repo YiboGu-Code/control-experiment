@@ -1,0 +1,108 @@
+{
+  "note": "Development attempts are not independent benchmark samples. Configurations and prompts changed during implementation. Raw paid calls and failed attempts are retained; do not exclude them from development cost.",
+  "attempts": [
+    {
+      "run": "qa-live-001",
+      "status": "failed",
+      "stage": "qa-review",
+      "usage": {
+        "model_calls": 3,
+        "input_tokens": 567905,
+        "cached_input_tokens": 376064,
+        "output_tokens": 38375,
+        "image_calls": 0,
+        "tool_calls": 419,
+        "tool_seconds": 164.6770000000106,
+        "wall_seconds": 182.46900000001187,
+        "token_usage_complete": true
+      },
+      "retained_path": "runs/qa-live-001"
+    },
+    {
+      "run": "qa-live-002",
+      "status": "failed",
+      "stage": "qa-review",
+      "usage": {
+        "model_calls": 3,
+        "input_tokens": 295958,
+        "cached_input_tokens": 194304,
+        "output_tokens": 40284,
+        "image_calls": 0,
+        "tool_calls": 419,
+        "tool_seconds": 165.2510000000184,
+        "wall_seconds": 178.77999999999884,
+        "token_usage_complete": true
+      },
+      "retained_path": "runs/qa-live-002"
+    },
+    {
+      "run": "qa-live-003",
+      "status": "failed",
+      "stage": "qa-review",
+      "usage": {
+        "model_calls": 4,
+        "input_tokens": 441299,
+        "cached_input_tokens": 291840,
+        "output_tokens": 54495,
+        "image_calls": 0,
+        "tool_calls": 420,
+        "tool_seconds": 194.69200000003912,
+        "wall_seconds": 212.63999999998487,
+        "token_usage_complete": true
+      },
+      "retained_path": "runs/qa-live-003"
+    },
+    {
+      "run": "qa-live-004",
+      "status": "failed",
+      "stage": "import-recorded-player",
+      "usage": {
+        "model_calls": 0,
+        "input_tokens": 0,
+        "cached_input_tokens": 0,
+        "output_tokens": 0,
+        "image_calls": 0,
+        "tool_calls": 236,
+        "tool_seconds": 7.225999999966007,
+        "wall_seconds": 16.172000000005937,
+        "token_usage_complete": true
+      },
+      "retained_path": "runs/qa-live-004"
+    },
+    {
+      "run": "qa-live-005",
+      "status": "completed",
+      "stage": "qa-review",
+      "usage": {
+        "model_calls": 2,
+        "input_tokens": 211551,
+        "cached_input_tokens": 195072,
+        "output_tokens": 28953,
+        "image_calls": 0,
+        "tool_calls": 425,
+        "tool_seconds": 111.39200000005076,
+        "wall_seconds": 128.37500000001455,
+        "token_usage_complete": true
+      },
+      "retained_path": "runs/qa-live-005"
+    }
+  ],
+  "total_development_usage": {
+    "model_calls": 12,
+    "input_tokens": 1516713,
+    "cached_input_tokens": 1057280,
+    "output_tokens": 162107,
+    "image_calls": 0,
+    "tool_calls": 1919
+  },
+  "final_implementation_sha256": {
+    "src/adaptive_game_generation/roles/qa_reviewer/contracts.py": "7670f8c5314518d3e5d76030ee044d89705293fa7a84835f8eefae0f13452af3",
+    "src/adaptive_game_generation/roles/qa_reviewer/evidence.py": "f69dfed1e0d41d3b106e82ddf277fea8502b720281ea50fecf9bd3f90979531f",
+    "src/adaptive_game_generation/roles/qa_reviewer/grounding.py": "99d0e5c354ccbd3af1e143dc8002daea08a9e20186b8ce10e9a81d6c99823114",
+    "src/adaptive_game_generation/roles/qa_reviewer/prompt.py": "72467a2bdd760cad35e72a51d465a82a8f1dc7f8170f962eced1752969c26bc7",
+    "src/adaptive_game_generation/roles/qa_reviewer/role.py": "97b4ee2143ddff7b494938acb9904874f7be11c01bcce0791eb509cbd4730d26",
+    "src/adaptive_game_generation/roles/qa_reviewer/__init__.py": "e0cead73a02bea4a116f58c5a5c04e12252325d3655ccf576ee782f7a5e963af",
+    "examples/qa_demo.py": "bd3377ff0475e7663f8177642dbc0739173ae18647ff9e1d0ab5dcb420c3b541",
+    "src/adaptive_game_generation/runtime/files.py": "f671fcec8b465fdbecf68896ee5ec5bc8ea03b74d6b7909d9420c814ca4e1993"
+  }
+}

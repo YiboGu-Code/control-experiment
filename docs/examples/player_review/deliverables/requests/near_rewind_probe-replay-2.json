@@ -1,0 +1,82 @@
+{
+  "harness_version": "godot-player.v1",
+  "trace": {
+    "scenario": "near_rewind",
+    "duration_frames": 600,
+    "events": [
+      {
+        "frame": 10,
+        "type": "wait"
+      },
+      {
+        "frame": 30,
+        "type": "key_down",
+        "keycode": "D"
+      },
+      {
+        "frame": 90,
+        "type": "key_up",
+        "keycode": "D"
+      },
+      {
+        "frame": 110,
+        "type": "key_down",
+        "keycode": "SPACE"
+      },
+      {
+        "frame": 111,
+        "type": "key_up",
+        "keycode": "SPACE"
+      },
+      {
+        "frame": 140,
+        "type": "wait"
+      },
+      {
+        "frame": 180,
+        "type": "key_down",
+        "keycode": "E"
+      },
+      {
+        "frame": 181,
+        "type": "key_up",
+        "keycode": "E"
+      },
+      {
+        "frame": 210,
+        "type": "wait"
+      },
+      {
+        "frame": 240,
+        "type": "wait"
+      },
+      {
+        "frame": 300,
+        "type": "wait"
+      },
+      {
+        "frame": 360,
+        "type": "key_down",
+        "keycode": "A"
+      },
+      {
+        "frame": 420,
+        "type": "key_up",
+        "keycode": "A"
+      },
+      {
+        "frame": 500,
+        "type": "wait"
+      }
+    ]
+  },
+  "checkpoints": [
+    0,
+    180,
+    240,
+    500,
+    599
+  ],
+  "project_sha256": "eb929b96a5bdd894db35ea59191e8f109a38221372d62b6d5d28a8ab4f244d22",
+  "seed": 1337
+}

@@ -1,0 +1,217 @@
+{
+  "session_id": "near_victory_probe-replay-1",
+  "mode": "replay",
+  "argv": [
+    "python3",
+    "/opt/gamecraft/player_driver.py",
+    "--project",
+    "/workspace/artifacts/developer/8ce726a9ecad90a140719624/game",
+    "--request",
+    "/output/requests/near_victory_probe-replay-1.json",
+    "--output",
+    "/output/sessions/near_victory_probe-replay-1"
+  ],
+  "status": "passed",
+  "reason": "Real frame-indexed input capture completed; gameplay objectives and QA acceptance are separate",
+  "process": {
+    "returncode": 0,
+    "stdout": "{\"status\": \"passed\", \"steps\": 2, \"authored_files_unchanged\": true}\n",
+    "stderr": ""
+  },
+  "driver": {
+    "driver_version": "godot-player.v1",
+    "status": "passed",
+    "project_sha256": "eb929b96a5bdd894db35ea59191e8f109a38221372d62b6d5d28a8ab4f244d22",
+    "fresh_process": true,
+    "fresh_user_data": true,
+    "network": "none",
+    "steps": [
+      {
+        "name": "import",
+        "argv": [
+          "godot",
+          "--headless",
+          "--path",
+          "/tmp/player-somwjcw8/game",
+          "--import"
+        ],
+        "returncode": 0,
+        "stdout": "Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org\n\n[   0% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | Started Project initialization (5 steps)\u001b[39m\u001b[0m\n[   0% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | Scanning file structure...\u001b[39m\u001b[0m\n[  16% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | Loading global class names...\u001b[39m\u001b[0m\n[  33% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | Verifying GDExtensions...\u001b[39m\u001b[0m\n[  50% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | Creating autoload scripts...\u001b[39m\u001b[0m\n[  66% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | Initializing plugins...\u001b[39m\u001b[0m\n[  83% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | Starting file scan...\u001b[39m\u001b[0m\n\u001b[92m[ DONE ]\u001b[39m \u001b[1mfirst_scan_filesystem\u001b[22m\n\u001b[0m\n[   0% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | Started Registering global classes... (9 steps)\u001b[39m\u001b[0m\n[   0% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | \u001b[39m\u001b[0m\n[  10% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | \u001b[39m\u001b[0m\n[  20% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | \u001b[39m\u001b[0m\n[  30% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | \u001b[39m\u001b[0m\n[  40% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | \u001b[39m\u001b[0m\n[  50% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | \u001b[39m\u001b[0m\n[  60% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | \u001b[39m\u001b[0m\n[  70% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | \u001b[39m\u001b[0m\n[  80% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | \u001b[39m\u001b[0m\n\u001b[92m[ DONE ]\u001b[39m \u001b[1mupdate_scripts_classes\u001b[22m\n\u001b[0m\n[   0% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | Started Scanning actions... (12 steps)\u001b[39m\u001b[0m\n[   0% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | door_gate.png\u001b[39m\u001b[0m\n[   7% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | exit_crystal.png\u001b[39m\u001b[0m\n[  15% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | laser_hazard.png\u001b[39m\u001b[0m\n[  23% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | pressure_plate.png\u001b[39m\u001b[0m\n[  30% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | switch_button.png\u001b[39m\u001b[0m\n[  38% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | enemy_patroller.png\u001b[39m\u001b[0m\n[  46% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | ghost_sheet.png\u001b[39m\u001b[0m\n[  53% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | player_sheet.png\u001b[39m\u001b[0m\n[  61% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | tileset_platform.png\u001b[39m\u001b[0m\n[  69% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | hud_panel.png\u001b[39m\u001b[0m\n[  76% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | title_backdrop.png\u001b[39m\u001b[0m\n[  84% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | ui_controls.png\u001b[39m\u001b[0m\n\u001b[92m[ DONE ]\u001b[39m \u001b[1m_update_scan_actions\u001b[22m\n\u001b[0m\n[   0% ] \u001b[90m\u001b[1mreimport\u001b[22m | Started (Re)Importing Assets (12 steps)\u001b[39m\u001b[0m\n[   0% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[   7% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  15% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  23% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  30% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  38% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  46% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  53% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  61% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  69% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  76% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  84% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[   0% ] \u001b[90m\u001b[1mreimport\u001b[22m | Executing pre-reimport operations...\u001b[39m\u001b[0m\n[   0% ] \u001b[90m\u001b[1mreimport\u001b[22m | door_gate.png\u001b[39m\u001b[0m\n[   7% ] \u001b[90m\u001b[1mreimport\u001b[22m | exit_crystal.png\u001b[39m\u001b[0m\n[  15% ] \u001b[90m\u001b[1mreimport\u001b[22m | laser_hazard.png\u001b[39m\u001b[0m\n[  23% ] \u001b[90m\u001b[1mreimport\u001b[22m | pressure_plate.png\u001b[39m\u001b[0m\n[  30% ] \u001b[90m\u001b[1mreimport\u001b[22m | switch_button.png\u001b[39m\u001b[0m\n[  38% ] \u001b[90m\u001b[1mreimport\u001b[22m | enemy_patroller.png\u001b[39m\u001b[0m\n[  46% ] \u001b[90m\u001b[1mreimport\u001b[22m | ghost_sheet.png\u001b[39m\u001b[0m\n[  53% ] \u001b[90m\u001b[1mreimport\u001b[22m | player_sheet.png\u001b[39m\u001b[0m\n[  61% ] \u001b[90m\u001b[1mreimport\u001b[22m | tileset_platform.png\u001b[39m\u001b[0m\n[  69% ] \u001b[90m\u001b[1mreimport\u001b[22m | hud_panel.png\u001b[39m\u001b[0m\n[  76% ] \u001b[90m\u001b[1mreimport\u001b[22m | title_backdrop.png\u001b[39m\u001b[0m\n[  84% ] \u001b[90m\u001b[1mreimport\u001b[22m | ui_controls.png\u001b[39m\u001b[0m\n[  92% ] \u001b[90m\u001b[1mreimport\u001b[22m | Finalizing Asset Import...\u001b[39m\u001b[0m\n\u001b[92m[ DONE ]\u001b[39m \u001b[1mreimport\u001b[22m\n\u001b[0m\n[   0% ] \u001b[90m\u001b[1mreimport\u001b[22m | Started (Re)Importing Assets (12 steps)\u001b[39m\u001b[0m\n[   0% ] \u001b[90m\u001b[1mreimport\u001b[22m | Executing post-reimport operations...\u001b[39m\u001b[0m\n\u001b[92m[ DONE ]\u001b[39m \u001b[1mreimport\u001b[22m\n\u001b[0m\n[   0% ] \u001b[90m\u001b[1mloading_editor_layout\u001b[22m | Started Loading editor (5 steps)\u001b[39m\u001b[0m\n[   0% ] \u001b[90m\u001b[1mloading_editor_layout\u001b[22m | Loading editor layout...\u001b[39m\u001b[0m\n\u001b[92m[ DONE ]\u001b[39m \u001b[1mloading_editor_layout\u001b[22m\n\u001b[0m\n",
+        "stderr": "",
+        "passed": true
+      },
+      {
+        "name": "play",
+        "argv": [
+          "xvfb-run",
+          "-a",
+          "-s",
+          "-screen 0 1280x720x24 -nolisten tcp",
+          "godot",
+          "--path",
+          "/tmp/player-somwjcw8/game",
+          "--rendering-method",
+          "gl_compatibility",
+          "--audio-driver",
+          "Dummy",
+          "--fixed-fps",
+          "30",
+          "--disable-vsync",
+          "--resolution",
+          "1280x720",
+          "--script",
+          "/opt/gamecraft/player_harness.gd",
+          "--",
+          "--player-job",
+          "/tmp/player-somwjcw8/job.json",
+          "--scenario",
+          "near_victory"
+        ],
+        "returncode": 0,
+        "stdout": "Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org\nOpenGL API 4.5 (Core Profile) Mesa 22.3.6 - Compatibility - Using Device: Mesa/X.org - llvmpipe (LLVM 15.0.6, 256 bits)\n\n",
+        "stderr": "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.\n     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)\n",
+        "passed": true
+      }
+    ],
+    "authored_files_unchanged": true,
+    "modified_source_paths": [],
+    "original_project_unchanged": true
+  },
+  "runtime_files": [
+    {
+      "artifact_id": "player-near_victory_probe-replay-1-driver-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-replay-1/driver.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "a043042aed3bc69861073b98b2999e3a7e79b14ef78715fa9a64c8300c17e2e0"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-replay-1-events-jsonl",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-replay-1/events.jsonl",
+      "created_by": "player",
+      "media_type": "application/x-ndjson",
+      "sha256": "5fb83f2ca9135cc9936b862cb1c3021dd08e6be889231d97f34454de1dc55f20"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-replay-1-executed_trace-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-replay-1/executed_trace.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "cb77219c80003963ae5217d68210c7b42d46397af0a48ba9a2367945c028be9d"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-replay-1-frame_0000-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-replay-1/frame_0000.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "e947573228bfdd01fbe42b098e3b987b33e3aef1a1629679ce63faf814932370"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-replay-1-frame_0000-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-replay-1/frame_0000.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "2f1df3996b36f0fac429c9844960e77e0e0d86fa886bded0998a5783dec084cf"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-replay-1-frame_0200-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-replay-1/frame_0200.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "0a356cba4ef895cede13aff68b1d0474b1679e7a4bc5009628076f784e1348cf"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-replay-1-frame_0200-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-replay-1/frame_0200.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "1ca63464ee50f8836a1648f02360ef477cbd2fdac78c7efae348773f3429aeef"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-replay-1-frame_0300-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-replay-1/frame_0300.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "c5e35ce5a444116f9fa77cf3f7153a679d063b26a9b75fcbfb2dba994e44cd86"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-replay-1-frame_0300-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-replay-1/frame_0300.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "c4ad302b1c304bf694bf1a76a4d184f9774f69ba6a3209a1b8e83ecb5b54decb"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-replay-1-frame_0450-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-replay-1/frame_0450.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "803054a54baa89c520f763d08c6d165cc09e81cc489ce90f066657c778a0ad94"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-replay-1-frame_0450-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-replay-1/frame_0450.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "8b7a04fc17ab83b863cfc11e55c548fa85fde8d08fe3c548d81b4383202c5461"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-replay-1-frame_0599-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-replay-1/frame_0599.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "ab5e28130a6ac37cdd5accb0155d2c7024f79a5a0f0f322ec9c0aad7cefb1587"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-replay-1-frame_0599-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-replay-1/frame_0599.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "853c5602a06eb118d9abda6b09b2afb3f44e6b36e07ca431d81181001d463433"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-replay-1-frames-jsonl",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-replay-1/frames.jsonl",
+      "created_by": "player",
+      "media_type": "application/x-ndjson",
+      "sha256": "d227305a9ff93191bf3456130bbe824543a21dc54c62e9d1ca666b4651aa9be3"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-replay-1-receipt-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-replay-1/receipt.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "9b69e6ab3d6574446ffec2cfe30a3d304c409b0d08769b6862a7fb71d614c975"
+    }
+  ]
+}

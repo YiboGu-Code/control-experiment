@@ -1,0 +1,21 @@
+{
+  "name": "scenario:level1",
+  "argv": [
+    "godot",
+    "--headless",
+    "--path",
+    "/output/game",
+    "--fixed-fps",
+    "60",
+    "--quit-after",
+    "60",
+    "--",
+    "--scenario",
+    "level1"
+  ],
+  "status": "failed",
+  "returncode": 0,
+  "stdout": "Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org\n\n",
+  "stderr": "WARNING: Parent path './UI/TimelineBar' for node 'Background' has vanished when instantiating: 'res://scenes/Gameplay.tscn'.\n     at: instantiate (scene/resources/packed_scene.cpp:179)\n     GDScript backtrace (most recent call first):\n         [0] _load_scenario (res://scripts/main.gd:53)\nWARNING: Parent path './UI/TimelineBar' for node 'Marker' has vanished when instantiating: 'res://scenes/Gameplay.tscn'.\n     at: instantiate (scene/resources/packed_scene.cpp:179)\n     GDScript backtrace (most recent call first):\n         [0] _load_scenario (res://scripts/main.gd:53)\nWARNING: Parent path './UI/TimelineBar' for node 'LoopLabel' has vanished when instantiating: 'res://scenes/Gameplay.tscn'.\n     at: instantiate (scene/resources/packed_scene.cpp:179)\n     GDScript backtrace (most recent call first):\n         [0] _load_scenario (res://scripts/main.gd:53)\nERROR: Parameter \"data.tree\" is null.\n   at: get_tree (scene/main/node.h:507)\n   GDScript backtrace (most recent call first):\n       [0] _load_scenario (res://scripts/main.gd:57)\nSCRIPT ERROR: Invalid access to property or key 'physics_frame' on a base object of type 'null instance'.\n          at: _load_scenario (res://scripts/main.gd:57)\n          GDScript backtrace (most recent call first):\n              [0] _load_scenario (res://scripts/main.gd:57)\nERROR: Node not found: \"UI/TimelineBar\" (relative to \"/root/Gameplay\").\n   at: get_node (scene/main/node.cpp:1907)\n   GDScript backtrace (most recent call first):\n       [0] @implicit_ready (res://scripts/level.gd:19)\nERROR: Node not found: \"UI/TimelineBar/Marker\" (relative to \"/root/Gameplay\").\n   at: get_node (scene/main/node.cpp:1907)\n   GDScript backtrace (most recent call first):\n       [0] @implicit_ready (res://scripts/level.gd:20)\nERROR: Node not found: \"UI/TimelineBar/LoopLabel\" (relative to \"/root/Gameplay\").\n   at: get_node (scene/main/node.cpp:1907)\n   GDScript backtrace (most recent call first):\n       [0] @implicit_ready (res://scripts/level.gd:21)\n",
+  "reason": null
+}

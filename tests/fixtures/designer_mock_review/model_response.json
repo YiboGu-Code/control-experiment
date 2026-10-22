@@ -1,0 +1,301 @@
+{
+  "status": "completed",
+  "summary": "Decompose the public Time Loop task into 14 traceable requirements and eight design sections, preserving 30-second loops, 24 levels, interactive ghosts, and the full public delivery/replay protocol. Unspecified controls and simulation choices are recorded as assumptions.",
+  "requirements": [
+    {
+      "requirement_id": "R001",
+      "description": "Deliver Time Loop as a complete, polished Godot 4 micro-game.",
+      "source_excerpt": "Build **Time Loop**, a 30-second time loop platformer where past-self replays\nhelp solve puzzles in Godot 4 at `/workspace/game/`. This is not a prototype.\nIt is a **complete, shippable micro-game** that could sit on an itch.io page or\nSteam as a polished vertical slice.",
+      "acceptance_criteria": [
+        "The deliverable is a playable Godot 4 project named Time Loop at the required game path.",
+        "The ordinary entry supports a complete title-to-gameplay-to-level-completion flow with readable, consistent presentation rather than a static prototype."
+      ],
+      "dependency_ids": []
+    },
+    {
+      "requirement_id": "R002",
+      "description": "Run 30-second loops and replay the previous player after a rewind.",
+      "source_excerpt": "Each level is a 30-second loop. When the timer expires, time rewinds and the\nplayer starts again — but a ghost of the previous loop replays simultaneously,\ninteracting with the world.",
+      "acceptance_criteria": [
+        "Entering a level begins a visible 30-second countdown.",
+        "At expiry, time rewinds, the live player returns to spawn, and a ghost replays the previous loop at the same relative times.",
+        "Recorded ghost actions affect the same puzzle mechanisms as live actions."
+      ],
+      "dependency_ids": [
+        "R001"
+      ]
+    },
+    {
+      "requirement_id": "R003",
+      "description": "Support running, jumping, interaction, and physical ghost cooperation.",
+      "source_excerpt": "Entering a level starts a 30-second countdown. The player runs, jumps, and\ninteracts with switches and objects. When the timer hits zero, the screen\nflashes and rewinds — the player restarts at the spawn point, but a translucent\nghost replays exactly what they did in the previous loop. The ghost physically\ninteracts with the world: it presses buttons, holds doors, and blocks lasers.",
+      "acceptance_criteria": [
+        "The live player can run, jump, and interact with switches and objects.",
+        "A translucent ghost reproduces recorded movement and interaction timing, including button pressing, door holding, and laser blocking.",
+        "Rewind has a visible flash and returns the live player to the level spawn."
+      ],
+      "dependency_ids": [
+        "R002"
+      ]
+    },
+    {
+      "requirement_id": "R004",
+      "description": "Layer up to four loops and show their synchronized progress on a timeline.",
+      "source_excerpt": "The player can layer up to four loops. A timeline bar at the top shows all\nactive ghosts and their current positions in the 30-second window.",
+      "acceptance_criteria": [
+        "A level can coordinate four recorded/live loop contributions without exceeding the declared loop limit.",
+        "A top timeline displays every active ghost and its progress in the current 30-second window.",
+        "Independent recorded loops can cooperate at different switches or platforms during the same replay."
+      ],
+      "dependency_ids": [
+        "R002",
+        "R003"
+      ]
+    },
+    {
+      "requirement_id": "R005",
+      "description": "Gate the exit on required switches, clear ghosts on reset, and report completion statistics.",
+      "source_excerpt": "Reaching the\nexit crystal with all required switches held (by ghosts or player) completes\nthe level. A reset button clears all ghosts to start fresh. Level-complete\nshows loops used and time of exit within the final loop.",
+      "acceptance_criteria": [
+        "Touching the exit crystal completes the level only while all required switches are held by a ghost or the live player.",
+        "The reset button removes every ghost and restarts a fresh attempt.",
+        "The level-complete screen reports loops used and the exit time within the final loop."
+      ],
+      "dependency_ids": [
+        "R003",
+        "R004"
+      ]
+    },
+    {
+      "requirement_id": "R006",
+      "description": "Provide 24 levels in four chapters with escalating temporal puzzles.",
+      "source_excerpt": "Twenty-four levels across four chapters escalate from\nsingle-ghost puzzles to four-loop orchestrations.",
+      "acceptance_criteria": [
+        "The campaign contains exactly 24 playable levels, organized as four chapters with six levels each.",
+        "Early puzzles teach a single ghost; later puzzles require coordinated four-loop solutions.",
+        "Level data contains actual solvable layouts and temporal dependencies, not only menu entries."
+      ],
+      "dependency_ids": [
+        "R005"
+      ]
+    },
+    {
+      "requirement_id": "R007",
+      "description": "Provide the specified title screen and chapter menu.",
+      "source_excerpt": "A title screen shows overlapping clock hands and ghost silhouettes. A chapter\nmenu reveals four chapters of six levels each.",
+      "acceptance_criteria": [
+        "Normal launch opens a title screen with overlapping clock hands and ghost silhouettes.",
+        "The chapter menu presents four chapters containing six levels each and allows entry to playable levels."
+      ],
+      "dependency_ids": []
+    },
+    {
+      "requirement_id": "R008",
+      "description": "Use the public asset libraries and preserve their license requirements.",
+      "source_excerpt": "2D assets are mounted read-only at:\n\n- `/workspace/assets/library/` — Kenney CC0 packs (sprites, tiles, UI, fonts).\n- `/workspace/assets/library-oga/` — OpenGameArt entries; respect each\n  subdir's `LICENSE.txt`.\n\nBrowse the library and choose packs.\nCopy what you need into your project's `assets/` folder.",
+      "acceptance_criteria": [
+        "Inspect the public Kenney and OpenGameArt libraries in the configured runtime and choose suitable packs.",
+        "Copy selected resources into the project assets directory without modifying the read-only libraries.",
+        "Record Kenney CC0 provenance and respect each selected OpenGameArt entry LICENSE.txt; do not invent license information."
+      ],
+      "dependency_ids": []
+    },
+    {
+      "requirement_id": "R009",
+      "description": "Provide the required project layout and a clean headless launch.",
+      "source_excerpt": "## Project layout\n\n```\n/workspace/game/\n  project.godot\n  Main.tscn\n  demo_outputs/    <- your input traces (1-10 files)\n  scripts/  scenes/  assets/\n```\n\nThe build must launch cleanly with:\n\n```\ngodot --headless --path /workspace/game --quit-after 5\n```",
+      "acceptance_criteria": [
+        "The game directory contains project.godot, Main.tscn, scripts, scenes, assets, and demo_outputs with valid internal references.",
+        "The exact headless startup command from the instruction completes without project import, parse, or missing-resource failures."
+      ],
+      "dependency_ids": [
+        "R001"
+      ]
+    },
+    {
+      "requirement_id": "R010",
+      "description": "Respect engine/user argument separation and inspect actual rendered states.",
+      "source_excerpt": "A reference for Godot CLI flags is at `/workspace/tools/godot_command_line.md`.\n**Engine flags like `--headless` and `--quit-after N` must come BEFORE `--`** —\nanything after `--` is forwarded to the project as user args and silently\nignored by the engine. Correct shape:\n`godot --headless --quit-after 5 --path . -- --scenario near_victory`.\n\nA screenshot helper is available at `/workspace/tools/screenshot.sh`. Use it to actually see what your UI / battlefield /\nresult screens look like.\n\n```\n/workspace/tools/screenshot.sh --path /workspace/game \\\n      -- --out /workspace/frame.png --frames 60\n```\n\nTo screenshot a specific scenario, append `--scenario <id>` after `--`. The\nhelper consumes only `--out` / `--frames` / `--scene`; remaining args stay in\n`OS.get_cmdline_user_args()` for your game code to read. Example:\n\n```\n/workspace/tools/screenshot.sh --path /workspace/game \\\n      -- --out /workspace/battle_debug.png --frames 120 --scenario battle\n```",
+      "acceptance_criteria": [
+        "Put engine flags before -- and scenario user arguments after --.",
+        "Use the supplied screenshot helper to inspect ordinary gameplay, UI, and result screens once an executable game exists.",
+        "For scenario captures, --out/--frames/--scene belong to the helper while remaining user arguments remain available to the game."
+      ],
+      "dependency_ids": [
+        "R009"
+      ]
+    },
+    {
+      "requirement_id": "R011",
+      "description": "Ship 1-10 ordered demo traces for fresh-launch playback at 1280x720.",
+      "source_excerpt": "Ship **1-10 input-trace files** under `/workspace/game/demo_outputs/`, one per\ndemo, each named `*.json`. The evaluator launches a fresh game per trace,\nreplays your trace as synthetic mouse and keyboard input at 1280x720, and\nrecords the screen. Only the first 10 traces by filename are evaluated;\nrecordings longer than 20 s are sampled from a random 20 s window.",
+      "acceptance_criteria": [
+        "Place one JSON input trace per demo in /workspace/game/demo_outputs, with between one and ten files.",
+        "Name traces intentionally because only the first ten by filename are evaluated.",
+        "Each trace starts from a fresh game launch and uses mouse/keyboard inputs for a 1280x720 viewport; design demonstrations to fit the public 20-second capture limit."
+      ],
+      "dependency_ids": [
+        "R009"
+      ]
+    },
+    {
+      "requirement_id": "R012",
+      "description": "Support normal title flow and deterministic named scenario entry.",
+      "source_excerpt": "Normal play should start from the title screen and demonstrate the task's\ncore gameplay loop.\nDemo playback must be deterministic. For demos that need a specific state\n(a specific level, combat state, upgrade screen, result state, or late-game\nsetup), define named scenarios your game loads when launched with:\n\n```\ngodot --path /workspace/game -- --scenario <id>\n```\n\nWhen `--scenario <id>` is present the game must skip menus, set up the named\nstate deterministically (seed any RNG), and begin accepting input immediately.",
+      "acceptance_criteria": [
+        "Without --scenario, launch starts at the title screen and supports the core gameplay loop.",
+        "With --scenario <id>, skip menus, load a named reproducible state, seed any randomness, and accept input immediately.",
+        "Scenario setups exercise the same game rules as ordinary play rather than displaying pre-rendered success screens."
+      ],
+      "dependency_ids": [
+        "R002",
+        "R005",
+        "R007"
+      ]
+    },
+    {
+      "requirement_id": "R013",
+      "description": "Conform to the documented trace timing, viewport, and event schema.",
+      "source_excerpt": "- `scenario` — optional; omit for a normal game launch from the title screen.\n- `duration_frames` — total frames to record at 30 fps; cap at **600 (20 s)**.\n- `events` — time-ordered inputs. Coordinates are pixels in the 1280x720\n  viewport. Supported types:\n  - `mouse_click`: `{frame, type, button: \"left\"|\"right\", x, y}`\n  - `mouse_down` / `mouse_up`: `{frame, type, button: \"left\"|\"right\", x, y}` —\n    use these for drag interactions: emit `mouse_down` at the start point,\n    one or more `mouse_move` events along the way, and `mouse_up` at the end.\n    A `mouse_click` is a `mouse_down` + `mouse_up` at the same point in tight\n    succession.\n  - `mouse_move`: `{frame, type, x, y}`\n  - `key_press` / `key_down` / `key_up`: `{frame, type, keycode}` — keycodes:\n    `A`-`Z`, `0`-`9`, `ESCAPE`, `ENTER`, `SPACE`, `TAB`, `BACKSPACE`,\n    `DELETE`, `SHIFT`, `CTRL`, `ALT`, `UP`, `DOWN`, `LEFT`, `RIGHT`.\n  - `wait`: `{frame, type}` — anchor frame, no input.",
+      "acceptance_criteria": [
+        "The optional scenario field is omitted for an ordinary title-screen launch.",
+        "duration_frames counts recording frames at 30 fps and is at most 600 (20 seconds); events are time-ordered.",
+        "Mouse positions use 1280x720 pixels. Click/down/up/move and key press/down/up events use exactly the documented fields, buttons, and keycodes.",
+        "Use mouse_down, intermediate mouse_move events, and mouse_up for dragging; use wait only as a no-input frame anchor."
+      ],
+      "dependency_ids": [
+        "R011"
+      ]
+    },
+    {
+      "requirement_id": "R014",
+      "description": "Reproduce the same outcome for the same trace on every fresh launch.",
+      "source_excerpt": "Replay must be deterministic: same trace, fresh launch, same outcome every time.",
+      "acceptance_criteria": [
+        "Replaying a trace from a fresh launch twice yields the same puzzle state, ghost timing, and outcome.",
+        "Scenario initialization, replay inputs, simulation time, and random seeds do not depend on wall-clock timing or previous runs."
+      ],
+      "dependency_ids": [
+        "R012",
+        "R013"
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "section_id": "gameplay",
+      "content": "Build a temporal-coordination platformer, Time Loop. The live player records a 30-second attempt; on timeout, rewind the room and replay the attempt as an interactive ghost. Ghosts can hold switches, distract enemies, occupy pressure plates, support a bridge, and block lasers while the live player solves a different part of the puzzle. An exit crystal requires all designated switches to be held simultaneously. A level-complete screen shows loops used and final-loop exit time. Preserve the 30-second ordinary-play loop; do not shorten it to fit the demo capture window. The interpretation of the four-loop limit is listed as an assumption below.",
+      "requirement_ids": [
+        "R001",
+        "R002",
+        "R003",
+        "R004",
+        "R005"
+      ]
+    },
+    {
+      "section_id": "controls",
+      "content": "Proposed bindings, not explicit benchmark requirements: Left/Right or A/D move; Space jumps; E interacts with nearby objects; R activates the visible reset control. Mouse and keyboard navigation are supported for title, chapter menu, reset, and level-complete actions. Escape opens a pause menu; resuming restores exactly the same loop tick. During a ghost replay, recorded actions target stable mechanism IDs. A ghost never consumes live-player input. Capture held controls with key_down/key_up, not repeated key_press events, when creating demo traces.",
+      "requirement_ids": [
+        "R003",
+        "R005",
+        "R007",
+        "R013"
+      ]
+    },
+    {
+      "section_id": "state_flow",
+      "content": "TITLE -> CHAPTER_SELECT -> PLAYING(level, loop=1). PLAYING runs the live actor and all ghosts on a shared timeline. Timeout -> REWIND -> reset world mechanisms and actors -> append the completed recording -> PLAYING at tick zero. Reaching the exit while all required switches are held -> LEVEL_COMPLETE; report loop count and exit time, then offer next level, replay level, or chapter menu. Reset clears every recording and puzzle mechanism, restores spawn, and begins loop one. Pause freezes actors, switches, the countdown, and replay playback together. Suggested failure handling rewinds the current attempt without creating a fake completed recording; this is an assumption. A named scenario loads through the same initialization path and begins accepting input immediately.",
+      "requirement_ids": [
+        "R002",
+        "R003",
+        "R004",
+        "R005",
+        "R007",
+        "R012"
+      ]
+    },
+    {
+      "section_id": "content_plan",
+      "content": "Create four chapters with six authored levels each (24 total). Chapter 1: learn movement, rewind, one pressure plate, one held door, a laser-blocking ghost, and a combined one-ghost exit. Chapter 2: two timed plates, enemy distraction, bridge support, asynchronous door timing, laser/door sequencing, and a two-recording finale. Chapter 3: combine three timed responsibilities with spatially separated controls and progressively narrower coordination windows across six layouts. Chapter 4: six distinct four-loop puzzles culminate in simultaneous switches, a bridge, an enemy distraction, and an exit route. Store spawn, geometry, mechanism IDs, required switches, and planned solution timing per level. Use an exact 30-second cycle and deterministic room resets. Proposed tuning: 60 Hz simulation, 240 px/s movement, -420 px/s jump speed, 1100 px/s^2 gravity; validate reachability later. No playable level or solution has been verified in this Designer call.",
+      "requirement_ids": [
+        "R002",
+        "R003",
+        "R004",
+        "R005",
+        "R006",
+        "R014"
+      ]
+    },
+    {
+      "section_id": "visual_feedback",
+      "content": "At 1280x720, show the 30-second countdown, current chapter/level, loop count, and a top timeline with a separately labeled track for each ghost. Use translucent silhouettes with distinct outlines and labels so timing remains readable without relying only on color. Animate a brief flash/rewind at timeout. Switches, held doors, blocked lasers, bridge support, and the exit crystal display their current functional state. The title screen combines overlapping clock hands and ghost silhouettes; the chapter menu shows four groups of six levels. The result panel explicitly labels loops used and exit time. Proposed palette and easing are art-direction assumptions, not new task requirements. Inspect these states with the provided screenshot helper after implementation.",
+      "requirement_ids": [
+        "R002",
+        "R003",
+        "R004",
+        "R005",
+        "R006",
+        "R007",
+        "R010",
+        "R011"
+      ]
+    },
+    {
+      "section_id": "asset_requirements",
+      "content": "Inspect the public Kenney CC0 packs and OpenGameArt library in the configured game environment. Plan a player sprite set, translucent ghost variants derived from it, dungeon/clockwork tiles, switches, pressure plates, doors, laser emitters, bridge platforms, enemies, an exit crystal, clock hands, menu panels, icons, and a legible UI font. Proposed base sprites are 32x32 and tiles 32x32, with a consistent scaling rule. Copy selected files into project assets and preserve provenance and required license text. No library content or specific pack license was inspected by this offline Designer example; actual selection remains a downstream task. Temporary geometric placeholders are an implementation aid, not grounds to omit the required library selection or final presentation.",
+      "requirement_ids": [
+        "R003",
+        "R007",
+        "R008"
+      ]
+    },
+    {
+      "section_id": "implementation_plan",
+      "content": "Use Main.tscn as the normal title entry. Separate LevelSession, LoopRecorder, GhostPlayback, MechanismState, CampaignData, and HUD. Store bounded per-tick actor transforms and interaction events keyed by stable object IDs; replay their timed world interactions under the same mechanism rules. A fixed simulation tick controls the timer, actors, and recordings. Reset the same level snapshot before each loop. All 24 levels load from explicit configuration; validate referenced mechanisms and required-switch sets. Parse --scenario only from user arguments, seed any RNG, and initialize through normal gameplay systems. Keep project.godot, Main.tscn, scripts/, scenes/, assets/, and demo_outputs/ under the final game directory. Run the exact public headless smoke command and screenshot commands through the configured isolated runtime; engine flags precede --. This document does not execute the engine or select role order.",
+      "requirement_ids": [
+        "R001",
+        "R002",
+        "R003",
+        "R004",
+        "R005",
+        "R006",
+        "R008",
+        "R009",
+        "R010",
+        "R012",
+        "R014"
+      ]
+    },
+    {
+      "section_id": "validation_plan",
+      "content": "R001/R007/R009: launch through the ordinary entry, inspect the clock/ghost title, all four six-level chapter groups, navigation, and clean headless startup. R002/R003: observe a full 30-second ordinary loop, rewind, ghost motion, and actual switch/door/laser interactions. R004/R005/R006: exercise progressive one-to-four-loop puzzles, verify timeline synchronization, blocked and open exit conditions, reset, and completion statistics; enumerate all 24 playable levels. R008/R010: verify copied resources, licenses, argument placement, and rendered screenshots. R011-R014: produce six proposed demos named 01_title_flow.json, 02_rewind.json, 03_switch_cooperation.json, 04_laser_bridge.json, 05_four_loop_exit.json, and 06_reset.json. Each lasts at most 600 recording frames at 30 fps in 1280x720. Omit scenario for 01; for 02, a deterministic near_rewind scenario starts late in an otherwise normal 30-second loop with a valid recording prefix. Other scenarios preload reproducible, rule-consistent ghost recordings for focused interactions. These scenario names and six-demo selection are assumptions. Capture real inputs, keep event schemas/keycodes valid, replay each from fresh launches twice, and collect evidence rather than claiming these plans already passed. Do not speed up the base loop or fabricate traces to satisfy the 20-second demo cap.",
+      "requirement_ids": [
+        "R001",
+        "R002",
+        "R003",
+        "R004",
+        "R005",
+        "R006",
+        "R007",
+        "R008",
+        "R009",
+        "R010",
+        "R011",
+        "R012",
+        "R013",
+        "R014"
+      ]
+    }
+  ],
+  "assumptions": [
+    "Interpret the four-loop limit as four total loop-selves: at most three past ghosts plus the current player. After an unsuccessful fourth loop, offer a full reset rather than silently discarding one ghost. This interpretation needs review against the public instruction.",
+    "Use Left/Right or A/D to move, Space to jump, E to interact, R to reset, and Escape to pause. Pause freezes the entire loop timeline.",
+    "Use fixed 60 Hz simulation with movement speed 240 px/s, jump speed -420 px/s, and gravity 1100 px/s^2; validate puzzle reachability after implementation.",
+    "On a lethal hazard, rewind the current attempt without appending a completed recording. Existing ghosts are retained until an explicit full reset.",
+    "Use sequential chapter progression with replay of completed levels. Exact unlock rules and persistence behavior are not specified by the task.",
+    "Use six demo traces and deterministic near_rewind/cooperation scenario setups to show 30-second-loop mechanics inside the 20-second recording cap; ordinary play retains the full loop duration.",
+    "Asset sizes, palette, and UI navigation details are proposals. The offline example has not mounted the advertised asset libraries, tools, or Godot runtime."
+  ],
+  "blockers": []
+}

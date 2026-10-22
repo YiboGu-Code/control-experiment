@@ -1,0 +1,41 @@
+{
+  "mode": "live-text/real-rendered-godot/recorded-mock-art",
+  "status": "failed",
+  "role_status": "failed",
+  "model": "deepseek-flash",
+  "model_calls": 2,
+  "captured_traces": 0,
+  "replay_matches": 0,
+  "replay_mismatches": 0,
+  "replay_incomplete": 0,
+  "usage": {
+    "model_calls": 2,
+    "input_tokens": 75839,
+    "cached_input_tokens": 9728,
+    "output_tokens": 2661,
+    "image_calls": 0,
+    "tool_calls": 314,
+    "tool_seconds": 238.59799999989627,
+    "wall_seconds": 248.73399999999674,
+    "token_usage_complete": true
+  },
+  "checks": {
+    "original_instruction_unchanged": true,
+    "real_model_completed": true,
+    "observations_committed": false,
+    "real_trace_and_screenshots": false,
+    "two_fresh_replays_per_capture": false,
+    "all_sessions_executed": false,
+    "model_concluded_from_observations": false,
+    "published_game_unchanged": true,
+    "no_qa_or_issue_mutation": true,
+    "mock_art_unchanged": true,
+    "usage_matches_provider": true,
+    "english_model_output": true
+  },
+  "error": {
+    "code": "execution_error",
+    "message": "Invocation failed (PermissionError)",
+    "retryable": false
+  }
+}

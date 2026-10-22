@@ -1,0 +1,122 @@
+[gd_scene load_steps=8 format=3 uid="uid://btimelooplevel"]
+
+[ext_resource type="Script" path="res://scripts/Level.gd" id="1_level"]
+[ext_resource type="Script" path="res://scripts/Hud.gd" id="2_hud"]
+
+[node name="Level" type="Node2D"]
+script = ExtResource("1_level")
+
+[node name="World" type="Node2D" parent="."]
+
+[node name="BG" type="ColorRect" parent="World"]
+color = Color(0.106, 0.117, 0.227, 1)
+position = Vector2(0, 0)
+size = Vector2(1280, 720)
+mouse_filter = 2
+
+[node name="Platforms" type="Node2D" parent="."]
+
+[node name="Entities" type="Node2D" parent="."]
+
+[node name="HUD" type="CanvasLayer" parent="."]
+script = ExtResource("2_hud")
+
+[node name="FlashRect" type="ColorRect" parent="HUD"]
+color = Color(1, 1, 1, 0)
+position = Vector2(0, 0)
+size = Vector2(1280, 720)
+mouse_filter = 2
+
+[node name="Root" type="Control" parent="HUD"]
+layout_mode = 3
+anchors_preset = 0
+
+[node name="TimerLabel" type="Label" parent="HUD/Root"]
+offset_left = 16.0
+offset_top = 8.0
+offset_right = 200.0
+offset_bottom = 52.0
+theme_override_font_sizes/font_size = 30
+text = "30.00"
+
+[node name="LoopLabel" type="Label" parent="HUD/Root"]
+offset_left = 210.0
+offset_top = 14.0
+offset_right = 420.0
+offset_bottom = 46.0
+theme_override_font_sizes/font_size = 18
+text = "Loop 1 / 4"
+
+[node name="Timeline" type="Control" parent="HUD/Root"]
+offset_left = 16.0
+offset_top = 56.0
+offset_right = 1264.0
+offset_bottom = 84.0
+
+[node name="Track" type="ColorRect" parent="HUD/Root/Timeline"]
+offset_left = 0.0
+offset_top = 6.0
+offset_right = 1248.0
+offset_bottom = 22.0
+color = Color(0.15, 0.16, 0.3, 1)
+
+[node name="Markers" type="Control" parent="HUD/Root/Timeline"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1248.0
+
+[node name="ResetButton" type="Button" parent="HUD/Root"]
+offset_left = 1080.0
+offset_top = 8.0
+offset_right = 1264.0
+offset_bottom = 48.0
+theme_override_font_sizes/font_size = 18
+text = "Reset"
+
+[node name="MenuButton" type="Button" parent="HUD/Root"]
+offset_left = 900.0
+offset_top = 8.0
+offset_right = 1064.0
+offset_bottom = 48.0
+theme_override_font_sizes/font_size = 18
+text = "Menu"
+
+[node name="CompleteOverlay" type="Control" parent="HUD"]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 340.0
+offset_top = 220.0
+offset_right = 940.0
+offset_bottom = 520.0
+
+[node name="Panel" type="Panel" parent="HUD/CompleteOverlay"]
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 600.0
+offset_bottom = 300.0
+
+[node name="VBox" type="VBoxContainer" parent="HUD/CompleteOverlay"]
+offset_left = 30.0
+offset_top = 30.0
+offset_right = 570.0
+offset_bottom = 270.0
+
+[node name="NameLabel" type="Label" parent="HUD/CompleteOverlay/VBox"]
+theme_override_font_sizes/font_size = 26
+text = "Level Complete"
+
+[node name="LoopsLabel" type="Label" parent="HUD/CompleteOverlay/VBox"]
+theme_override_font_sizes/font_size = 20
+text = "Loops used: 1"
+
+[node name="TimeLabel" type="Label" parent="HUD/CompleteOverlay/VBox"]
+theme_override_font_sizes/font_size = 20
+text = "Exit time: 0.0 s"
+
+[node name="HUDNote" type="Label" parent="HUD"]
+offset_left = 16.0
+offset_top = 690.0
+offset_right = 900.0
+offset_bottom = 718.0
+theme_override_font_sizes/font_size = 14
+text = "A/D move  Space jump  E interact  R reset  Esc menu"

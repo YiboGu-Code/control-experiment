@@ -1,0 +1,32 @@
+{
+  "mode": "live-text/mock-image",
+  "status": "completed",
+  "role_status": "partial",
+  "model": "deepseek-flash",
+  "asset_count": 12,
+  "mock_asset_count": 12,
+  "usage": {
+    "model_calls": 1,
+    "input_tokens": 19720,
+    "cached_input_tokens": 18048,
+    "output_tokens": 6877,
+    "image_calls": 12,
+    "tool_calls": 30,
+    "tool_seconds": 33.40700000000652,
+    "wall_seconds": 34.34299999999348,
+    "token_usage_complete": true
+  },
+  "checks": {
+    "original_instruction_unchanged": true,
+    "real_planner_completed": true,
+    "assets_committed": true,
+    "requirements_and_design_unchanged": true,
+    "no_game_or_qa_claims": true,
+    "mock_images_labelled": true,
+    "status_matches_placeholders": true,
+    "image_usage_matches_mock_calls": true,
+    "text_usage_matches_provider": true,
+    "english_authored_output_no_cjk": true
+  },
+  "error": null
+}

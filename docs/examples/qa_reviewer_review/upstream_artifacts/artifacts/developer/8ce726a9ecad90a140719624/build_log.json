@@ -1,0 +1,96 @@
+[
+  {
+    "attempt": 1,
+    "model_turn": 2,
+    "source_digest": "411dacc5d1e270be7b766d25a2b2591c08be28b5137b709b4900b8994db11b59",
+    "status": "passed",
+    "steps": [
+      {
+        "name": "engine_version",
+        "argv": [
+          "godot",
+          "--headless",
+          "--version"
+        ],
+        "status": "passed",
+        "returncode": 0,
+        "stdout": "4.5.1.stable.official.f62fdbde1\n",
+        "stderr": "",
+        "reason": null
+      },
+      {
+        "name": "import",
+        "argv": [
+          "godot",
+          "--headless",
+          "--path",
+          "/output/game",
+          "--import"
+        ],
+        "status": "passed",
+        "returncode": 0,
+        "stdout": "Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org\n\n[   0% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | Started Project initialization (5 steps)\u001b[39m\u001b[0m\n[   0% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | Scanning file structure...\u001b[39m\u001b[0m\n[  16% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | Loading global class names...\u001b[39m\u001b[0m\n[  33% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | Verifying GDExtensions...\u001b[39m\u001b[0m\n[  50% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | Creating autoload scripts...\u001b[39m\u001b[0m\n[  66% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | Initializing plugins...\u001b[39m\u001b[0m\n[  83% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | Starting file scan...\u001b[39m\u001b[0m\n\u001b[92m[ DONE ]\u001b[39m \u001b[1mfirst_scan_filesystem\u001b[22m\n\u001b[0m\n[   0% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | Started Registering global classes... (9 steps)\u001b[39m\u001b[0m\n[   0% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | \u001b[39m\u001b[0m\n[  10% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | \u001b[39m\u001b[0m\n[  20% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | \u001b[39m\u001b[0m\n[  30% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | \u001b[39m\u001b[0m\n[  40% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | \u001b[39m\u001b[0m\n[  50% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | \u001b[39m\u001b[0m\n[  60% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | \u001b[39m\u001b[0m\n[  70% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | \u001b[39m\u001b[0m\n[  80% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | \u001b[39m\u001b[0m\n\u001b[92m[ DONE ]\u001b[39m \u001b[1mupdate_scripts_classes\u001b[22m\n\u001b[0m\n[   0% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | Started Scanning actions... (12 steps)\u001b[39m\u001b[0m\n[   0% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | door_gate.png\u001b[39m\u001b[0m\n[   7% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | exit_crystal.png\u001b[39m\u001b[0m\n[  15% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | laser_hazard.png\u001b[39m\u001b[0m\n[  23% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | pressure_plate.png\u001b[39m\u001b[0m\n[  30% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | switch_button.png\u001b[39m\u001b[0m\n[  38% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | enemy_patroller.png\u001b[39m\u001b[0m\n[  46% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | ghost_sheet.png\u001b[39m\u001b[0m\n[  53% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | player_sheet.png\u001b[39m\u001b[0m\n[  61% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | tileset_platform.png\u001b[39m\u001b[0m\n[  69% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | hud_panel.png\u001b[39m\u001b[0m\n[  76% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | title_backdrop.png\u001b[39m\u001b[0m\n[  84% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | ui_controls.png\u001b[39m\u001b[0m\n\u001b[92m[ DONE ]\u001b[39m \u001b[1m_update_scan_actions\u001b[22m\n\u001b[0m\n[   0% ] \u001b[90m\u001b[1mreimport\u001b[22m | Started (Re)Importing Assets (12 steps)\u001b[39m\u001b[0m\n[   0% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[   7% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  15% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  23% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  30% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  38% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  46% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  53% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  61% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  69% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  76% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  84% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[   0% ] \u001b[90m\u001b[1mreimport\u001b[22m | Executing pre-reimport operations...\u001b[39m\u001b[0m\n[   0% ] \u001b[90m\u001b[1mreimport\u001b[22m | door_gate.png\u001b[39m\u001b[0m\n[   7% ] \u001b[90m\u001b[1mreimport\u001b[22m | exit_crystal.png\u001b[39m\u001b[0m\n[  15% ] \u001b[90m\u001b[1mreimport\u001b[22m | laser_hazard.png\u001b[39m\u001b[0m\n[  23% ] \u001b[90m\u001b[1mreimport\u001b[22m | pressure_plate.png\u001b[39m\u001b[0m\n[  30% ] \u001b[90m\u001b[1mreimport\u001b[22m | switch_button.png\u001b[39m\u001b[0m\n[  38% ] \u001b[90m\u001b[1mreimport\u001b[22m | enemy_patroller.png\u001b[39m\u001b[0m\n[  46% ] \u001b[90m\u001b[1mreimport\u001b[22m | ghost_sheet.png\u001b[39m\u001b[0m\n[  53% ] \u001b[90m\u001b[1mreimport\u001b[22m | player_sheet.png\u001b[39m\u001b[0m\n[  61% ] \u001b[90m\u001b[1mreimport\u001b[22m | tileset_platform.png\u001b[39m\u001b[0m\n[  69% ] \u001b[90m\u001b[1mreimport\u001b[22m | hud_panel.png\u001b[39m\u001b[0m\n[  76% ] \u001b[90m\u001b[1mreimport\u001b[22m | title_backdrop.png\u001b[39m\u001b[0m\n[  84% ] \u001b[90m\u001b[1mreimport\u001b[22m | ui_controls.png\u001b[39m\u001b[0m\n[  92% ] \u001b[90m\u001b[1mreimport\u001b[22m | Finalizing Asset Import...\u001b[39m\u001b[0m\n\u001b[92m[ DONE ]\u001b[39m \u001b[1mreimport\u001b[22m\n\u001b[0m\n[   0% ] \u001b[90m\u001b[1mreimport\u001b[22m | Started (Re)Importing Assets (12 steps)\u001b[39m\u001b[0m\n[   0% ] \u001b[90m\u001b[1mreimport\u001b[22m | Executing post-reimport operations...\u001b[39m\u001b[0m\n\u001b[92m[ DONE ]\u001b[39m \u001b[1mreimport\u001b[22m\n\u001b[0m\n[   0% ] \u001b[90m\u001b[1mloading_editor_layout\u001b[22m | Started Loading editor (5 steps)\u001b[39m\u001b[0m\n[   0% ] \u001b[90m\u001b[1mloading_editor_layout\u001b[22m | Loading editor layout...\u001b[39m\u001b[0m\n\u001b[92m[ DONE ]\u001b[39m \u001b[1mloading_editor_layout\u001b[22m\n\u001b[0m\n",
+        "stderr": "",
+        "reason": null
+      },
+      {
+        "name": "ordinary_launch",
+        "argv": [
+          "godot",
+          "--headless",
+          "--path",
+          "/output/game",
+          "--quit-after",
+          "5"
+        ],
+        "status": "passed",
+        "returncode": 0,
+        "stdout": "Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org\n\n",
+        "stderr": "",
+        "reason": null
+      },
+      {
+        "name": "scenario:near_rewind",
+        "argv": [
+          "godot",
+          "--headless",
+          "--path",
+          "/output/game",
+          "--fixed-fps",
+          "60",
+          "--quit-after",
+          "60",
+          "--",
+          "--scenario",
+          "near_rewind"
+        ],
+        "status": "passed",
+        "returncode": 0,
+        "stdout": "Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org\n\n",
+        "stderr": "",
+        "reason": null
+      },
+      {
+        "name": "scenario:near_victory",
+        "argv": [
+          "godot",
+          "--headless",
+          "--path",
+          "/output/game",
+          "--fixed-fps",
+          "60",
+          "--quit-after",
+          "60",
+          "--",
+          "--scenario",
+          "near_victory"
+        ],
+        "status": "passed",
+        "returncode": 0,
+        "stdout": "Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org\n\n",
+        "stderr": "",
+        "reason": null
+      }
+    ]
+  }
+]

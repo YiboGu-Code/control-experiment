@@ -1,0 +1,109 @@
+{
+  "duration_frames": 600,
+  "events": [
+    {
+      "frame": 20,
+      "type": "mouse_down",
+      "button": "left",
+      "x": 640,
+      "y": 412
+    },
+    {
+      "frame": 21,
+      "type": "mouse_up",
+      "button": "left",
+      "x": 640,
+      "y": 412
+    },
+    {
+      "frame": 60,
+      "type": "wait"
+    },
+    {
+      "frame": 90,
+      "type": "mouse_move",
+      "x": 300,
+      "y": 360
+    },
+    {
+      "frame": 120,
+      "type": "mouse_down",
+      "button": "left",
+      "x": 300,
+      "y": 360
+    },
+    {
+      "frame": 121,
+      "type": "mouse_up",
+      "button": "left",
+      "x": 300,
+      "y": 360
+    },
+    {
+      "frame": 150,
+      "type": "wait"
+    },
+    {
+      "frame": 180,
+      "type": "mouse_down",
+      "button": "left",
+      "x": 300,
+      "y": 300
+    },
+    {
+      "frame": 181,
+      "type": "mouse_up",
+      "button": "left",
+      "x": 300,
+      "y": 300
+    },
+    {
+      "frame": 220,
+      "type": "wait"
+    },
+    {
+      "frame": 250,
+      "type": "key_down",
+      "keycode": "D"
+    },
+    {
+      "frame": 300,
+      "type": "key_up",
+      "keycode": "D"
+    },
+    {
+      "frame": 320,
+      "type": "key_down",
+      "keycode": "SPACE"
+    },
+    {
+      "frame": 321,
+      "type": "key_up",
+      "keycode": "SPACE"
+    },
+    {
+      "frame": 360,
+      "type": "key_down",
+      "keycode": "A"
+    },
+    {
+      "frame": 420,
+      "type": "key_up",
+      "keycode": "A"
+    },
+    {
+      "frame": 450,
+      "type": "key_down",
+      "keycode": "E"
+    },
+    {
+      "frame": 451,
+      "type": "key_up",
+      "keycode": "E"
+    },
+    {
+      "frame": 500,
+      "type": "wait"
+    }
+  ]
+}

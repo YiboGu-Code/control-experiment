@@ -1,0 +1,35 @@
+{
+  "offline_full_suite": {
+    "command": "python -m pytest -q",
+    "passed": 274,
+    "skipped": 7,
+    "duration_seconds": 383.91,
+    "note": "Collected before the final supplemental interior-frame comparison test was added."
+  },
+  "supplemental_offline": {
+    "command": "python -m pytest tests/test_player.py::test_replay_checks_interior_frames_even_without_screenshots -q",
+    "passed": 1,
+    "duration_seconds": 0.35
+  },
+  "live_player": {
+    "command": "GAMECRAFT_PLAYER_LIVE_TESTS=1 python -m pytest tests/test_player_live.py -q -s",
+    "run": "player-live-004",
+    "passed": 1,
+    "duration_seconds": 359.03,
+    "note": "Integration success includes faithfully recording two failed replays; it is not gameplay acceptance."
+  },
+  "live_renderer": {
+    "command": "GAMECRAFT_PLAYER_RUNTIME_TESTS=1 python -m pytest tests/test_player_runtime_live.py -q",
+    "run": "player-runtime-006",
+    "passed": 1,
+    "duration_seconds": 10.15,
+    "note": "Actual unchanged Developer game, actual movement and a one-frame Space jump, no model call."
+  },
+  "collection_final_tree": 282,
+  "offline_passes_across_recorded_checks": 275,
+  "remaining_skips": [
+    "Prior-role paid Designer, Art Producer and Developer tests were not rerun",
+    "Host does not permit the real symlink test",
+    "Generic sandbox integration image was not supplied; Player-specific Docker tests ran separately"
+  ]
+}

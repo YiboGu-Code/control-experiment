@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0",
+  "request_id": "developer-initial",
+  "run_id": "developer-live",
+  "task_id": "platformer-time-loop",
+  "role": "developer",
+  "work_item_ids": [],
+  "objective": "Implement the Time Loop Godot game from the original task, Designer specification and supplied Art package",
+  "completion_criteria": [
+    "Implement the playable title/chapter/menu/level/reset/result flows and twenty-four levels across four chapters",
+    "Implement real 30-second rewind, deterministic recorded ghosts, temporal interactions and completion gating",
+    "Integrate the supplied asset bytes, implement near_rewind and near_victory using the real game systems, and pass isolated import/startup checks",
+    "Record remaining mock-art, gameplay verification and Player trace work without claiming QA acceptance"
+  ],
+  "state_revision": 2,
+  "artifact_refs": [],
+  "limits": {
+    "max_model_calls": 3,
+    "max_input_tokens": 1500000,
+    "max_output_tokens": 98304,
+    "max_image_calls": 0,
+    "max_tool_calls": 600,
+    "max_tool_seconds": 2400.0,
+    "max_wall_seconds": 2520.0
+  }
+}

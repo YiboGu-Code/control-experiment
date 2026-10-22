@@ -1,0 +1,19 @@
+{
+  "requested_image": "gamecraft-player:4.5.1",
+  "image_id": "sha256:f4ec73b2be9e4241b874acc8ee28f1bf1090daa79102ac572044bb68c6b0e2fb",
+  "network": "none",
+  "non_root": true,
+  "read_only_root": true,
+  "fresh_process_and_user_data": true,
+  "host_execution_fallback": false,
+  "fps": 30,
+  "resolution": [
+    1280,
+    720
+  ],
+  "cpus": 2.0,
+  "memory_mb": 1536,
+  "tmpfs_mb": 512,
+  "driver_sha256": "a8f953c090c85acc4edcb961977526f0dc2bbf9db907616d2ef2a3dd73d43c67",
+  "harness_sha256": "e8badd737fd7a0c5e0b87ef5a81117cff3d5f92bcdd422bb6ec7b6895510d497"
+}

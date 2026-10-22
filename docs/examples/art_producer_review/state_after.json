@@ -1,0 +1,2068 @@
+{
+  "schema_version": "1.0",
+  "task": {
+    "task_id": "platformer-time-loop",
+    "instruction": "# Time Loop\n\nBuild **Time Loop**, a 30-second time loop platformer where past-self replays\nhelp solve puzzles in Godot 4 at `/workspace/game/`. This is not a prototype.\nIt is a **complete, shippable micro-game** that could sit on an itch.io page or\nSteam as a polished vertical slice.\n\n## Core Vision\n\nEach level is a 30-second loop. When the timer expires, time rewinds and the\nplayer starts again — but a ghost of the previous loop replays simultaneously,\ninteracting with the world. The ghost can hold switches, distract enemies, or\nstand on pressure plates while the current player tackles other objectives.\nMultiple loops layer: loop 1's ghost holds a door open, loop 2's ghost stands\non a platform to create a bridge, and in loop 3 the player finally reaches the\nexit using both ghosts' contributions. The puzzle is temporal coordination —\nplanning what each loop-self needs to do and when, so that all versions\ncooperate across time. Twenty-four levels across four chapters escalate from\nsingle-ghost puzzles to four-loop orchestrations.\n\n## What the Player Experiences\n\nA title screen shows overlapping clock hands and ghost silhouettes. A chapter\nmenu reveals four chapters of six levels each.\n\nEntering a level starts a 30-second countdown. The player runs, jumps, and\ninteracts with switches and objects. When the timer hits zero, the screen\nflashes and rewinds — the player restarts at the spawn point, but a translucent\nghost replays exactly what they did in the previous loop. The ghost physically\ninteracts with the world: it presses buttons, holds doors, and blocks lasers.\n\nThe player can layer up to four loops. A timeline bar at the top shows all\nactive ghosts and their current positions in the 30-second window. Reaching the\nexit crystal with all required switches held (by ghosts or player) completes\nthe level. A reset button clears all ghosts to start fresh. Level-complete\nshows loops used and time of exit within the final loop.\n\n## Assets\n\n2D assets are mounted read-only at:\n\n- `/workspace/assets/library/` — Kenney CC0 packs (sprites, tiles, UI, fonts).\n- `/workspace/assets/library-oga/` — OpenGameArt entries; respect each\n  subdir's `LICENSE.txt`.\n\nBrowse the library and choose packs.\nCopy what you need into your project's `assets/` folder.\n\n## Project layout\n\n```\n/workspace/game/\n  project.godot\n  Main.tscn\n  demo_outputs/    <- your input traces (1-10 files)\n  scripts/  scenes/  assets/\n```\n\nThe build must launch cleanly with:\n\n```\ngodot --headless --path /workspace/game --quit-after 5\n```\n\nA reference for Godot CLI flags is at `/workspace/tools/godot_command_line.md`.\n**Engine flags like `--headless` and `--quit-after N` must come BEFORE `--`** —\nanything after `--` is forwarded to the project as user args and silently\nignored by the engine. Correct shape:\n`godot --headless --quit-after 5 --path . -- --scenario near_victory`.\n\nA screenshot helper is available at `/workspace/tools/screenshot.sh`. Use it to actually see what your UI / battlefield /\nresult screens look like.\n\n```\n/workspace/tools/screenshot.sh --path /workspace/game \\\n      -- --out /workspace/frame.png --frames 60\n```\n\nTo screenshot a specific scenario, append `--scenario <id>` after `--`. The\nhelper consumes only `--out` / `--frames` / `--scene`; remaining args stay in\n`OS.get_cmdline_user_args()` for your game code to read. Example:\n\n```\n/workspace/tools/screenshot.sh --path /workspace/game \\\n      -- --out /workspace/battle_debug.png --frames 120 --scenario battle\n```\n\n## Demos\n\nShip **1-10 input-trace files** under `/workspace/game/demo_outputs/`, one per\ndemo, each named `*.json`. The evaluator launches a fresh game per trace,\nreplays your trace as synthetic mouse and keyboard input at 1280x720, and\nrecords the screen. Only the first 10 traces by filename are evaluated;\nrecordings longer than 20 s are sampled from a random 20 s window.\n\n### Scenarios\n\nNormal play should start from the title screen and demonstrate the task's\ncore gameplay loop.\nDemo playback must be deterministic. For demos that need a specific state\n(a specific level, combat state, upgrade screen, result state, or late-game\nsetup), define named scenarios your game loads when launched with:\n\n```\ngodot --path /workspace/game -- --scenario <id>\n```\n\nWhen `--scenario <id>` is present the game must skip menus, set up the named\nstate deterministically (seed any RNG), and begin accepting input immediately.\n\n### Trace file format\n\n```json\n{\n  \"scenario\": \"title_flow\",\n  \"duration_frames\": 360,\n  \"events\": [\n    {\"frame\": 30,  \"type\": \"mouse_click\", \"button\": \"left\", \"x\": 300, \"y\": 360},\n    {\"frame\": 90,  \"type\": \"key_press\",   \"keycode\": \"1\"},\n    {\"frame\": 180, \"type\": \"key_press\",   \"keycode\": \"SPACE\"},\n    {\"frame\": 300, \"type\": \"wait\"}\n  ]\n}\n```\n\n- `scenario` — optional; omit for a normal game launch from the title screen.\n- `duration_frames` — total frames to record at 30 fps; cap at **600 (20 s)**.\n- `events` — time-ordered inputs. Coordinates are pixels in the 1280x720\n  viewport. Supported types:\n  - `mouse_click`: `{frame, type, button: \"left\"|\"right\", x, y}`\n  - `mouse_down` / `mouse_up`: `{frame, type, button: \"left\"|\"right\", x, y}` —\n    use these for drag interactions: emit `mouse_down` at the start point,\n    one or more `mouse_move` events along the way, and `mouse_up` at the end.\n    A `mouse_click` is a `mouse_down` + `mouse_up` at the same point in tight\n    succession.\n  - `mouse_move`: `{frame, type, x, y}`\n  - `key_press` / `key_down` / `key_up`: `{frame, type, keycode}` — keycodes:\n    `A`-`Z`, `0`-`9`, `ESCAPE`, `ENTER`, `SPACE`, `TAB`, `BACKSPACE`,\n    `DELETE`, `SHIFT`, `CTRL`, `ALT`, `UP`, `DOWN`, `LEFT`, `RIGHT`.\n  - `wait`: `{frame, type}` — anchor frame, no input.\n\nReplay must be deterministic: same trace, fresh launch, same outcome every time.\n",
+    "benchmark_snapshot": "FreedomIntelligence-gamecraft-bench-a433475",
+    "environment_constraints": [
+      "All authored role inputs, prompts, and outputs must be in English. The original instruction is unchanged.",
+      "Library paths in the instruction refer to the target server. Actual mount availability is supplied by the host.",
+      "Both library selection and self-generation are allowed for this experiment. Actual image generation is mocked in this test only.",
+      "No engine or hidden evaluator is run. Do not claim visual inspection, game integration, or official acceptance."
+    ],
+    "resource_refs": []
+  },
+  "ledger": {
+    "schema_version": "1.0",
+    "run_id": "art-producer-live",
+    "task_id": "platformer-time-loop",
+    "controller": "fixed_loop",
+    "budget": {
+      "max_model_calls": 4,
+      "max_input_tokens": 800000,
+      "max_output_tokens": 131072,
+      "max_image_calls": 12,
+      "max_tool_calls": 160,
+      "max_tool_seconds": 2520.0,
+      "max_wall_seconds": 2580.0
+    },
+    "config_ref": {
+      "artifact_id": "runtime-config",
+      "version": 1,
+      "kind": "config",
+      "path": "input/runtime_config.json",
+      "created_by": "system",
+      "media_type": null,
+      "sha256": null
+    },
+    "started_at": "2026-10-19T08:54:26.942828Z",
+    "events": [
+      {
+        "schema_version": "1.0",
+        "event_id": "98d160f71e814f5694f758e6aa10475c",
+        "sequence": 1,
+        "recorded_at": "2026-10-19T08:54:26.958464Z",
+        "payload": {
+          "kind": "role_call_started",
+          "request": {
+            "schema_version": "1.0",
+            "request_id": "import-recorded-designer",
+            "run_id": "art-producer-live",
+            "task_id": "platformer-time-loop",
+            "role": "designer",
+            "work_item_ids": [],
+            "objective": "Import the previously recorded real Designer output for this isolated Art Producer test",
+            "completion_criteria": [
+              "Preserve original Designer bytes and grounded requirements"
+            ],
+            "state_revision": 0,
+            "artifact_refs": [],
+            "limits": {
+              "max_model_calls": 4,
+              "max_input_tokens": 800000,
+              "max_output_tokens": 131072,
+              "max_image_calls": 12,
+              "max_tool_calls": 160,
+              "max_tool_seconds": 2520.0,
+              "max_wall_seconds": 2580.0
+            }
+          }
+        }
+      },
+      {
+        "schema_version": "1.0",
+        "event_id": "e16815c479d64273aa8986337bbaef78",
+        "sequence": 2,
+        "recorded_at": "2026-10-19T08:54:27.024046Z",
+        "payload": {
+          "kind": "role_call_finished",
+          "result": {
+            "schema_version": "1.0",
+            "request_id": "import-recorded-designer",
+            "role": "designer",
+            "state_revision": 0,
+            "status": "completed",
+            "summary": "Imported the unmodified recorded real Designer artifact as test precondition; no new Designer model call",
+            "artifact_refs": [
+              {
+                "artifact_id": "designer-specification",
+                "version": 1,
+                "kind": "document",
+                "path": "artifacts/designer/047cd30e0026f06f86a3e5a9/design.json",
+                "created_by": "designer",
+                "media_type": "application/json",
+                "sha256": "060ef8850723b647440e0fe92ee871f83a46595a068eacea5a07b188a8ce3a39"
+              }
+            ],
+            "proposed_updates": {
+              "requirements": [
+                {
+                  "requirement_id": "R001",
+                  "description": "Time Loop is a per-level 30-second time-loop platformer: every level has a 30-second active loop duration before rewind.",
+                  "source_excerpt": "Each level is a 30-second loop.",
+                  "acceptance_criteria": [
+                    "Entering any level initializes a visible countdown at 30 seconds.",
+                    "The active loop expires after exactly 30 seconds of gameplay time at the configured simulation rate.",
+                    "All 24 levels use the same 30-second loop duration."
+                  ],
+                  "dependency_ids": [],
+                  "status": "not_implemented",
+                  "verification": null
+                },
+                {
+                  "requirement_id": "R002",
+                  "description": "When the loop timer expires, the player is rewound and a ghost of the previous loop replays simultaneously.",
+                  "source_excerpt": "player starts again — but a ghost of the previous loop replays simultaneously",
+                  "acceptance_criteria": [
+                    "At timer expiry the current player is restored to the level spawn point.",
+                    "A ghost instance is created at the spawn point and begins replaying the previous loop from t=0.",
+                    "Ghost movement and actions correspond to the recorded player state at the same loop time."
+                  ],
+                  "dependency_ids": [
+                    "R001"
+                  ],
+                  "status": "not_implemented",
+                  "verification": null
+                },
+                {
+                  "requirement_id": "R003",
+                  "description": "Ghosts can hold switches, distract enemies, and stand on pressure plates while the current player pursues other objectives.",
+                  "source_excerpt": "The ghost can hold switches, distract enemies, or\nstand on pressure plates while the current player tackles other objectives.",
+                  "acceptance_criteria": [
+                    "Ghost occupancy of a switch or pressure plate counts as held while the ghost remains on it.",
+                    "Enemies within the defined distraction range enter a distracted state while a ghost is near.",
+                    "These ghost interactions can occur concurrently with independent player actions elsewhere in the level."
+                  ],
+                  "dependency_ids": [
+                    "R002"
+                  ],
+                  "status": "not_implemented",
+                  "verification": null
+                },
+                {
+                  "requirement_id": "R004",
+                  "description": "Loops layer so prior-loop ghosts can cooperate with the current player and with each other to solve a level.",
+                  "source_excerpt": "Multiple loops layer: loop 1's ghost holds a door open, loop 2's ghost stands\non a platform to create a bridge, and in loop 3 the player finally reaches the\nexit using both ghosts' contributions.",
+                  "acceptance_criteria": [
+                    "At least one authored level requires simultaneous contributions from two prior ghosts before the current player can reach the exit.",
+                    "Removing either required ghost contribution makes the exit unreachable.",
+                    "Ghost contributions persist across subsequent loops until reset or the maximum loop limit is reached."
+                  ],
+                  "dependency_ids": [
+                    "R002",
+                    "R003"
+                  ],
+                  "status": "not_implemented",
+                  "verification": null
+                },
+                {
+                  "requirement_id": "R005",
+                  "description": "The puzzle design is temporal coordination: the player plans what each loop-self must do and when so all versions cooperate across time.",
+                  "source_excerpt": "The puzzle is temporal coordination —\nplanning what each loop-self needs to do and when, so that all versions\ncooperate across time.",
+                  "acceptance_criteria": [
+                    "At least one level cannot be solved in a single loop.",
+                    "The authored solution requires scheduling distinct actions in different loop iterations at specified times.",
+                    "Earlier-loop ghost actions are necessary for later-loop success."
+                  ],
+                  "dependency_ids": [
+                    "R004"
+                  ],
+                  "status": "not_implemented",
+                  "verification": null
+                },
+                {
+                  "requirement_id": "R006",
+                  "description": "The game contains twenty-four levels across four chapters, escalating from single-ghost puzzles to four-loop orchestrations.",
+                  "source_excerpt": "Twenty-four levels across four chapters escalate from\nsingle-ghost puzzles to four-loop orchestrations.",
+                  "acceptance_criteria": [
+                    "Exactly 24 playable levels are defined in level data.",
+                    "The levels are grouped into four chapters with six levels per chapter.",
+                    "Chapter 1 levels require at most one ghost; the final chapter includes levels requiring four active loops."
+                  ],
+                  "dependency_ids": [
+                    "R005"
+                  ],
+                  "status": "not_implemented",
+                  "verification": null
+                },
+                {
+                  "requirement_id": "R007",
+                  "description": "The title screen visually shows overlapping clock hands and ghost silhouettes.",
+                  "source_excerpt": "A title screen shows overlapping clock hands and ghost silhouettes.",
+                  "acceptance_criteria": [
+                    "The ordinary launch title screen displays at least two overlapping clock-hand graphics.",
+                    "Ghost silhouettes are visible on the title screen.",
+                    "The title screen is the first ordinary-entry screen before menus."
+                  ],
+                  "dependency_ids": [],
+                  "status": "not_implemented",
+                  "verification": null
+                },
+                {
+                  "requirement_id": "R008",
+                  "description": "A chapter menu reveals four chapters, each containing six levels.",
+                  "source_excerpt": "A chapter\nmenu reveals four chapters of six levels each.",
+                  "acceptance_criteria": [
+                    "The chapter menu presents four chapter entries.",
+                    "Each chapter entry exposes six level entries, for 24 total level entries.",
+                    "Each level entry displays a locked or unlocked state consistent with progression."
+                  ],
+                  "dependency_ids": [
+                    "R006"
+                  ],
+                  "status": "not_implemented",
+                  "verification": null
+                },
+                {
+                  "requirement_id": "R009",
+                  "description": "Selecting and entering a level starts its 30-second countdown.",
+                  "source_excerpt": "Entering a level starts a 30-second countdown.",
+                  "acceptance_criteria": [
+                    "On level entry the countdown begins at 30.0 seconds.",
+                    "The countdown is visible during play.",
+                    "The countdown starts only after the level scene is ready and player control begins."
+                  ],
+                  "dependency_ids": [
+                    "R001",
+                    "R008"
+                  ],
+                  "status": "not_implemented",
+                  "verification": null
+                },
+                {
+                  "requirement_id": "R010",
+                  "description": "The player can run, jump, and interact with switches and level objects.",
+                  "source_excerpt": "The player runs, jumps, and\ninteracts with switches and objects.",
+                  "acceptance_criteria": [
+                    "Horizontal movement responds to left and right input.",
+                    "Jump input produces a jump when the player is grounded.",
+                    "Interact input triggers eligible switches and interactive objects within range."
+                  ],
+                  "dependency_ids": [
+                    "R009"
+                  ],
+                  "status": "not_implemented",
+                  "verification": null
+                },
+                {
+                  "requirement_id": "R011",
+                  "description": "At zero timer the screen flashes and rewinds; the player restarts at spawn while a translucent ghost replays the previous loop exactly.",
+                  "source_excerpt": "When the timer hits zero, the screen\nflashes and rewinds — the player restarts at the spawn point, but a translucent\nghost replays exactly what they did in the previous loop.",
+                  "acceptance_criteria": [
+                    "A visible screen-flash effect occurs when the timer reaches zero.",
+                    "The level rewinds the current player to the spawn point.",
+                    "A ghost with alpha less than 1 is shown replaying the recorded previous loop.",
+                    "The ghost reproduces the previous loop's player state sequence rather than a newly generated approximation."
+                  ],
+                  "dependency_ids": [
+                    "R002",
+                    "R009"
+                  ],
+                  "status": "not_implemented",
+                  "verification": null
+                },
+                {
+                  "requirement_id": "R012",
+                  "description": "Ghosts physically interact with the world by pressing buttons, holding doors, and blocking lasers.",
+                  "source_excerpt": "The ghost physically\ninteracts with the world: it presses buttons, holds doors, and blocks lasers.",
+                  "acceptance_criteria": [
+                    "A ghost overlapping a button or switch activates or holds it according to its type.",
+                    "A ghost standing at a door or door-hold point keeps the door open for as long as the replay remains there.",
+                    "A laser ray hitting a ghost is blocked at the ghost position instead of continuing to its normal target."
+                  ],
+                  "dependency_ids": [
+                    "R003",
+                    "R011"
+                  ],
+                  "status": "not_implemented",
+                  "verification": null
+                },
+                {
+                  "requirement_id": "R013",
+                  "description": "The player can layer up to four loops, producing at most four active ghost instances.",
+                  "source_excerpt": "The player can layer up to four loops.",
+                  "acceptance_criteria": [
+                    "The loop manager permits no more than four active ghost instances.",
+                    "The timeline and HUD represent each active ghost up to the four-loop maximum.",
+                    "Attempting another loop after four active ghosts follows the defined maximum-loop reset behavior rather than creating a fifth ghost."
+                  ],
+                  "dependency_ids": [
+                    "R004"
+                  ],
+                  "status": "not_implemented",
+                  "verification": null
+                },
+                {
+                  "requirement_id": "R014",
+                  "description": "A top timeline bar shows all active ghosts and their current positions in the 30-second loop window.",
+                  "source_excerpt": "A timeline bar at the top shows all\nactive ghosts and their current positions in the 30-second window.",
+                  "acceptance_criteria": [
+                    "The play HUD includes a timeline bar spanning 0 to 30 seconds.",
+                    "Each active ghost has a distinct marker on the timeline.",
+                    "Each ghost marker updates to reflect that ghost's current playback time within the loop."
+                  ],
+                  "dependency_ids": [
+                    "R013"
+                  ],
+                  "status": "not_implemented",
+                  "verification": null
+                },
+                {
+                  "requirement_id": "R015",
+                  "description": "Touching the exit crystal completes the level only when all required switches are held by ghosts or the current player.",
+                  "source_excerpt": "Reaching the\nexit crystal with all required switches held (by ghosts or player) completes\nthe level.",
+                  "acceptance_criteria": [
+                    "Each level defines the required switches needed for exit completion.",
+                    "The exit crystal rejects completion while any required switch is unheld.",
+                    "The exit crystal completes the level when all required switches are held by any combination of ghosts and the current player."
+                  ],
+                  "dependency_ids": [
+                    "R003",
+                    "R012"
+                  ],
+                  "status": "not_implemented",
+                  "verification": null
+                },
+                {
+                  "requirement_id": "R016",
+                  "description": "A reset button clears all ghosts so the player can start the level fresh.",
+                  "source_excerpt": "A reset button clears all ghosts to start fresh.",
+                  "acceptance_criteria": [
+                    "The play HUD provides a visible reset button.",
+                    "Activating reset removes all active ghosts.",
+                    "Activating reset restarts the current level at its spawn point with a fresh 30-second timer and no retained loop replay."
+                  ],
+                  "dependency_ids": [
+                    "R013"
+                  ],
+                  "status": "not_implemented",
+                  "verification": null
+                },
+                {
+                  "requirement_id": "R017",
+                  "description": "The level-complete display reports loops used and the time of exit within the final loop.",
+                  "source_excerpt": "Level-complete\nshows loops used and time of exit within the final loop.",
+                  "acceptance_criteria": [
+                    "The level-complete overlay shows an integer count of loops used.",
+                    "The overlay shows the exit time within the final loop.",
+                    "The displayed values match the completed session's loop count and final-loop exit timestamp."
+                  ],
+                  "dependency_ids": [
+                    "R015"
+                  ],
+                  "status": "not_implemented",
+                  "verification": null
+                },
+                {
+                  "requirement_id": "R018",
+                  "description": "The deliverable is a complete, shippable micro-game built in Godot 4 at /workspace/game, not a prototype.",
+                  "source_excerpt": "Build **Time Loop**, a 30-second time loop platformer where past-self replays\nhelp solve puzzles in Godot 4 at `/workspace/game/`. This is not a prototype.\nIt is a **complete, shippable micro-game** that could sit on an itch.io page or\nSteam as a polished vertical slice.",
+                  "acceptance_criteria": [
+                    "A Godot 4 project exists at /workspace/game.",
+                    "The ordinary game path includes title, chapter menu, all 24 levels, loop rewinds, ghosts, timeline, reset, exit completion, and completion metrics.",
+                    "Core gameplay does not depend on placeholder-only debug controls or an unfinished test scene."
+                  ],
+                  "dependency_ids": [],
+                  "status": "not_implemented",
+                  "verification": null
+                },
+                {
+                  "requirement_id": "R019",
+                  "description": "2D assets must be sourced from the mounted read-only Kenney CC0 library or OpenGameArt entries, respecting each OpenGameArt subdirectory license.",
+                  "source_excerpt": "2D assets are mounted read-only at:\n\n- `/workspace/assets/library/` — Kenney CC0 packs (sprites, tiles, UI, fonts).\n- `/workspace/assets/library-oga/` — OpenGameArt entries; respect each\n  subdir's `LICENSE.txt`.",
+                  "acceptance_criteria": [
+                    "All imported visual assets come from the mounted asset libraries or from permissible engine primitives.",
+                    "Kenney-sourced files are used as CC0 assets.",
+                    "Any OpenGameArt-derived file is accompanied by or used in accordance with its subdirectory LICENSE.txt obligations.",
+                    "No unlicensed external asset is introduced."
+                  ],
+                  "dependency_ids": [
+                    "R018"
+                  ],
+                  "status": "not_implemented",
+                  "verification": null
+                },
+                {
+                  "requirement_id": "R020",
+                  "description": "The implementer must browse the mounted libraries, choose suitable packs, and copy needed files into the project's assets folder.",
+                  "source_excerpt": "Browse the library and choose packs.\nCopy what you need into your project's `assets/` folder.",
+                  "acceptance_criteria": [
+                    "Selected asset files are copied under /workspace/game/assets/.",
+                    "Game scenes reference copied assets through project-relative res:// paths.",
+                    "No gameplay asset is loaded from a read-only mount at runtime."
+                  ],
+                  "dependency_ids": [
+                    "R019"
+                  ],
+                  "status": "not_implemented",
+                  "verification": null
+                },
+                {
+                  "requirement_id": "R021",
+                  "description": "The Godot project layout must include project.godot, Main.tscn, demo_outputs, scripts, scenes, and assets under /workspace/game.",
+                  "source_excerpt": "/workspace/game/\n  project.godot\n  Main.tscn\n  demo_outputs/    <- your input traces (1-10 files)\n  scripts/  scenes/  assets/",
+                  "acceptance_criteria": [
+                    "/workspace/game/project.godot exists.",
+                    "/workspace/game/Main.tscn exists as the entry scene.",
+                    "/workspace/game/demo_outputs/, scripts/, scenes/, and assets/ exist.",
+                    "The project opens and runs from this layout without missing-path errors for required scenes or assets."
+                  ],
+                  "dependency_ids": [
+                    "R018"
+                  ],
+                  "status": "not_implemented",
+                  "verification": null
+                },
+                {
+                  "requirement_id": "R022",
+                  "description": "The built project must launch cleanly with the specified headless command.",
+                  "source_excerpt": "godot --headless --path /workspace/game --quit-after 5",
+                  "acceptance_criteria": [
+                    "Running the exact command exits without script parse errors or missing-resource errors.",
+                    "The command completes within the five-second quit window.",
+                    "The project creates no failure dialog or blocking startup error in headless mode."
+                  ],
+                  "dependency_ids": [
+                    "R021"
+                  ],
+                  "status": "not_implemented",
+                  "verification": null
+                },
+                {
+                  "requirement_id": "R023",
+                  "description": "Engine flags such as --headless and --quit-after N must precede the -- separator; user scenario arguments must come after --.",
+                  "source_excerpt": "**Engine flags like `--headless` and `--quit-after N` must come BEFORE `--`** —\nanything after `--` is forwarded to the project as user args and silently\nignored by the engine. Correct shape:\n`godot --headless --quit-after 5 --path . -- --scenario near_victory`.",
+                  "acceptance_criteria": [
+                    "Launch commands place --headless, --quit-after, and --path before --.",
+                    "Scenario identifiers are placed after --.",
+                    "Game code reads scenario identifiers from OS.get_cmdline_user_args rather than engine flags."
+                  ],
+                  "dependency_ids": [
+                    "R022"
+                  ],
+                  "status": "not_implemented",
+                  "verification": null
+                },
+                {
+                  "requirement_id": "R024",
+                  "description": "A screenshot helper at /workspace/tools/screenshot.sh is available and must be used to inspect UI and result screens.",
+                  "source_excerpt": "A screenshot helper is available at `/workspace/tools/screenshot.sh`. Use it to actually see what your UI / battlefield /\nresult screens look like.",
+                  "acceptance_criteria": [
+                    "Validation can invoke the helper with --path /workspace/game and --out to produce a screenshot.",
+                    "The helper supports --frames and optional --scenario arguments.",
+                    "Title, active-play, multi-ghost, and completion screens are inspected through rendered screenshots."
+                  ],
+                  "dependency_ids": [
+                    "R018"
+                  ],
+                  "status": "not_implemented",
+                  "verification": null
+                },
+                {
+                  "requirement_id": "R025",
+                  "description": "The project ships between 1 and 10 input-trace files under demo_outputs, one per demo, each named with a .json extension.",
+                  "source_excerpt": "Ship **1-10 input-trace files** under `/workspace/game/demo_outputs/`, one per\ndemo, each named `*.json`.",
+                  "acceptance_criteria": [
+                    "/workspace/game/demo_outputs/ contains at least 1 and at most 10 trace files.",
+                    "Every trace file has the .json suffix.",
+                    "Each demo has exactly one trace file and filenames are unique."
+                  ],
+                  "dependency_ids": [
+                    "R021"
+                  ],
+                  "status": "not_implemented",
+                  "verification": null
+                },
+                {
+                  "requirement_id": "R026",
+                  "description": "The evaluator launches a fresh game per trace, replays synthetic mouse and keyboard input at 1280x720, records the screen, evaluates only the first 10 filenames, and samples recordings longer than 20 seconds.",
+                  "source_excerpt": "The evaluator launches a fresh game per trace,\nreplays your trace as synthetic mouse and keyboard input at 1280x720, and\nrecords the screen. Only the first 10 traces by filename are evaluated;\nrecordings longer than 20 s are sampled from a random 20 s window.",
+                  "acceptance_criteria": [
+                    "Every trace is authored for the 1280x720 viewport.",
+                    "Each trace can run from a fresh game launch without depending on prior process state.",
+                    "No more than 10 trace files are shipped so that filename ordering does not exclude desired demos.",
+                    "No demo depends on content outside a random 20-second sample if its recording exceeds 20 seconds."
+                  ],
+                  "dependency_ids": [
+                    "R025"
+                  ],
+                  "status": "not_implemented",
+                  "verification": null
+                },
+                {
+                  "requirement_id": "R027",
+                  "description": "Normal play starts at the title screen and demonstrates the core gameplay loop.",
+                  "source_excerpt": "Normal play should start from the title screen and demonstrate the task's\ncore gameplay loop.",
+                  "acceptance_criteria": [
+                    "A trace with no scenario begins on the title screen.",
+                    "Accepting normal input from the title can reach the chapter menu and enter a level.",
+                    "The demonstrated normal flow includes movement, timer expiry, ghost replay, and an exit attempt."
+                  ],
+                  "dependency_ids": [
+                    "R007",
+                    "R009"
+                  ],
+                  "status": "not_implemented",
+                  "verification": null
+                },
+                {
+                  "requirement_id": "R028",
+                  "description": "Demo playback must be deterministic.",
+                  "source_excerpt": "Demo playback must be deterministic.",
+                  "acceptance_criteria": [
+                    "Replaying the same trace from a fresh launch produces the same outcome.",
+                    "Randomized elements are seeded or fixed for trace playback.",
+                    "No timing-dependent setup varies between identical trace runs."
+                  ],
+                  "dependency_ids": [
+                    "R026"
+                  ],
+                  "status": "not_implemented",
+                  "verification": null
+                },
+                {
+                  "requirement_id": "R029",
+                  "description": "Demos that need a specific state must use named scenarios that the game loads when launched with a scenario argument.",
+                  "source_excerpt": "For demos that need a specific state\n(a specific level, combat state, upgrade screen, result state, or late-game\nsetup), define named scenarios your game loads when launched with:",
+                  "acceptance_criteria": [
+                    "The project defines a finite set of named scenarios for level, loop, completion, and reset states.",
+                    "Each scenario is selectable through the documented --scenario launch form.",
+                    "Trace files may reference these scenario identifiers."
+                  ],
+                  "dependency_ids": [
+                    "R028",
+                    "R023"
+                  ],
+                  "status": "not_implemented",
+                  "verification": null
+                },
+                {
+                  "requirement_id": "R030",
+                  "description": "When a scenario argument is present, the game skips menus, sets up the named state deterministically, seeds any RNG, and immediately accepts input.",
+                  "source_excerpt": "When `--scenario <id>` is present the game must skip menus, set up the named\nstate deterministically (seed any RNG), and begin accepting input immediately.",
+                  "acceptance_criteria": [
+                    "Scenario launch opens directly into the named gameplay or result state without title or chapter-menu steps.",
+                    "Level selection, active loop count, ghost positions, and required switches match the scenario definition at frame zero.",
+                    "All RNG used by the scenario is seeded deterministically.",
+                    "Player input is accepted immediately after scenario setup."
+                  ],
+                  "dependency_ids": [
+                    "R029"
+                  ],
+                  "status": "not_implemented",
+                  "verification": null
+                },
+                {
+                  "requirement_id": "R031",
+                  "description": "A trace's scenario field is optional; omitting it means normal launch from the title screen.",
+                  "source_excerpt": "`scenario` — optional; omit for a normal game launch from the title screen.",
+                  "acceptance_criteria": [
+                    "A trace without a scenario field launches the ordinary title flow.",
+                    "A trace with a scenario field loads that named scenario.",
+                    "Scenario omission does not produce a parse error."
+                  ],
+                  "dependency_ids": [
+                    "R029",
+                    "R027"
+                  ],
+                  "status": "not_implemented",
+                  "verification": null
+                },
+                {
+                  "requirement_id": "R032",
+                  "description": "The duration_frames field defines recorded frames at 30 fps with a maximum of 600 frames (20 seconds).",
+                  "source_excerpt": "`duration_frames` — total frames to record at 30 fps; cap at **600 (20 s)**.",
+                  "acceptance_criteria": [
+                    "Every trace includes an integer duration_frames value.",
+                    "No trace exceeds 600 frames.",
+                    "Trace event frames are interpreted at 30 frames per second."
+                  ],
+                  "dependency_ids": [
+                    "R025"
+                  ],
+                  "status": "not_implemented",
+                  "verification": null
+                },
+                {
+                  "requirement_id": "R033",
+                  "description": "Trace events are time-ordered synthetic inputs with coordinates in the 1280x720 viewport and use the supported event types.",
+                  "source_excerpt": "`events` — time-ordered inputs. Coordinates are pixels in the 1280x720\n  viewport. Supported types:",
+                  "acceptance_criteria": [
+                    "The events array is ordered by frame number.",
+                    "Mouse coordinates lie within the 1280x720 viewport.",
+                    "Only supported event types are used."
+                  ],
+                  "dependency_ids": [
+                    "R032"
+                  ],
+                  "status": "not_implemented",
+                  "verification": null
+                },
+                {
+                  "requirement_id": "R034",
+                  "description": "Keyboard trace events use one of the supported keycodes.",
+                  "source_excerpt": "`A`-`Z`, `0`-`9`, `ESCAPE`, `ENTER`, `SPACE`, `TAB`, `BACKSPACE`,\n    `DELETE`, `SHIFT`, `CTRL`, `ALT`, `UP`, `DOWN`, `LEFT`, `RIGHT`.",
+                  "acceptance_criteria": [
+                    "Every key event uses a listed keycode.",
+                    "Keycodes outside the listed set are not emitted.",
+                    "Held and released keys use matching supported keycodes."
+                  ],
+                  "dependency_ids": [
+                    "R033"
+                  ],
+                  "status": "not_implemented",
+                  "verification": null
+                },
+                {
+                  "requirement_id": "R035",
+                  "description": "Mouse drag traces use mouse_down at the start, one or more mouse_move events, and mouse_up at the end; a mouse_click is a down-up pair at the same point.",
+                  "source_excerpt": "use these for drag interactions: emit `mouse_down` at the start point,\n    one or more `mouse_move` events along the way, and `mouse_up` at the end.\n    A `mouse_click` is a `mouse_down` + `mouse_up` at the same point in tight\n    succession.",
+                  "acceptance_criteria": [
+                    "A drag trace emits mouse_down before its mouse_move events and mouse_up after them.",
+                    "Every mouse_move event lies between a matching down and up event.",
+                    "A mouse_click event is replayable as down and up at the same coordinates."
+                  ],
+                  "dependency_ids": [
+                    "R033"
+                  ],
+                  "status": "not_implemented",
+                  "verification": null
+                },
+                {
+                  "requirement_id": "R036",
+                  "description": "A wait event has a frame and type only and acts as an anchor frame with no input.",
+                  "source_excerpt": "`wait`: `{frame, type}` — anchor frame, no input.",
+                  "acceptance_criteria": [
+                    "Wait events contain no input payload beyond frame and type.",
+                    "Wait events do not change game state.",
+                    "Wait events can anchor timing between other events."
+                  ],
+                  "dependency_ids": [
+                    "R033"
+                  ],
+                  "status": "not_implemented",
+                  "verification": null
+                },
+                {
+                  "requirement_id": "R037",
+                  "description": "Replay must be deterministic: the same trace on a fresh launch must produce the same outcome every time.",
+                  "source_excerpt": "Replay must be deterministic: same trace, fresh launch, same outcome every time.",
+                  "acceptance_criteria": [
+                    "Two identical fresh-launch replays of one trace produce the same final state and outcome.",
+                    "No fresh-launch replay depends on mutable state from a prior replay.",
+                    "Timing, ghost playback, and level completion are reproducible for the same trace."
+                  ],
+                  "dependency_ids": [
+                    "R028",
+                    "R030"
+                  ],
+                  "status": "not_implemented",
+                  "verification": null
+                }
+              ],
+              "design": {
+                "version": 1,
+                "document_ref": {
+                  "artifact_id": "designer-specification",
+                  "version": 1,
+                  "kind": "document",
+                  "path": "artifacts/designer/047cd30e0026f06f86a3e5a9/design.json",
+                  "created_by": "designer",
+                  "media_type": "application/json",
+                  "sha256": "060ef8850723b647440e0fe92ee871f83a46595a068eacea5a07b188a8ce3a39"
+                },
+                "change_summary": "Initial English specification for Time Loop covering all eight design sections. It translates the public instruction into 37 grounded requirements, separates explicit requirements from assumptions, and defines observable acceptance, deterministic scenario/demo behavior, asset sourcing rules, project structure, and replay validation without claiming implementation or execution evidence.",
+                "assumptions": [
+                  "Default controls are A/D or Left/Right for movement, Space for jump, E for interact, R for reset, Esc for pause or back, and mouse for UI selection; these are assumed because the instruction does not enumerate bindings.",
+                  "The game renders at a fixed 1280x720 viewport to match demo evaluation coordinates.",
+                  "Ghosts are non-controllable translucent silhouettes that replay recorded player states; they can activate switches, plates, doors, lasers, and enemy distraction, but do not block the current player's movement.",
+                  "A maximum of four ghost instances is enforced; if another loop would exceed four, the level performs the defined reset-to-fresh behavior rather than creating a fifth ghost.",
+                  "Enemies are distraction targets for ghost play and do not add a combat system beyond the explicitly mentioned distraction behavior.",
+                  "Levels use a linear four-chapter unlock order, but named scenarios may load any level or result state directly.",
+                  "The default demo set uses six trace files, within the required 1-10 range, covering title flow, single-ghost play, multi-loop play, reset, completion, and a final-chapter setup.",
+                  "The named scenario identifiers in the content plan are authored defaults because the instruction names the scenario mechanism but not a mandatory scenario list.",
+                  "Asset fallback uses Godot primitive shapes, programmatic silhouettes, and built-in fonts if a suitable mounted pack is unavailable; no additional asset library or license is assumed."
+                ]
+              },
+              "assets": [],
+              "game_revision": null,
+              "evidence": [],
+              "issues": [],
+              "readiness": null
+            },
+            "evidence_refs": [],
+            "blockers": [],
+            "error": null
+          },
+          "usage": {
+            "model_calls": 0,
+            "input_tokens": 0,
+            "cached_input_tokens": 0,
+            "output_tokens": 0,
+            "image_calls": 0,
+            "tool_calls": 1,
+            "tool_seconds": 0.0,
+            "wall_seconds": 0.06199999999080319,
+            "token_usage_complete": true
+          }
+        }
+      },
+      {
+        "schema_version": "1.0",
+        "event_id": "8928880e9b9b49129603d32307d6e34d",
+        "sequence": 3,
+        "recorded_at": "2026-10-19T08:54:27.024636Z",
+        "payload": {
+          "kind": "state_committed",
+          "previous_revision": 0,
+          "state_revision": 1,
+          "request_id": "import-recorded-designer",
+          "summary": "Imported the unmodified recorded real Designer artifact as test precondition; no new Designer model call"
+        }
+      },
+      {
+        "schema_version": "1.0",
+        "event_id": "527926cea4c840ba9bcc59be187395da",
+        "sequence": 4,
+        "recorded_at": "2026-10-19T08:54:27.064864Z",
+        "payload": {
+          "kind": "role_call_started",
+          "request": {
+            "schema_version": "1.0",
+            "request_id": "art-initial",
+            "run_id": "art-producer-live",
+            "task_id": "platformer-time-loop",
+            "role": "art_producer",
+            "work_item_ids": [],
+            "objective": "Create the initial Time Loop art package and Developer handoff using available library assets or generated assets",
+            "completion_criteria": [
+              "Cover the required player/ghost, level, interaction, hazard and UI visual needs within twelve reusable assets",
+              "Preserve source licenses, precise dimensions, frame layout, target paths and affected scenes",
+              "Mark mock generation as placeholders with final visual acceptance pending"
+            ],
+            "state_revision": 1,
+            "artifact_refs": [],
+            "limits": {
+              "max_model_calls": 4,
+              "max_input_tokens": 800000,
+              "max_output_tokens": 131072,
+              "max_image_calls": 12,
+              "max_tool_calls": 160,
+              "max_tool_seconds": 2520.0,
+              "max_wall_seconds": 2580.0
+            }
+          }
+        }
+      },
+      {
+        "schema_version": "1.0",
+        "event_id": "c15bfe910730409ea27ce1730cc5829a",
+        "sequence": 5,
+        "recorded_at": "2026-10-19T08:55:01.356591Z",
+        "payload": {
+          "kind": "role_call_finished",
+          "result": {
+            "schema_version": "1.0",
+            "request_id": "art-initial",
+            "role": "art_producer",
+            "state_revision": 1,
+            "status": "partial",
+            "summary": "Initial Time Loop art package: 12 reusable raster placeholder assets covering the player, ghost replay silhouette, level tileset, switch, pressure plate, door, laser emitter/beam, enemy, exit crystal, HUD panel with timeline track, UI buttons plus ghost timeline markers and clock hand, and a title backdrop with overlapping clock hands and ghost silhouettes. Both mounted libraries reported available=false in this environment, so no library paths or licenses are claimed; every asset is an image-service placeholder (mock-image.v1) generated to final target dimensions so Developer can integrate now. Libraries remain permitted for later replacement, and all generated visuals are placeholders pending final visual acceptance. No engine run, screenshot inspection, or gameplay/visual quality verification is claimed. Image generation was mocked; final artwork remains pending.",
+            "artifact_refs": [
+              {
+                "artifact_id": "art-asset-player_sheet",
+                "version": 1,
+                "kind": "asset",
+                "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/sprites/player_sheet.png",
+                "created_by": "art_producer",
+                "media_type": "image/png",
+                "sha256": "081dc213f7c8f838ea754bf184ba2c9afec75fc201847f1b48a3569f477c73ca"
+              },
+              {
+                "artifact_id": "art-asset-ghost_sheet",
+                "version": 1,
+                "kind": "asset",
+                "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/sprites/ghost_sheet.png",
+                "created_by": "art_producer",
+                "media_type": "image/png",
+                "sha256": "081dc213f7c8f838ea754bf184ba2c9afec75fc201847f1b48a3569f477c73ca"
+              },
+              {
+                "artifact_id": "art-asset-tileset_platform",
+                "version": 1,
+                "kind": "asset",
+                "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/tiles/tileset_platform.png",
+                "created_by": "art_producer",
+                "media_type": "image/png",
+                "sha256": "946f87b17cb7458e775e08a8e199172e68d900c1a871c66ed9a53c1cd0047e73"
+              },
+              {
+                "artifact_id": "art-asset-switch_button",
+                "version": 1,
+                "kind": "asset",
+                "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/props/switch_button.png",
+                "created_by": "art_producer",
+                "media_type": "image/png",
+                "sha256": "c226178e5c714b2db8b979e5c00c77fa5df2112703a5c8a21ac021179751feca"
+              },
+              {
+                "artifact_id": "art-asset-pressure_plate",
+                "version": 1,
+                "kind": "asset",
+                "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/props/pressure_plate.png",
+                "created_by": "art_producer",
+                "media_type": "image/png",
+                "sha256": "c226178e5c714b2db8b979e5c00c77fa5df2112703a5c8a21ac021179751feca"
+              },
+              {
+                "artifact_id": "art-asset-door_gate",
+                "version": 1,
+                "kind": "asset",
+                "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/props/door_gate.png",
+                "created_by": "art_producer",
+                "media_type": "image/png",
+                "sha256": "c226178e5c714b2db8b979e5c00c77fa5df2112703a5c8a21ac021179751feca"
+              },
+              {
+                "artifact_id": "art-asset-laser_hazard",
+                "version": 1,
+                "kind": "asset",
+                "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/props/laser_hazard.png",
+                "created_by": "art_producer",
+                "media_type": "image/png",
+                "sha256": "c226178e5c714b2db8b979e5c00c77fa5df2112703a5c8a21ac021179751feca"
+              },
+              {
+                "artifact_id": "art-asset-enemy_patroller",
+                "version": 1,
+                "kind": "asset",
+                "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/sprites/enemy_patroller.png",
+                "created_by": "art_producer",
+                "media_type": "image/png",
+                "sha256": "c226178e5c714b2db8b979e5c00c77fa5df2112703a5c8a21ac021179751feca"
+              },
+              {
+                "artifact_id": "art-asset-exit_crystal",
+                "version": 1,
+                "kind": "asset",
+                "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/props/exit_crystal.png",
+                "created_by": "art_producer",
+                "media_type": "image/png",
+                "sha256": "c226178e5c714b2db8b979e5c00c77fa5df2112703a5c8a21ac021179751feca"
+              },
+              {
+                "artifact_id": "art-asset-hud_panel",
+                "version": 1,
+                "kind": "asset",
+                "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/ui/hud_panel.png",
+                "created_by": "art_producer",
+                "media_type": "image/png",
+                "sha256": "c5213e17331175be34ce516c1e0127679d3d854ca2a1eb65dda3d7797f05ec42"
+              },
+              {
+                "artifact_id": "art-asset-ui_controls",
+                "version": 1,
+                "kind": "asset",
+                "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/ui/ui_controls.png",
+                "created_by": "art_producer",
+                "media_type": "image/png",
+                "sha256": "95336d2d67797ded9ef9b9e08792355515fffaf75bc2622a4828a3b661d0ce33"
+              },
+              {
+                "artifact_id": "art-asset-title_backdrop",
+                "version": 1,
+                "kind": "asset",
+                "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/ui/title_backdrop.png",
+                "created_by": "art_producer",
+                "media_type": "image/png",
+                "sha256": "bf137e5842b15092838d0c6ef14310ca93c9bf07845e62b338c2be42e0a5487a"
+              },
+              {
+                "artifact_id": "art-manifest",
+                "version": 1,
+                "kind": "document",
+                "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/asset_manifest.json",
+                "created_by": "art_producer",
+                "media_type": "application/json",
+                "sha256": "d837be1e49b787c7c60213d6b8c2b1c575271052a7693174de3bd3a084f076bf"
+              },
+              {
+                "artifact_id": "art-handoff",
+                "version": 1,
+                "kind": "document",
+                "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/art_handoff.md",
+                "created_by": "art_producer",
+                "media_type": "text/markdown",
+                "sha256": "67a3aa5307c6189c739cc928cfa56c3ee5d6b595ac176180b7593e91e118fcb4"
+              }
+            ],
+            "proposed_updates": {
+              "requirements": [],
+              "design": null,
+              "assets": [
+                {
+                  "asset_id": "player_sheet",
+                  "artifact_ref": {
+                    "artifact_id": "art-asset-player_sheet",
+                    "version": 1,
+                    "kind": "asset",
+                    "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/sprites/player_sheet.png",
+                    "created_by": "art_producer",
+                    "media_type": "image/png",
+                    "sha256": "081dc213f7c8f838ea754bf184ba2c9afec75fc201847f1b48a3569f477c73ca"
+                  },
+                  "purpose": "Base player character sprite sheet for running, idle and jumping, reused as the temporal anchor of every loop.",
+                  "source": "mock:mock-image.v1",
+                  "license": "Synthetic test placeholder; replace before assessing art quality. No third-party artwork used.",
+                  "integration_notes": "Copy to assets/sprites/player_sheet.png. Filter: nearest. Grid: 4 x 1. Frames (row-major): player_idle, player_run_a, player_run_b, player_jump. Import as SpriteFrames with a 4x1 grid, nearest filtering, no mipmaps. AnimatedSprite2D on the player scene; draw at integer scale 2x (64x64 on screen) inside the 1280x720 viewport. Ground baseline sits at the bottom row of each cell, so place the sprite origin at the feet. Frame timing: idle loop 8 fps, run 12 fps, jump held static. Do not bake a shadow; add a separate simple ellipse if needed. License handling: Generated by the host-configured mock image service (mock-image.v1), which is declared a synthetic test placeholder by the host. No third-party artwork is contained, no attribution or redistribution obligation applies, and the placeholder license is host-defined only; treat the file as temporary and replace with licensed Kenney/OpenGameArt art or a final generated set before shipping. MOCK PLACEHOLDER: replace before visual acceptance. Visual review has not been performed."
+                },
+                {
+                  "asset_id": "ghost_sheet",
+                  "artifact_ref": {
+                    "artifact_id": "art-asset-ghost_sheet",
+                    "version": 1,
+                    "kind": "asset",
+                    "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/sprites/ghost_sheet.png",
+                    "created_by": "art_producer",
+                    "media_type": "image/png",
+                    "sha256": "081dc213f7c8f838ea754bf184ba2c9afec75fc201847f1b48a3569f477c73ca"
+                  },
+                  "purpose": "Translucent ghost silhouette sheet so past-loop replays are visually distinct from the current player.",
+                  "source": "mock:mock-image.v1",
+                  "license": "Synthetic test placeholder; replace before assessing art quality. No third-party artwork used.",
+                  "integration_notes": "Copy to assets/sprites/ghost_sheet.png. Filter: nearest. Grid: 4 x 1. Frames (row-major): ghost_idle, ghost_run_a, ghost_run_b, ghost_jump. Import identical to the player sheet (4x1 grid, nearest). Spawn one instance per recorded loop, cap four. Drive opacity with CanvasItem.modulate.a between 0.45 and 0.65 and vary hue slightly per loop index so layered ghosts stay distinguishable; also tint the marker cell from ui_controls to match. Ghosts must not collide with the current player. Developer may alternatively reuse player_sheet with runtime tint/opacity, but this dedicated silhouette is the preferred primary art. License handling: Generated by the mock image service (mock-image.v1) as a host-declared synthetic test placeholder; no third-party artwork, no attribution obligation, host-defined placeholder license only. Replace before shippable release. MOCK PLACEHOLDER: replace before visual acceptance. Visual review has not been performed."
+                },
+                {
+                  "asset_id": "tileset_platform",
+                  "artifact_ref": {
+                    "artifact_id": "art-asset-tileset_platform",
+                    "version": 1,
+                    "kind": "asset",
+                    "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/tiles/tileset_platform.png",
+                    "created_by": "art_producer",
+                    "media_type": "image/png",
+                    "sha256": "946f87b17cb7458e775e08a8e199172e68d900c1a871c66ed9a53c1cd0047e73"
+                  },
+                  "purpose": "Single shared 32x32 level tileset for ground, platforms, bridges, background decor and spikes across all chapters.",
+                  "source": "mock:mock-image.v1",
+                  "license": "Synthetic test placeholder; replace before assessing art quality. No third-party artwork used.",
+                  "integration_notes": "Copy to assets/tiles/tileset_platform.png. Filter: nearest. Grid: 8 x 4. Frames (row-major): tile_ground_top, tile_ground_fill, tile_ground_left, tile_ground_right, tile_platform_left, tile_platform_mid, tile_platform_right, tile_platform_single, tile_wall, tile_wall_top, tile_bridge_left, tile_bridge_mid, tile_bridge_right, tile_bridge_single, tile_ladder, tile_pipe, tile_decor_pillar, tile_decor_vent, tile_decor_panel, tile_decor_lamp, tile_decor_crate, tile_decor_barrel, tile_decor_stand, tile_decor_sign, tile_bg_brick, tile_bg_window, tile_bg_clock, tile_bg_gear, tile_bg_cloud, tile_bg_silhouette, tile_hazard_spike, tile_slope. Import as TileSet atlas with 8x4 grid, nearest filtering. One TileSet resource is shared by all 24 levels; chapter variance is applied as a TileMap modulate tint, never as extra art. Solid collisions only on rows 1 and 2 ground/wall/bridge cells; decor and background rows are non-colliding. Build the 'bridge' cells so a ghost-body interaction can occupy them for the R004 bridge puzzle. License handling: Generated by the mock image service (mock-image.v1) as a host-declared synthetic test placeholder; no third-party artwork, no attribution obligation, host-defined placeholder license only. No library pack is claimed because /workspace/assets/library was reported unavailable. MOCK PLACEHOLDER: replace before visual acceptance. Visual review has not been performed."
+                },
+                {
+                  "asset_id": "switch_button",
+                  "artifact_ref": {
+                    "artifact_id": "art-asset-switch_button",
+                    "version": 1,
+                    "kind": "asset",
+                    "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/props/switch_button.png",
+                    "created_by": "art_producer",
+                    "media_type": "image/png",
+                    "sha256": "c226178e5c714b2db8b979e5c00c77fa5df2112703a5c8a21ac021179751feca"
+                  },
+                  "purpose": "Two-state wall/floor switch that ghosts and the player can hold down to gate the exit.",
+                  "source": "mock:mock-image.v1",
+                  "license": "Synthetic test placeholder; replace before assessing art quality. No third-party artwork used.",
+                  "integration_notes": "Copy to assets/props/switch_button.png. Filter: nearest. Grid: 2 x 1. Frames (row-major): switch_off, switch_on. Import as a 2x1 atlas, nearest filtering. Draw at 2x scale. Switch state must be driven by any overlapping body tagged as player or ghost; when a ghost holds it, keep frame switch_on and optionally pulse modulate. Expose a boolean 'held' the exit crystal reads for R015. License handling: Generated by the mock image service (mock-image.v1) as a host-declared synthetic test placeholder; no third-party artwork, no attribution obligation, host-defined placeholder license only. MOCK PLACEHOLDER: replace before visual acceptance. Visual review has not been performed."
+                },
+                {
+                  "asset_id": "pressure_plate",
+                  "artifact_ref": {
+                    "artifact_id": "art-asset-pressure_plate",
+                    "version": 1,
+                    "kind": "asset",
+                    "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/props/pressure_plate.png",
+                    "created_by": "art_producer",
+                    "media_type": "image/png",
+                    "sha256": "c226178e5c714b2db8b979e5c00c77fa5df2112703a5c8a21ac021179751feca"
+                  },
+                  "purpose": "Two-state floor plate ghosts can stand on to hold switches or create bridges.",
+                  "source": "mock:mock-image.v1",
+                  "license": "Synthetic test placeholder; replace before assessing art quality. No third-party artwork used.",
+                  "integration_notes": "Copy to assets/props/pressure_plate.png. Filter: nearest. Grid: 2 x 1. Frames (row-major): plate_up, plate_down. Import as a 2x1 atlas, nearest filtering, draw at 2x. Plate activates while any player or ghost body overlaps its Area2D; ghost occupancy must count as held for R003. Pair each plate with a switch id so the exit crystal can query it. License handling: Generated by the mock image service (mock-image.v1) as a host-declared synthetic test placeholder; no third-party artwork, no attribution obligation, host-defined placeholder license only. MOCK PLACEHOLDER: replace before visual acceptance. Visual review has not been performed."
+                },
+                {
+                  "asset_id": "door_gate",
+                  "artifact_ref": {
+                    "artifact_id": "art-asset-door_gate",
+                    "version": 1,
+                    "kind": "asset",
+                    "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/props/door_gate.png",
+                    "created_by": "art_producer",
+                    "media_type": "image/png",
+                    "sha256": "c226178e5c714b2db8b979e5c00c77fa5df2112703a5c8a21ac021179751feca"
+                  },
+                  "purpose": "Two-state door a ghost can hold open across loops for later-loop traversal.",
+                  "source": "mock:mock-image.v1",
+                  "license": "Synthetic test placeholder; replace before assessing art quality. No third-party artwork used.",
+                  "integration_notes": "Copy to assets/props/door_gate.png. Filter: nearest. Grid: 2 x 1. Frames (row-major): door_closed, door_open. Import as a 2x1 atlas, nearest filtering. The 32x32 cell is door-slab sized; scale to the level's actual door height using a Sprite2D region plus a separate collision rectangle, or repeat the frame vertically. Collision is disabled only while a ghost or the player occupies the hold Area2D; hold state must persist for as long as the ghost replay remains there (R012). License handling: Generated by the mock image service (mock-image.v1) as a host-declared synthetic test placeholder; no third-party artwork, no attribution obligation, host-defined placeholder license only. MOCK PLACEHOLDER: replace before visual acceptance. Visual review has not been performed."
+                },
+                {
+                  "asset_id": "laser_hazard",
+                  "artifact_ref": {
+                    "artifact_id": "art-asset-laser_hazard",
+                    "version": 1,
+                    "kind": "asset",
+                    "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/props/laser_hazard.png",
+                    "created_by": "art_producer",
+                    "media_type": "image/png",
+                    "sha256": "c226178e5c714b2db8b979e5c00c77fa5df2112703a5c8a21ac021179751feca"
+                  },
+                  "purpose": "Laser emitter plus beam cell so a ghost body visibly blocks a beam at its position.",
+                  "source": "mock:mock-image.v1",
+                  "license": "Synthetic test placeholder; replace before assessing art quality. No third-party artwork used.",
+                  "integration_notes": "Copy to assets/props/laser_hazard.png. Filter: nearest. Grid: 2 x 1. Frames (row-major): laser_emitter, laser_beam. Import as a 2x1 atlas, nearest filtering. Tile laser_beam horizontally inside a thin Sprite2D or Line2D so the beam stretches to the first blocker. When a ghost or the player intersects the ray, the beam visual must terminate at that contact point instead of the usual endpoint (R012). Beam and emitter are non-solid decoration; only the blocking logic matters. License handling: Generated by the mock image service (mock-image.v1) as a host-declared synthetic test placeholder; no third-party artwork, no attribution obligation, host-defined placeholder license only. MOCK PLACEHOLDER: replace before visual acceptance. Visual review has not been performed."
+                },
+                {
+                  "asset_id": "enemy_patroller",
+                  "artifact_ref": {
+                    "artifact_id": "art-asset-enemy_patroller",
+                    "version": 1,
+                    "kind": "asset",
+                    "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/sprites/enemy_patroller.png",
+                    "created_by": "art_producer",
+                    "media_type": "image/png",
+                    "sha256": "c226178e5c714b2db8b979e5c00c77fa5df2112703a5c8a21ac021179751feca"
+                  },
+                  "purpose": "Patrolling enemy that switches to a distracted state while a ghost is nearby.",
+                  "source": "mock:mock-image.v1",
+                  "license": "Synthetic test placeholder; replace before assessing art quality. No third-party artwork used.",
+                  "integration_notes": "Copy to assets/sprites/enemy_patroller.png. Filter: nearest. Grid: 2 x 1. Frames (row-major): enemy_walk_a, enemy_walk_b. Import as a 2x1 atlas, nearest filtering, draw at 2x, loop the two frames at 6 fps while patrolling. For the distracted state, stop the walk loop and apply a brief modulate tint (for example amber) plus a small '?' style reaction via modulate pulse rather than extra frames. Distraction range and timing belong to the enemy script, not the art. License handling: Generated by the mock image service (mock-image.v1) as a host-declared synthetic test placeholder; no third-party artwork, no attribution obligation, host-defined placeholder license only. MOCK PLACEHOLDER: replace before visual acceptance. Visual review has not been performed."
+                },
+                {
+                  "asset_id": "exit_crystal",
+                  "artifact_ref": {
+                    "artifact_id": "art-asset-exit_crystal",
+                    "version": 1,
+                    "kind": "asset",
+                    "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/props/exit_crystal.png",
+                    "created_by": "art_producer",
+                    "media_type": "image/png",
+                    "sha256": "c226178e5c714b2db8b979e5c00c77fa5df2112703a5c8a21ac021179751feca"
+                  },
+                  "purpose": "Exit crystal with dormant and all-switches-held states to signal completion gating.",
+                  "source": "mock:mock-image.v1",
+                  "license": "Synthetic test placeholder; replace before assessing art quality. No third-party artwork used.",
+                  "integration_notes": "Copy to assets/props/exit_crystal.png. Filter: nearest. Grid: 2 x 1. Frames (row-major): crystal_dormant, crystal_active. Import as a 2x1 atlas, nearest filtering, draw at 2x with a slow 2-frame pulse between dormant and active brightness when active. Show crystal_dormant while any required switch is unheld and switch to crystal_active only when all required switches are held by any player or ghost combination (R015). Touching an active crystal triggers the completion overlay; an inactive crystal should give a short rejected flash instead of completing. License handling: Generated by the mock image service (mock-image.v1) as a host-declared synthetic test placeholder; no third-party artwork, no attribution obligation, host-defined placeholder license only. MOCK PLACEHOLDER: replace before visual acceptance. Visual review has not been performed."
+                },
+                {
+                  "asset_id": "hud_panel",
+                  "artifact_ref": {
+                    "artifact_id": "art-asset-hud_panel",
+                    "version": 1,
+                    "kind": "asset",
+                    "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/ui/hud_panel.png",
+                    "created_by": "art_producer",
+                    "media_type": "image/png",
+                    "sha256": "c5213e17331175be34ce516c1e0127679d3d854ca2a1eb65dda3d7797f05ec42"
+                  },
+                  "purpose": "HUD frame, timer badge and 0-30 second timeline track for the play screen.",
+                  "source": "mock:mock-image.v1",
+                  "license": "Synthetic test placeholder; replace before assessing art quality. No third-party artwork used.",
+                  "integration_notes": "Copy to assets/ui/hud_panel.png. Filter: nearest. Grid: 3 x 1. Frames (row-major): panel_bg, timer_badge, timeline_track. Import as a 3x1 atlas, nearest filtering; slice panel_bg as a NinePatchRect with 12-pixel margins. Use timeline_track as a stretched TextureRect (or repeat) spanning left to right with the 0-30 s mapping done in code; ghost markers from ui_controls are positioned as children on top. Timer numbers are rendered with the built-in font as a Label centered on timer_badge; nothing numeric is baked into the art. License handling: Generated by the mock image service (mock-image.v1) as a host-declared synthetic test placeholder; no third-party artwork, no attribution obligation, host-defined placeholder license only. MOCK PLACEHOLDER: replace before visual acceptance. Visual review has not been performed."
+                },
+                {
+                  "asset_id": "ui_controls",
+                  "artifact_ref": {
+                    "artifact_id": "art-asset-ui_controls",
+                    "version": 1,
+                    "kind": "asset",
+                    "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/ui/ui_controls.png",
+                    "created_by": "art_producer",
+                    "media_type": "image/png",
+                    "sha256": "95336d2d67797ded9ef9b9e08792355515fffaf75bc2622a4828a3b661d0ce33"
+                  },
+                  "purpose": "Button states, ghost timeline markers and a clock-hand graphic shared by menus and the HUD.",
+                  "source": "mock:mock-image.v1",
+                  "license": "Synthetic test placeholder; replace before assessing art quality. No third-party artwork used.",
+                  "integration_notes": "Copy to assets/ui/ui_controls.png. Filter: nearest. Grid: 3 x 2. Frames (row-major): button_normal, button_hover, button_pressed, ghost_marker_a, ghost_marker_b, clock_hand. Import as a 3x2 atlas, nearest filtering; slice buttons into TextureButton normal/hover/pressed with 16-pixel nine-patch margins. Use ghost_marker_a and ghost_marker_b alternately by loop index (maximum four markers) as children of the timeline track, positioned by playback time; keep markers small enough to stay legible at 1x. clock_hand is reused by the title screen at large scale and by decorative UI to keep the clock motif consistent. License handling: Generated by the mock image service (mock-image.v1) as a host-declared synthetic test placeholder; no third-party artwork, no attribution obligation, host-defined placeholder license only. MOCK PLACEHOLDER: replace before visual acceptance. Visual review has not been performed."
+                },
+                {
+                  "asset_id": "title_backdrop",
+                  "artifact_ref": {
+                    "artifact_id": "art-asset-title_backdrop",
+                    "version": 1,
+                    "kind": "asset",
+                    "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/ui/title_backdrop.png",
+                    "created_by": "art_producer",
+                    "media_type": "image/png",
+                    "sha256": "bf137e5842b15092838d0c6ef14310ca93c9bf07845e62b338c2be42e0a5487a"
+                  },
+                  "purpose": "Title screen backdrop with overlapping clock hands and ghost silhouettes as required for the first screen.",
+                  "source": "mock:mock-image.v1",
+                  "license": "Synthetic test placeholder; replace before assessing art quality. No third-party artwork used.",
+                  "integration_notes": "Copy to assets/ui/title_backdrop.png. Filter: nearest. Grid: 1 x 1. Frames (row-major): title_background. Import as a single Texture2D with nearest filtering, placed full-rect behind the title UI; no scaling beyond the fixed 1280x720 viewport. Keep the center band clear so the game's own title Label and buttons remain readable. For a subtle idle animation, Developer can offset the ghost silhouettes with a low-amplitude position tween, but the image itself is static. License handling: Generated by the mock image service (mock-image.v1) as a host-declared synthetic test placeholder; no third-party artwork, no attribution obligation, host-defined placeholder license only. All twelve assets in this package are placeholders until the host confirms a real image service or licensed library art; final visual acceptance is pending. MOCK PLACEHOLDER: replace before visual acceptance. Visual review has not been performed."
+                }
+              ],
+              "game_revision": null,
+              "evidence": [],
+              "issues": [],
+              "readiness": null
+            },
+            "evidence_refs": [],
+            "blockers": [],
+            "error": null
+          },
+          "usage": {
+            "model_calls": 1,
+            "input_tokens": 19720,
+            "cached_input_tokens": 18048,
+            "output_tokens": 6877,
+            "image_calls": 12,
+            "tool_calls": 29,
+            "tool_seconds": 33.40700000000652,
+            "wall_seconds": 34.28100000000268,
+            "token_usage_complete": true
+          }
+        }
+      },
+      {
+        "schema_version": "1.0",
+        "event_id": "a5d6d21e95534c7dab8b0b2022160da9",
+        "sequence": 6,
+        "recorded_at": "2026-10-19T08:55:01.357601Z",
+        "payload": {
+          "kind": "state_committed",
+          "previous_revision": 1,
+          "state_revision": 2,
+          "request_id": "art-initial",
+          "summary": "Initial Time Loop art package: 12 reusable raster placeholder assets covering the player, ghost replay silhouette, level tileset, switch, pressure plate, door, laser emitter/beam, enemy, exit crystal, HUD panel with timeline track, UI buttons plus ghost timeline markers and clock hand, and a title backdrop with overlapping clock hands and ghost silhouettes. Both mounted libraries reported available=false in this environment, so no library paths or licenses are claimed; every asset is an image-service placeholder (mock-image.v1) generated to final target dimensions so Developer can integrate now. Libraries remain permitted for later replacement, and all generated visuals are placeholders pending final visual acceptance. No engine run, screenshot inspection, or gameplay/visual quality verification is claimed. Image generation was mocked; final artwork remains pending."
+        }
+      }
+    ]
+  },
+  "state_revision": 2,
+  "artifacts": [
+    {
+      "artifact_id": "runtime-config",
+      "version": 1,
+      "kind": "config",
+      "path": "input/runtime_config.json",
+      "created_by": "system",
+      "media_type": null,
+      "sha256": null
+    },
+    {
+      "artifact_id": "designer-specification",
+      "version": 1,
+      "kind": "document",
+      "path": "artifacts/designer/047cd30e0026f06f86a3e5a9/design.json",
+      "created_by": "designer",
+      "media_type": "application/json",
+      "sha256": "060ef8850723b647440e0fe92ee871f83a46595a068eacea5a07b188a8ce3a39"
+    },
+    {
+      "artifact_id": "art-asset-player_sheet",
+      "version": 1,
+      "kind": "asset",
+      "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/sprites/player_sheet.png",
+      "created_by": "art_producer",
+      "media_type": "image/png",
+      "sha256": "081dc213f7c8f838ea754bf184ba2c9afec75fc201847f1b48a3569f477c73ca"
+    },
+    {
+      "artifact_id": "art-asset-ghost_sheet",
+      "version": 1,
+      "kind": "asset",
+      "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/sprites/ghost_sheet.png",
+      "created_by": "art_producer",
+      "media_type": "image/png",
+      "sha256": "081dc213f7c8f838ea754bf184ba2c9afec75fc201847f1b48a3569f477c73ca"
+    },
+    {
+      "artifact_id": "art-asset-tileset_platform",
+      "version": 1,
+      "kind": "asset",
+      "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/tiles/tileset_platform.png",
+      "created_by": "art_producer",
+      "media_type": "image/png",
+      "sha256": "946f87b17cb7458e775e08a8e199172e68d900c1a871c66ed9a53c1cd0047e73"
+    },
+    {
+      "artifact_id": "art-asset-switch_button",
+      "version": 1,
+      "kind": "asset",
+      "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/props/switch_button.png",
+      "created_by": "art_producer",
+      "media_type": "image/png",
+      "sha256": "c226178e5c714b2db8b979e5c00c77fa5df2112703a5c8a21ac021179751feca"
+    },
+    {
+      "artifact_id": "art-asset-pressure_plate",
+      "version": 1,
+      "kind": "asset",
+      "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/props/pressure_plate.png",
+      "created_by": "art_producer",
+      "media_type": "image/png",
+      "sha256": "c226178e5c714b2db8b979e5c00c77fa5df2112703a5c8a21ac021179751feca"
+    },
+    {
+      "artifact_id": "art-asset-door_gate",
+      "version": 1,
+      "kind": "asset",
+      "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/props/door_gate.png",
+      "created_by": "art_producer",
+      "media_type": "image/png",
+      "sha256": "c226178e5c714b2db8b979e5c00c77fa5df2112703a5c8a21ac021179751feca"
+    },
+    {
+      "artifact_id": "art-asset-laser_hazard",
+      "version": 1,
+      "kind": "asset",
+      "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/props/laser_hazard.png",
+      "created_by": "art_producer",
+      "media_type": "image/png",
+      "sha256": "c226178e5c714b2db8b979e5c00c77fa5df2112703a5c8a21ac021179751feca"
+    },
+    {
+      "artifact_id": "art-asset-enemy_patroller",
+      "version": 1,
+      "kind": "asset",
+      "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/sprites/enemy_patroller.png",
+      "created_by": "art_producer",
+      "media_type": "image/png",
+      "sha256": "c226178e5c714b2db8b979e5c00c77fa5df2112703a5c8a21ac021179751feca"
+    },
+    {
+      "artifact_id": "art-asset-exit_crystal",
+      "version": 1,
+      "kind": "asset",
+      "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/props/exit_crystal.png",
+      "created_by": "art_producer",
+      "media_type": "image/png",
+      "sha256": "c226178e5c714b2db8b979e5c00c77fa5df2112703a5c8a21ac021179751feca"
+    },
+    {
+      "artifact_id": "art-asset-hud_panel",
+      "version": 1,
+      "kind": "asset",
+      "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/ui/hud_panel.png",
+      "created_by": "art_producer",
+      "media_type": "image/png",
+      "sha256": "c5213e17331175be34ce516c1e0127679d3d854ca2a1eb65dda3d7797f05ec42"
+    },
+    {
+      "artifact_id": "art-asset-ui_controls",
+      "version": 1,
+      "kind": "asset",
+      "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/ui/ui_controls.png",
+      "created_by": "art_producer",
+      "media_type": "image/png",
+      "sha256": "95336d2d67797ded9ef9b9e08792355515fffaf75bc2622a4828a3b661d0ce33"
+    },
+    {
+      "artifact_id": "art-asset-title_backdrop",
+      "version": 1,
+      "kind": "asset",
+      "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/ui/title_backdrop.png",
+      "created_by": "art_producer",
+      "media_type": "image/png",
+      "sha256": "bf137e5842b15092838d0c6ef14310ca93c9bf07845e62b338c2be42e0a5487a"
+    },
+    {
+      "artifact_id": "art-manifest",
+      "version": 1,
+      "kind": "document",
+      "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/asset_manifest.json",
+      "created_by": "art_producer",
+      "media_type": "application/json",
+      "sha256": "d837be1e49b787c7c60213d6b8c2b1c575271052a7693174de3bd3a084f076bf"
+    },
+    {
+      "artifact_id": "art-handoff",
+      "version": 1,
+      "kind": "document",
+      "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/art_handoff.md",
+      "created_by": "art_producer",
+      "media_type": "text/markdown",
+      "sha256": "67a3aa5307c6189c739cc928cfa56c3ee5d6b595ac176180b7593e91e118fcb4"
+    }
+  ],
+  "requirements": [
+    {
+      "requirement_id": "R001",
+      "description": "Time Loop is a per-level 30-second time-loop platformer: every level has a 30-second active loop duration before rewind.",
+      "source_excerpt": "Each level is a 30-second loop.",
+      "acceptance_criteria": [
+        "Entering any level initializes a visible countdown at 30 seconds.",
+        "The active loop expires after exactly 30 seconds of gameplay time at the configured simulation rate.",
+        "All 24 levels use the same 30-second loop duration."
+      ],
+      "dependency_ids": [],
+      "status": "not_implemented",
+      "verification": null
+    },
+    {
+      "requirement_id": "R002",
+      "description": "When the loop timer expires, the player is rewound and a ghost of the previous loop replays simultaneously.",
+      "source_excerpt": "player starts again — but a ghost of the previous loop replays simultaneously",
+      "acceptance_criteria": [
+        "At timer expiry the current player is restored to the level spawn point.",
+        "A ghost instance is created at the spawn point and begins replaying the previous loop from t=0.",
+        "Ghost movement and actions correspond to the recorded player state at the same loop time."
+      ],
+      "dependency_ids": [
+        "R001"
+      ],
+      "status": "not_implemented",
+      "verification": null
+    },
+    {
+      "requirement_id": "R003",
+      "description": "Ghosts can hold switches, distract enemies, and stand on pressure plates while the current player pursues other objectives.",
+      "source_excerpt": "The ghost can hold switches, distract enemies, or\nstand on pressure plates while the current player tackles other objectives.",
+      "acceptance_criteria": [
+        "Ghost occupancy of a switch or pressure plate counts as held while the ghost remains on it.",
+        "Enemies within the defined distraction range enter a distracted state while a ghost is near.",
+        "These ghost interactions can occur concurrently with independent player actions elsewhere in the level."
+      ],
+      "dependency_ids": [
+        "R002"
+      ],
+      "status": "not_implemented",
+      "verification": null
+    },
+    {
+      "requirement_id": "R004",
+      "description": "Loops layer so prior-loop ghosts can cooperate with the current player and with each other to solve a level.",
+      "source_excerpt": "Multiple loops layer: loop 1's ghost holds a door open, loop 2's ghost stands\non a platform to create a bridge, and in loop 3 the player finally reaches the\nexit using both ghosts' contributions.",
+      "acceptance_criteria": [
+        "At least one authored level requires simultaneous contributions from two prior ghosts before the current player can reach the exit.",
+        "Removing either required ghost contribution makes the exit unreachable.",
+        "Ghost contributions persist across subsequent loops until reset or the maximum loop limit is reached."
+      ],
+      "dependency_ids": [
+        "R002",
+        "R003"
+      ],
+      "status": "not_implemented",
+      "verification": null
+    },
+    {
+      "requirement_id": "R005",
+      "description": "The puzzle design is temporal coordination: the player plans what each loop-self must do and when so all versions cooperate across time.",
+      "source_excerpt": "The puzzle is temporal coordination —\nplanning what each loop-self needs to do and when, so that all versions\ncooperate across time.",
+      "acceptance_criteria": [
+        "At least one level cannot be solved in a single loop.",
+        "The authored solution requires scheduling distinct actions in different loop iterations at specified times.",
+        "Earlier-loop ghost actions are necessary for later-loop success."
+      ],
+      "dependency_ids": [
+        "R004"
+      ],
+      "status": "not_implemented",
+      "verification": null
+    },
+    {
+      "requirement_id": "R006",
+      "description": "The game contains twenty-four levels across four chapters, escalating from single-ghost puzzles to four-loop orchestrations.",
+      "source_excerpt": "Twenty-four levels across four chapters escalate from\nsingle-ghost puzzles to four-loop orchestrations.",
+      "acceptance_criteria": [
+        "Exactly 24 playable levels are defined in level data.",
+        "The levels are grouped into four chapters with six levels per chapter.",
+        "Chapter 1 levels require at most one ghost; the final chapter includes levels requiring four active loops."
+      ],
+      "dependency_ids": [
+        "R005"
+      ],
+      "status": "not_implemented",
+      "verification": null
+    },
+    {
+      "requirement_id": "R007",
+      "description": "The title screen visually shows overlapping clock hands and ghost silhouettes.",
+      "source_excerpt": "A title screen shows overlapping clock hands and ghost silhouettes.",
+      "acceptance_criteria": [
+        "The ordinary launch title screen displays at least two overlapping clock-hand graphics.",
+        "Ghost silhouettes are visible on the title screen.",
+        "The title screen is the first ordinary-entry screen before menus."
+      ],
+      "dependency_ids": [],
+      "status": "not_implemented",
+      "verification": null
+    },
+    {
+      "requirement_id": "R008",
+      "description": "A chapter menu reveals four chapters, each containing six levels.",
+      "source_excerpt": "A chapter\nmenu reveals four chapters of six levels each.",
+      "acceptance_criteria": [
+        "The chapter menu presents four chapter entries.",
+        "Each chapter entry exposes six level entries, for 24 total level entries.",
+        "Each level entry displays a locked or unlocked state consistent with progression."
+      ],
+      "dependency_ids": [
+        "R006"
+      ],
+      "status": "not_implemented",
+      "verification": null
+    },
+    {
+      "requirement_id": "R009",
+      "description": "Selecting and entering a level starts its 30-second countdown.",
+      "source_excerpt": "Entering a level starts a 30-second countdown.",
+      "acceptance_criteria": [
+        "On level entry the countdown begins at 30.0 seconds.",
+        "The countdown is visible during play.",
+        "The countdown starts only after the level scene is ready and player control begins."
+      ],
+      "dependency_ids": [
+        "R001",
+        "R008"
+      ],
+      "status": "not_implemented",
+      "verification": null
+    },
+    {
+      "requirement_id": "R010",
+      "description": "The player can run, jump, and interact with switches and level objects.",
+      "source_excerpt": "The player runs, jumps, and\ninteracts with switches and objects.",
+      "acceptance_criteria": [
+        "Horizontal movement responds to left and right input.",
+        "Jump input produces a jump when the player is grounded.",
+        "Interact input triggers eligible switches and interactive objects within range."
+      ],
+      "dependency_ids": [
+        "R009"
+      ],
+      "status": "not_implemented",
+      "verification": null
+    },
+    {
+      "requirement_id": "R011",
+      "description": "At zero timer the screen flashes and rewinds; the player restarts at spawn while a translucent ghost replays the previous loop exactly.",
+      "source_excerpt": "When the timer hits zero, the screen\nflashes and rewinds — the player restarts at the spawn point, but a translucent\nghost replays exactly what they did in the previous loop.",
+      "acceptance_criteria": [
+        "A visible screen-flash effect occurs when the timer reaches zero.",
+        "The level rewinds the current player to the spawn point.",
+        "A ghost with alpha less than 1 is shown replaying the recorded previous loop.",
+        "The ghost reproduces the previous loop's player state sequence rather than a newly generated approximation."
+      ],
+      "dependency_ids": [
+        "R002",
+        "R009"
+      ],
+      "status": "not_implemented",
+      "verification": null
+    },
+    {
+      "requirement_id": "R012",
+      "description": "Ghosts physically interact with the world by pressing buttons, holding doors, and blocking lasers.",
+      "source_excerpt": "The ghost physically\ninteracts with the world: it presses buttons, holds doors, and blocks lasers.",
+      "acceptance_criteria": [
+        "A ghost overlapping a button or switch activates or holds it according to its type.",
+        "A ghost standing at a door or door-hold point keeps the door open for as long as the replay remains there.",
+        "A laser ray hitting a ghost is blocked at the ghost position instead of continuing to its normal target."
+      ],
+      "dependency_ids": [
+        "R003",
+        "R011"
+      ],
+      "status": "not_implemented",
+      "verification": null
+    },
+    {
+      "requirement_id": "R013",
+      "description": "The player can layer up to four loops, producing at most four active ghost instances.",
+      "source_excerpt": "The player can layer up to four loops.",
+      "acceptance_criteria": [
+        "The loop manager permits no more than four active ghost instances.",
+        "The timeline and HUD represent each active ghost up to the four-loop maximum.",
+        "Attempting another loop after four active ghosts follows the defined maximum-loop reset behavior rather than creating a fifth ghost."
+      ],
+      "dependency_ids": [
+        "R004"
+      ],
+      "status": "not_implemented",
+      "verification": null
+    },
+    {
+      "requirement_id": "R014",
+      "description": "A top timeline bar shows all active ghosts and their current positions in the 30-second loop window.",
+      "source_excerpt": "A timeline bar at the top shows all\nactive ghosts and their current positions in the 30-second window.",
+      "acceptance_criteria": [
+        "The play HUD includes a timeline bar spanning 0 to 30 seconds.",
+        "Each active ghost has a distinct marker on the timeline.",
+        "Each ghost marker updates to reflect that ghost's current playback time within the loop."
+      ],
+      "dependency_ids": [
+        "R013"
+      ],
+      "status": "not_implemented",
+      "verification": null
+    },
+    {
+      "requirement_id": "R015",
+      "description": "Touching the exit crystal completes the level only when all required switches are held by ghosts or the current player.",
+      "source_excerpt": "Reaching the\nexit crystal with all required switches held (by ghosts or player) completes\nthe level.",
+      "acceptance_criteria": [
+        "Each level defines the required switches needed for exit completion.",
+        "The exit crystal rejects completion while any required switch is unheld.",
+        "The exit crystal completes the level when all required switches are held by any combination of ghosts and the current player."
+      ],
+      "dependency_ids": [
+        "R003",
+        "R012"
+      ],
+      "status": "not_implemented",
+      "verification": null
+    },
+    {
+      "requirement_id": "R016",
+      "description": "A reset button clears all ghosts so the player can start the level fresh.",
+      "source_excerpt": "A reset button clears all ghosts to start fresh.",
+      "acceptance_criteria": [
+        "The play HUD provides a visible reset button.",
+        "Activating reset removes all active ghosts.",
+        "Activating reset restarts the current level at its spawn point with a fresh 30-second timer and no retained loop replay."
+      ],
+      "dependency_ids": [
+        "R013"
+      ],
+      "status": "not_implemented",
+      "verification": null
+    },
+    {
+      "requirement_id": "R017",
+      "description": "The level-complete display reports loops used and the time of exit within the final loop.",
+      "source_excerpt": "Level-complete\nshows loops used and time of exit within the final loop.",
+      "acceptance_criteria": [
+        "The level-complete overlay shows an integer count of loops used.",
+        "The overlay shows the exit time within the final loop.",
+        "The displayed values match the completed session's loop count and final-loop exit timestamp."
+      ],
+      "dependency_ids": [
+        "R015"
+      ],
+      "status": "not_implemented",
+      "verification": null
+    },
+    {
+      "requirement_id": "R018",
+      "description": "The deliverable is a complete, shippable micro-game built in Godot 4 at /workspace/game, not a prototype.",
+      "source_excerpt": "Build **Time Loop**, a 30-second time loop platformer where past-self replays\nhelp solve puzzles in Godot 4 at `/workspace/game/`. This is not a prototype.\nIt is a **complete, shippable micro-game** that could sit on an itch.io page or\nSteam as a polished vertical slice.",
+      "acceptance_criteria": [
+        "A Godot 4 project exists at /workspace/game.",
+        "The ordinary game path includes title, chapter menu, all 24 levels, loop rewinds, ghosts, timeline, reset, exit completion, and completion metrics.",
+        "Core gameplay does not depend on placeholder-only debug controls or an unfinished test scene."
+      ],
+      "dependency_ids": [],
+      "status": "not_implemented",
+      "verification": null
+    },
+    {
+      "requirement_id": "R019",
+      "description": "2D assets must be sourced from the mounted read-only Kenney CC0 library or OpenGameArt entries, respecting each OpenGameArt subdirectory license.",
+      "source_excerpt": "2D assets are mounted read-only at:\n\n- `/workspace/assets/library/` — Kenney CC0 packs (sprites, tiles, UI, fonts).\n- `/workspace/assets/library-oga/` — OpenGameArt entries; respect each\n  subdir's `LICENSE.txt`.",
+      "acceptance_criteria": [
+        "All imported visual assets come from the mounted asset libraries or from permissible engine primitives.",
+        "Kenney-sourced files are used as CC0 assets.",
+        "Any OpenGameArt-derived file is accompanied by or used in accordance with its subdirectory LICENSE.txt obligations.",
+        "No unlicensed external asset is introduced."
+      ],
+      "dependency_ids": [
+        "R018"
+      ],
+      "status": "not_implemented",
+      "verification": null
+    },
+    {
+      "requirement_id": "R020",
+      "description": "The implementer must browse the mounted libraries, choose suitable packs, and copy needed files into the project's assets folder.",
+      "source_excerpt": "Browse the library and choose packs.\nCopy what you need into your project's `assets/` folder.",
+      "acceptance_criteria": [
+        "Selected asset files are copied under /workspace/game/assets/.",
+        "Game scenes reference copied assets through project-relative res:// paths.",
+        "No gameplay asset is loaded from a read-only mount at runtime."
+      ],
+      "dependency_ids": [
+        "R019"
+      ],
+      "status": "not_implemented",
+      "verification": null
+    },
+    {
+      "requirement_id": "R021",
+      "description": "The Godot project layout must include project.godot, Main.tscn, demo_outputs, scripts, scenes, and assets under /workspace/game.",
+      "source_excerpt": "/workspace/game/\n  project.godot\n  Main.tscn\n  demo_outputs/    <- your input traces (1-10 files)\n  scripts/  scenes/  assets/",
+      "acceptance_criteria": [
+        "/workspace/game/project.godot exists.",
+        "/workspace/game/Main.tscn exists as the entry scene.",
+        "/workspace/game/demo_outputs/, scripts/, scenes/, and assets/ exist.",
+        "The project opens and runs from this layout without missing-path errors for required scenes or assets."
+      ],
+      "dependency_ids": [
+        "R018"
+      ],
+      "status": "not_implemented",
+      "verification": null
+    },
+    {
+      "requirement_id": "R022",
+      "description": "The built project must launch cleanly with the specified headless command.",
+      "source_excerpt": "godot --headless --path /workspace/game --quit-after 5",
+      "acceptance_criteria": [
+        "Running the exact command exits without script parse errors or missing-resource errors.",
+        "The command completes within the five-second quit window.",
+        "The project creates no failure dialog or blocking startup error in headless mode."
+      ],
+      "dependency_ids": [
+        "R021"
+      ],
+      "status": "not_implemented",
+      "verification": null
+    },
+    {
+      "requirement_id": "R023",
+      "description": "Engine flags such as --headless and --quit-after N must precede the -- separator; user scenario arguments must come after --.",
+      "source_excerpt": "**Engine flags like `--headless` and `--quit-after N` must come BEFORE `--`** —\nanything after `--` is forwarded to the project as user args and silently\nignored by the engine. Correct shape:\n`godot --headless --quit-after 5 --path . -- --scenario near_victory`.",
+      "acceptance_criteria": [
+        "Launch commands place --headless, --quit-after, and --path before --.",
+        "Scenario identifiers are placed after --.",
+        "Game code reads scenario identifiers from OS.get_cmdline_user_args rather than engine flags."
+      ],
+      "dependency_ids": [
+        "R022"
+      ],
+      "status": "not_implemented",
+      "verification": null
+    },
+    {
+      "requirement_id": "R024",
+      "description": "A screenshot helper at /workspace/tools/screenshot.sh is available and must be used to inspect UI and result screens.",
+      "source_excerpt": "A screenshot helper is available at `/workspace/tools/screenshot.sh`. Use it to actually see what your UI / battlefield /\nresult screens look like.",
+      "acceptance_criteria": [
+        "Validation can invoke the helper with --path /workspace/game and --out to produce a screenshot.",
+        "The helper supports --frames and optional --scenario arguments.",
+        "Title, active-play, multi-ghost, and completion screens are inspected through rendered screenshots."
+      ],
+      "dependency_ids": [
+        "R018"
+      ],
+      "status": "not_implemented",
+      "verification": null
+    },
+    {
+      "requirement_id": "R025",
+      "description": "The project ships between 1 and 10 input-trace files under demo_outputs, one per demo, each named with a .json extension.",
+      "source_excerpt": "Ship **1-10 input-trace files** under `/workspace/game/demo_outputs/`, one per\ndemo, each named `*.json`.",
+      "acceptance_criteria": [
+        "/workspace/game/demo_outputs/ contains at least 1 and at most 10 trace files.",
+        "Every trace file has the .json suffix.",
+        "Each demo has exactly one trace file and filenames are unique."
+      ],
+      "dependency_ids": [
+        "R021"
+      ],
+      "status": "not_implemented",
+      "verification": null
+    },
+    {
+      "requirement_id": "R026",
+      "description": "The evaluator launches a fresh game per trace, replays synthetic mouse and keyboard input at 1280x720, records the screen, evaluates only the first 10 filenames, and samples recordings longer than 20 seconds.",
+      "source_excerpt": "The evaluator launches a fresh game per trace,\nreplays your trace as synthetic mouse and keyboard input at 1280x720, and\nrecords the screen. Only the first 10 traces by filename are evaluated;\nrecordings longer than 20 s are sampled from a random 20 s window.",
+      "acceptance_criteria": [
+        "Every trace is authored for the 1280x720 viewport.",
+        "Each trace can run from a fresh game launch without depending on prior process state.",
+        "No more than 10 trace files are shipped so that filename ordering does not exclude desired demos.",
+        "No demo depends on content outside a random 20-second sample if its recording exceeds 20 seconds."
+      ],
+      "dependency_ids": [
+        "R025"
+      ],
+      "status": "not_implemented",
+      "verification": null
+    },
+    {
+      "requirement_id": "R027",
+      "description": "Normal play starts at the title screen and demonstrates the core gameplay loop.",
+      "source_excerpt": "Normal play should start from the title screen and demonstrate the task's\ncore gameplay loop.",
+      "acceptance_criteria": [
+        "A trace with no scenario begins on the title screen.",
+        "Accepting normal input from the title can reach the chapter menu and enter a level.",
+        "The demonstrated normal flow includes movement, timer expiry, ghost replay, and an exit attempt."
+      ],
+      "dependency_ids": [
+        "R007",
+        "R009"
+      ],
+      "status": "not_implemented",
+      "verification": null
+    },
+    {
+      "requirement_id": "R028",
+      "description": "Demo playback must be deterministic.",
+      "source_excerpt": "Demo playback must be deterministic.",
+      "acceptance_criteria": [
+        "Replaying the same trace from a fresh launch produces the same outcome.",
+        "Randomized elements are seeded or fixed for trace playback.",
+        "No timing-dependent setup varies between identical trace runs."
+      ],
+      "dependency_ids": [
+        "R026"
+      ],
+      "status": "not_implemented",
+      "verification": null
+    },
+    {
+      "requirement_id": "R029",
+      "description": "Demos that need a specific state must use named scenarios that the game loads when launched with a scenario argument.",
+      "source_excerpt": "For demos that need a specific state\n(a specific level, combat state, upgrade screen, result state, or late-game\nsetup), define named scenarios your game loads when launched with:",
+      "acceptance_criteria": [
+        "The project defines a finite set of named scenarios for level, loop, completion, and reset states.",
+        "Each scenario is selectable through the documented --scenario launch form.",
+        "Trace files may reference these scenario identifiers."
+      ],
+      "dependency_ids": [
+        "R028",
+        "R023"
+      ],
+      "status": "not_implemented",
+      "verification": null
+    },
+    {
+      "requirement_id": "R030",
+      "description": "When a scenario argument is present, the game skips menus, sets up the named state deterministically, seeds any RNG, and immediately accepts input.",
+      "source_excerpt": "When `--scenario <id>` is present the game must skip menus, set up the named\nstate deterministically (seed any RNG), and begin accepting input immediately.",
+      "acceptance_criteria": [
+        "Scenario launch opens directly into the named gameplay or result state without title or chapter-menu steps.",
+        "Level selection, active loop count, ghost positions, and required switches match the scenario definition at frame zero.",
+        "All RNG used by the scenario is seeded deterministically.",
+        "Player input is accepted immediately after scenario setup."
+      ],
+      "dependency_ids": [
+        "R029"
+      ],
+      "status": "not_implemented",
+      "verification": null
+    },
+    {
+      "requirement_id": "R031",
+      "description": "A trace's scenario field is optional; omitting it means normal launch from the title screen.",
+      "source_excerpt": "`scenario` — optional; omit for a normal game launch from the title screen.",
+      "acceptance_criteria": [
+        "A trace without a scenario field launches the ordinary title flow.",
+        "A trace with a scenario field loads that named scenario.",
+        "Scenario omission does not produce a parse error."
+      ],
+      "dependency_ids": [
+        "R029",
+        "R027"
+      ],
+      "status": "not_implemented",
+      "verification": null
+    },
+    {
+      "requirement_id": "R032",
+      "description": "The duration_frames field defines recorded frames at 30 fps with a maximum of 600 frames (20 seconds).",
+      "source_excerpt": "`duration_frames` — total frames to record at 30 fps; cap at **600 (20 s)**.",
+      "acceptance_criteria": [
+        "Every trace includes an integer duration_frames value.",
+        "No trace exceeds 600 frames.",
+        "Trace event frames are interpreted at 30 frames per second."
+      ],
+      "dependency_ids": [
+        "R025"
+      ],
+      "status": "not_implemented",
+      "verification": null
+    },
+    {
+      "requirement_id": "R033",
+      "description": "Trace events are time-ordered synthetic inputs with coordinates in the 1280x720 viewport and use the supported event types.",
+      "source_excerpt": "`events` — time-ordered inputs. Coordinates are pixels in the 1280x720\n  viewport. Supported types:",
+      "acceptance_criteria": [
+        "The events array is ordered by frame number.",
+        "Mouse coordinates lie within the 1280x720 viewport.",
+        "Only supported event types are used."
+      ],
+      "dependency_ids": [
+        "R032"
+      ],
+      "status": "not_implemented",
+      "verification": null
+    },
+    {
+      "requirement_id": "R034",
+      "description": "Keyboard trace events use one of the supported keycodes.",
+      "source_excerpt": "`A`-`Z`, `0`-`9`, `ESCAPE`, `ENTER`, `SPACE`, `TAB`, `BACKSPACE`,\n    `DELETE`, `SHIFT`, `CTRL`, `ALT`, `UP`, `DOWN`, `LEFT`, `RIGHT`.",
+      "acceptance_criteria": [
+        "Every key event uses a listed keycode.",
+        "Keycodes outside the listed set are not emitted.",
+        "Held and released keys use matching supported keycodes."
+      ],
+      "dependency_ids": [
+        "R033"
+      ],
+      "status": "not_implemented",
+      "verification": null
+    },
+    {
+      "requirement_id": "R035",
+      "description": "Mouse drag traces use mouse_down at the start, one or more mouse_move events, and mouse_up at the end; a mouse_click is a down-up pair at the same point.",
+      "source_excerpt": "use these for drag interactions: emit `mouse_down` at the start point,\n    one or more `mouse_move` events along the way, and `mouse_up` at the end.\n    A `mouse_click` is a `mouse_down` + `mouse_up` at the same point in tight\n    succession.",
+      "acceptance_criteria": [
+        "A drag trace emits mouse_down before its mouse_move events and mouse_up after them.",
+        "Every mouse_move event lies between a matching down and up event.",
+        "A mouse_click event is replayable as down and up at the same coordinates."
+      ],
+      "dependency_ids": [
+        "R033"
+      ],
+      "status": "not_implemented",
+      "verification": null
+    },
+    {
+      "requirement_id": "R036",
+      "description": "A wait event has a frame and type only and acts as an anchor frame with no input.",
+      "source_excerpt": "`wait`: `{frame, type}` — anchor frame, no input.",
+      "acceptance_criteria": [
+        "Wait events contain no input payload beyond frame and type.",
+        "Wait events do not change game state.",
+        "Wait events can anchor timing between other events."
+      ],
+      "dependency_ids": [
+        "R033"
+      ],
+      "status": "not_implemented",
+      "verification": null
+    },
+    {
+      "requirement_id": "R037",
+      "description": "Replay must be deterministic: the same trace on a fresh launch must produce the same outcome every time.",
+      "source_excerpt": "Replay must be deterministic: same trace, fresh launch, same outcome every time.",
+      "acceptance_criteria": [
+        "Two identical fresh-launch replays of one trace produce the same final state and outcome.",
+        "No fresh-launch replay depends on mutable state from a prior replay.",
+        "Timing, ghost playback, and level completion are reproducible for the same trace."
+      ],
+      "dependency_ids": [
+        "R028",
+        "R030"
+      ],
+      "status": "not_implemented",
+      "verification": null
+    }
+  ],
+  "design": {
+    "version": 1,
+    "document_ref": {
+      "artifact_id": "designer-specification",
+      "version": 1,
+      "kind": "document",
+      "path": "artifacts/designer/047cd30e0026f06f86a3e5a9/design.json",
+      "created_by": "designer",
+      "media_type": "application/json",
+      "sha256": "060ef8850723b647440e0fe92ee871f83a46595a068eacea5a07b188a8ce3a39"
+    },
+    "change_summary": "Initial English specification for Time Loop covering all eight design sections. It translates the public instruction into 37 grounded requirements, separates explicit requirements from assumptions, and defines observable acceptance, deterministic scenario/demo behavior, asset sourcing rules, project structure, and replay validation without claiming implementation or execution evidence.",
+    "assumptions": [
+      "Default controls are A/D or Left/Right for movement, Space for jump, E for interact, R for reset, Esc for pause or back, and mouse for UI selection; these are assumed because the instruction does not enumerate bindings.",
+      "The game renders at a fixed 1280x720 viewport to match demo evaluation coordinates.",
+      "Ghosts are non-controllable translucent silhouettes that replay recorded player states; they can activate switches, plates, doors, lasers, and enemy distraction, but do not block the current player's movement.",
+      "A maximum of four ghost instances is enforced; if another loop would exceed four, the level performs the defined reset-to-fresh behavior rather than creating a fifth ghost.",
+      "Enemies are distraction targets for ghost play and do not add a combat system beyond the explicitly mentioned distraction behavior.",
+      "Levels use a linear four-chapter unlock order, but named scenarios may load any level or result state directly.",
+      "The default demo set uses six trace files, within the required 1-10 range, covering title flow, single-ghost play, multi-loop play, reset, completion, and a final-chapter setup.",
+      "The named scenario identifiers in the content plan are authored defaults because the instruction names the scenario mechanism but not a mandatory scenario list.",
+      "Asset fallback uses Godot primitive shapes, programmatic silhouettes, and built-in fonts if a suitable mounted pack is unavailable; no additional asset library or license is assumed."
+    ]
+  },
+  "assets": [
+    {
+      "asset_id": "player_sheet",
+      "artifact_ref": {
+        "artifact_id": "art-asset-player_sheet",
+        "version": 1,
+        "kind": "asset",
+        "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/sprites/player_sheet.png",
+        "created_by": "art_producer",
+        "media_type": "image/png",
+        "sha256": "081dc213f7c8f838ea754bf184ba2c9afec75fc201847f1b48a3569f477c73ca"
+      },
+      "purpose": "Base player character sprite sheet for running, idle and jumping, reused as the temporal anchor of every loop.",
+      "source": "mock:mock-image.v1",
+      "license": "Synthetic test placeholder; replace before assessing art quality. No third-party artwork used.",
+      "integration_notes": "Copy to assets/sprites/player_sheet.png. Filter: nearest. Grid: 4 x 1. Frames (row-major): player_idle, player_run_a, player_run_b, player_jump. Import as SpriteFrames with a 4x1 grid, nearest filtering, no mipmaps. AnimatedSprite2D on the player scene; draw at integer scale 2x (64x64 on screen) inside the 1280x720 viewport. Ground baseline sits at the bottom row of each cell, so place the sprite origin at the feet. Frame timing: idle loop 8 fps, run 12 fps, jump held static. Do not bake a shadow; add a separate simple ellipse if needed. License handling: Generated by the host-configured mock image service (mock-image.v1), which is declared a synthetic test placeholder by the host. No third-party artwork is contained, no attribution or redistribution obligation applies, and the placeholder license is host-defined only; treat the file as temporary and replace with licensed Kenney/OpenGameArt art or a final generated set before shipping. MOCK PLACEHOLDER: replace before visual acceptance. Visual review has not been performed."
+    },
+    {
+      "asset_id": "ghost_sheet",
+      "artifact_ref": {
+        "artifact_id": "art-asset-ghost_sheet",
+        "version": 1,
+        "kind": "asset",
+        "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/sprites/ghost_sheet.png",
+        "created_by": "art_producer",
+        "media_type": "image/png",
+        "sha256": "081dc213f7c8f838ea754bf184ba2c9afec75fc201847f1b48a3569f477c73ca"
+      },
+      "purpose": "Translucent ghost silhouette sheet so past-loop replays are visually distinct from the current player.",
+      "source": "mock:mock-image.v1",
+      "license": "Synthetic test placeholder; replace before assessing art quality. No third-party artwork used.",
+      "integration_notes": "Copy to assets/sprites/ghost_sheet.png. Filter: nearest. Grid: 4 x 1. Frames (row-major): ghost_idle, ghost_run_a, ghost_run_b, ghost_jump. Import identical to the player sheet (4x1 grid, nearest). Spawn one instance per recorded loop, cap four. Drive opacity with CanvasItem.modulate.a between 0.45 and 0.65 and vary hue slightly per loop index so layered ghosts stay distinguishable; also tint the marker cell from ui_controls to match. Ghosts must not collide with the current player. Developer may alternatively reuse player_sheet with runtime tint/opacity, but this dedicated silhouette is the preferred primary art. License handling: Generated by the mock image service (mock-image.v1) as a host-declared synthetic test placeholder; no third-party artwork, no attribution obligation, host-defined placeholder license only. Replace before shippable release. MOCK PLACEHOLDER: replace before visual acceptance. Visual review has not been performed."
+    },
+    {
+      "asset_id": "tileset_platform",
+      "artifact_ref": {
+        "artifact_id": "art-asset-tileset_platform",
+        "version": 1,
+        "kind": "asset",
+        "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/tiles/tileset_platform.png",
+        "created_by": "art_producer",
+        "media_type": "image/png",
+        "sha256": "946f87b17cb7458e775e08a8e199172e68d900c1a871c66ed9a53c1cd0047e73"
+      },
+      "purpose": "Single shared 32x32 level tileset for ground, platforms, bridges, background decor and spikes across all chapters.",
+      "source": "mock:mock-image.v1",
+      "license": "Synthetic test placeholder; replace before assessing art quality. No third-party artwork used.",
+      "integration_notes": "Copy to assets/tiles/tileset_platform.png. Filter: nearest. Grid: 8 x 4. Frames (row-major): tile_ground_top, tile_ground_fill, tile_ground_left, tile_ground_right, tile_platform_left, tile_platform_mid, tile_platform_right, tile_platform_single, tile_wall, tile_wall_top, tile_bridge_left, tile_bridge_mid, tile_bridge_right, tile_bridge_single, tile_ladder, tile_pipe, tile_decor_pillar, tile_decor_vent, tile_decor_panel, tile_decor_lamp, tile_decor_crate, tile_decor_barrel, tile_decor_stand, tile_decor_sign, tile_bg_brick, tile_bg_window, tile_bg_clock, tile_bg_gear, tile_bg_cloud, tile_bg_silhouette, tile_hazard_spike, tile_slope. Import as TileSet atlas with 8x4 grid, nearest filtering. One TileSet resource is shared by all 24 levels; chapter variance is applied as a TileMap modulate tint, never as extra art. Solid collisions only on rows 1 and 2 ground/wall/bridge cells; decor and background rows are non-colliding. Build the 'bridge' cells so a ghost-body interaction can occupy them for the R004 bridge puzzle. License handling: Generated by the mock image service (mock-image.v1) as a host-declared synthetic test placeholder; no third-party artwork, no attribution obligation, host-defined placeholder license only. No library pack is claimed because /workspace/assets/library was reported unavailable. MOCK PLACEHOLDER: replace before visual acceptance. Visual review has not been performed."
+    },
+    {
+      "asset_id": "switch_button",
+      "artifact_ref": {
+        "artifact_id": "art-asset-switch_button",
+        "version": 1,
+        "kind": "asset",
+        "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/props/switch_button.png",
+        "created_by": "art_producer",
+        "media_type": "image/png",
+        "sha256": "c226178e5c714b2db8b979e5c00c77fa5df2112703a5c8a21ac021179751feca"
+      },
+      "purpose": "Two-state wall/floor switch that ghosts and the player can hold down to gate the exit.",
+      "source": "mock:mock-image.v1",
+      "license": "Synthetic test placeholder; replace before assessing art quality. No third-party artwork used.",
+      "integration_notes": "Copy to assets/props/switch_button.png. Filter: nearest. Grid: 2 x 1. Frames (row-major): switch_off, switch_on. Import as a 2x1 atlas, nearest filtering. Draw at 2x scale. Switch state must be driven by any overlapping body tagged as player or ghost; when a ghost holds it, keep frame switch_on and optionally pulse modulate. Expose a boolean 'held' the exit crystal reads for R015. License handling: Generated by the mock image service (mock-image.v1) as a host-declared synthetic test placeholder; no third-party artwork, no attribution obligation, host-defined placeholder license only. MOCK PLACEHOLDER: replace before visual acceptance. Visual review has not been performed."
+    },
+    {
+      "asset_id": "pressure_plate",
+      "artifact_ref": {
+        "artifact_id": "art-asset-pressure_plate",
+        "version": 1,
+        "kind": "asset",
+        "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/props/pressure_plate.png",
+        "created_by": "art_producer",
+        "media_type": "image/png",
+        "sha256": "c226178e5c714b2db8b979e5c00c77fa5df2112703a5c8a21ac021179751feca"
+      },
+      "purpose": "Two-state floor plate ghosts can stand on to hold switches or create bridges.",
+      "source": "mock:mock-image.v1",
+      "license": "Synthetic test placeholder; replace before assessing art quality. No third-party artwork used.",
+      "integration_notes": "Copy to assets/props/pressure_plate.png. Filter: nearest. Grid: 2 x 1. Frames (row-major): plate_up, plate_down. Import as a 2x1 atlas, nearest filtering, draw at 2x. Plate activates while any player or ghost body overlaps its Area2D; ghost occupancy must count as held for R003. Pair each plate with a switch id so the exit crystal can query it. License handling: Generated by the mock image service (mock-image.v1) as a host-declared synthetic test placeholder; no third-party artwork, no attribution obligation, host-defined placeholder license only. MOCK PLACEHOLDER: replace before visual acceptance. Visual review has not been performed."
+    },
+    {
+      "asset_id": "door_gate",
+      "artifact_ref": {
+        "artifact_id": "art-asset-door_gate",
+        "version": 1,
+        "kind": "asset",
+        "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/props/door_gate.png",
+        "created_by": "art_producer",
+        "media_type": "image/png",
+        "sha256": "c226178e5c714b2db8b979e5c00c77fa5df2112703a5c8a21ac021179751feca"
+      },
+      "purpose": "Two-state door a ghost can hold open across loops for later-loop traversal.",
+      "source": "mock:mock-image.v1",
+      "license": "Synthetic test placeholder; replace before assessing art quality. No third-party artwork used.",
+      "integration_notes": "Copy to assets/props/door_gate.png. Filter: nearest. Grid: 2 x 1. Frames (row-major): door_closed, door_open. Import as a 2x1 atlas, nearest filtering. The 32x32 cell is door-slab sized; scale to the level's actual door height using a Sprite2D region plus a separate collision rectangle, or repeat the frame vertically. Collision is disabled only while a ghost or the player occupies the hold Area2D; hold state must persist for as long as the ghost replay remains there (R012). License handling: Generated by the mock image service (mock-image.v1) as a host-declared synthetic test placeholder; no third-party artwork, no attribution obligation, host-defined placeholder license only. MOCK PLACEHOLDER: replace before visual acceptance. Visual review has not been performed."
+    },
+    {
+      "asset_id": "laser_hazard",
+      "artifact_ref": {
+        "artifact_id": "art-asset-laser_hazard",
+        "version": 1,
+        "kind": "asset",
+        "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/props/laser_hazard.png",
+        "created_by": "art_producer",
+        "media_type": "image/png",
+        "sha256": "c226178e5c714b2db8b979e5c00c77fa5df2112703a5c8a21ac021179751feca"
+      },
+      "purpose": "Laser emitter plus beam cell so a ghost body visibly blocks a beam at its position.",
+      "source": "mock:mock-image.v1",
+      "license": "Synthetic test placeholder; replace before assessing art quality. No third-party artwork used.",
+      "integration_notes": "Copy to assets/props/laser_hazard.png. Filter: nearest. Grid: 2 x 1. Frames (row-major): laser_emitter, laser_beam. Import as a 2x1 atlas, nearest filtering. Tile laser_beam horizontally inside a thin Sprite2D or Line2D so the beam stretches to the first blocker. When a ghost or the player intersects the ray, the beam visual must terminate at that contact point instead of the usual endpoint (R012). Beam and emitter are non-solid decoration; only the blocking logic matters. License handling: Generated by the mock image service (mock-image.v1) as a host-declared synthetic test placeholder; no third-party artwork, no attribution obligation, host-defined placeholder license only. MOCK PLACEHOLDER: replace before visual acceptance. Visual review has not been performed."
+    },
+    {
+      "asset_id": "enemy_patroller",
+      "artifact_ref": {
+        "artifact_id": "art-asset-enemy_patroller",
+        "version": 1,
+        "kind": "asset",
+        "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/sprites/enemy_patroller.png",
+        "created_by": "art_producer",
+        "media_type": "image/png",
+        "sha256": "c226178e5c714b2db8b979e5c00c77fa5df2112703a5c8a21ac021179751feca"
+      },
+      "purpose": "Patrolling enemy that switches to a distracted state while a ghost is nearby.",
+      "source": "mock:mock-image.v1",
+      "license": "Synthetic test placeholder; replace before assessing art quality. No third-party artwork used.",
+      "integration_notes": "Copy to assets/sprites/enemy_patroller.png. Filter: nearest. Grid: 2 x 1. Frames (row-major): enemy_walk_a, enemy_walk_b. Import as a 2x1 atlas, nearest filtering, draw at 2x, loop the two frames at 6 fps while patrolling. For the distracted state, stop the walk loop and apply a brief modulate tint (for example amber) plus a small '?' style reaction via modulate pulse rather than extra frames. Distraction range and timing belong to the enemy script, not the art. License handling: Generated by the mock image service (mock-image.v1) as a host-declared synthetic test placeholder; no third-party artwork, no attribution obligation, host-defined placeholder license only. MOCK PLACEHOLDER: replace before visual acceptance. Visual review has not been performed."
+    },
+    {
+      "asset_id": "exit_crystal",
+      "artifact_ref": {
+        "artifact_id": "art-asset-exit_crystal",
+        "version": 1,
+        "kind": "asset",
+        "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/props/exit_crystal.png",
+        "created_by": "art_producer",
+        "media_type": "image/png",
+        "sha256": "c226178e5c714b2db8b979e5c00c77fa5df2112703a5c8a21ac021179751feca"
+      },
+      "purpose": "Exit crystal with dormant and all-switches-held states to signal completion gating.",
+      "source": "mock:mock-image.v1",
+      "license": "Synthetic test placeholder; replace before assessing art quality. No third-party artwork used.",
+      "integration_notes": "Copy to assets/props/exit_crystal.png. Filter: nearest. Grid: 2 x 1. Frames (row-major): crystal_dormant, crystal_active. Import as a 2x1 atlas, nearest filtering, draw at 2x with a slow 2-frame pulse between dormant and active brightness when active. Show crystal_dormant while any required switch is unheld and switch to crystal_active only when all required switches are held by any player or ghost combination (R015). Touching an active crystal triggers the completion overlay; an inactive crystal should give a short rejected flash instead of completing. License handling: Generated by the mock image service (mock-image.v1) as a host-declared synthetic test placeholder; no third-party artwork, no attribution obligation, host-defined placeholder license only. MOCK PLACEHOLDER: replace before visual acceptance. Visual review has not been performed."
+    },
+    {
+      "asset_id": "hud_panel",
+      "artifact_ref": {
+        "artifact_id": "art-asset-hud_panel",
+        "version": 1,
+        "kind": "asset",
+        "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/ui/hud_panel.png",
+        "created_by": "art_producer",
+        "media_type": "image/png",
+        "sha256": "c5213e17331175be34ce516c1e0127679d3d854ca2a1eb65dda3d7797f05ec42"
+      },
+      "purpose": "HUD frame, timer badge and 0-30 second timeline track for the play screen.",
+      "source": "mock:mock-image.v1",
+      "license": "Synthetic test placeholder; replace before assessing art quality. No third-party artwork used.",
+      "integration_notes": "Copy to assets/ui/hud_panel.png. Filter: nearest. Grid: 3 x 1. Frames (row-major): panel_bg, timer_badge, timeline_track. Import as a 3x1 atlas, nearest filtering; slice panel_bg as a NinePatchRect with 12-pixel margins. Use timeline_track as a stretched TextureRect (or repeat) spanning left to right with the 0-30 s mapping done in code; ghost markers from ui_controls are positioned as children on top. Timer numbers are rendered with the built-in font as a Label centered on timer_badge; nothing numeric is baked into the art. License handling: Generated by the mock image service (mock-image.v1) as a host-declared synthetic test placeholder; no third-party artwork, no attribution obligation, host-defined placeholder license only. MOCK PLACEHOLDER: replace before visual acceptance. Visual review has not been performed."
+    },
+    {
+      "asset_id": "ui_controls",
+      "artifact_ref": {
+        "artifact_id": "art-asset-ui_controls",
+        "version": 1,
+        "kind": "asset",
+        "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/ui/ui_controls.png",
+        "created_by": "art_producer",
+        "media_type": "image/png",
+        "sha256": "95336d2d67797ded9ef9b9e08792355515fffaf75bc2622a4828a3b661d0ce33"
+      },
+      "purpose": "Button states, ghost timeline markers and a clock-hand graphic shared by menus and the HUD.",
+      "source": "mock:mock-image.v1",
+      "license": "Synthetic test placeholder; replace before assessing art quality. No third-party artwork used.",
+      "integration_notes": "Copy to assets/ui/ui_controls.png. Filter: nearest. Grid: 3 x 2. Frames (row-major): button_normal, button_hover, button_pressed, ghost_marker_a, ghost_marker_b, clock_hand. Import as a 3x2 atlas, nearest filtering; slice buttons into TextureButton normal/hover/pressed with 16-pixel nine-patch margins. Use ghost_marker_a and ghost_marker_b alternately by loop index (maximum four markers) as children of the timeline track, positioned by playback time; keep markers small enough to stay legible at 1x. clock_hand is reused by the title screen at large scale and by decorative UI to keep the clock motif consistent. License handling: Generated by the mock image service (mock-image.v1) as a host-declared synthetic test placeholder; no third-party artwork, no attribution obligation, host-defined placeholder license only. MOCK PLACEHOLDER: replace before visual acceptance. Visual review has not been performed."
+    },
+    {
+      "asset_id": "title_backdrop",
+      "artifact_ref": {
+        "artifact_id": "art-asset-title_backdrop",
+        "version": 1,
+        "kind": "asset",
+        "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/ui/title_backdrop.png",
+        "created_by": "art_producer",
+        "media_type": "image/png",
+        "sha256": "bf137e5842b15092838d0c6ef14310ca93c9bf07845e62b338c2be42e0a5487a"
+      },
+      "purpose": "Title screen backdrop with overlapping clock hands and ghost silhouettes as required for the first screen.",
+      "source": "mock:mock-image.v1",
+      "license": "Synthetic test placeholder; replace before assessing art quality. No third-party artwork used.",
+      "integration_notes": "Copy to assets/ui/title_backdrop.png. Filter: nearest. Grid: 1 x 1. Frames (row-major): title_background. Import as a single Texture2D with nearest filtering, placed full-rect behind the title UI; no scaling beyond the fixed 1280x720 viewport. Keep the center band clear so the game's own title Label and buttons remain readable. For a subtle idle animation, Developer can offset the ghost silhouettes with a low-amplitude position tween, but the image itself is static. License handling: Generated by the mock image service (mock-image.v1) as a host-declared synthetic test placeholder; no third-party artwork, no attribution obligation, host-defined placeholder license only. All twelve assets in this package are placeholders until the host confirms a real image service or licensed library art; final visual acceptance is pending. MOCK PLACEHOLDER: replace before visual acceptance. Visual review has not been performed."
+    }
+  ],
+  "game_revisions": [],
+  "current_game_revision_id": null,
+  "evidence": [],
+  "issues": [],
+  "readiness": null
+}

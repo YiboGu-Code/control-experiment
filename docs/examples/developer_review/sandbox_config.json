@@ -1,0 +1,8 @@
+{
+  "requested_image": "gamecraft-godot:4.5.1",
+  "image_id": "sha256:9c8b1ed51cc8e4b7058a293c404ebcdf1ceaf55b3a4c93401023f38ceadf8aec",
+  "network": "none",
+  "non_root": true,
+  "read_only_root": true,
+  "host_execution_fallback": false
+}

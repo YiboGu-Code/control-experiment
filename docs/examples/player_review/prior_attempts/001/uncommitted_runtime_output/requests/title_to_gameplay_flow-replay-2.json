@@ -1,0 +1,132 @@
+{
+  "harness_version": "godot-player.v1",
+  "trace": {
+    "duration_frames": 600,
+    "events": [
+      {
+        "frame": 20,
+        "type": "mouse_down",
+        "button": "left",
+        "x": 640,
+        "y": 412
+      },
+      {
+        "frame": 21,
+        "type": "mouse_up",
+        "button": "left",
+        "x": 640,
+        "y": 412
+      },
+      {
+        "frame": 60,
+        "type": "wait"
+      },
+      {
+        "frame": 75,
+        "type": "mouse_down",
+        "button": "left",
+        "x": 320,
+        "y": 200
+      },
+      {
+        "frame": 76,
+        "type": "mouse_up",
+        "button": "left",
+        "x": 320,
+        "y": 200
+      },
+      {
+        "frame": 110,
+        "type": "mouse_down",
+        "button": "left",
+        "x": 320,
+        "y": 400
+      },
+      {
+        "frame": 111,
+        "type": "mouse_up",
+        "button": "left",
+        "x": 320,
+        "y": 400
+      },
+      {
+        "frame": 150,
+        "type": "key_down",
+        "keycode": "D"
+      },
+      {
+        "frame": 200,
+        "type": "key_up",
+        "keycode": "D"
+      },
+      {
+        "frame": 210,
+        "type": "key_down",
+        "keycode": "SPACE"
+      },
+      {
+        "frame": 211,
+        "type": "key_up",
+        "keycode": "SPACE"
+      },
+      {
+        "frame": 250,
+        "type": "key_down",
+        "keycode": "D"
+      },
+      {
+        "frame": 290,
+        "type": "key_up",
+        "keycode": "D"
+      },
+      {
+        "frame": 310,
+        "type": "key_down",
+        "keycode": "E"
+      },
+      {
+        "frame": 311,
+        "type": "key_up",
+        "keycode": "E"
+      },
+      {
+        "frame": 330,
+        "type": "key_down",
+        "keycode": "A"
+      },
+      {
+        "frame": 370,
+        "type": "key_up",
+        "keycode": "A"
+      },
+      {
+        "frame": 400,
+        "type": "key_down",
+        "keycode": "SPACE"
+      },
+      {
+        "frame": 401,
+        "type": "key_up",
+        "keycode": "SPACE"
+      },
+      {
+        "frame": 450,
+        "type": "wait"
+      },
+      {
+        "frame": 550,
+        "type": "wait"
+      }
+    ]
+  },
+  "checkpoints": [
+    0,
+    30,
+    120,
+    300,
+    590,
+    599
+  ],
+  "project_sha256": "eb929b96a5bdd894db35ea59191e8f109a38221372d62b6d5d28a8ab4f244d22",
+  "seed": 1337
+}

@@ -1,0 +1,275 @@
+"""Bounded source discovery, strict plan validation, and staged asset publication."""
+
+from __future__ import annotations
+
+import hashlib
+import json
+from pathlib import PurePosixPath
+
+from pydantic import ValidationError
+
+from ...models import ArtifactRef, AssetRecord, Blocker, ProposedUpdates, RoleResult
+from ...runtime import InvalidSubmission, PermissionDenied, RoleContext
+from ...runtime.media import raster_info
+from .contracts import ArtManifest, ArtProducerConfig, ArtTurn, ImageJob, ProducedAsset, ProposalRejection
+from .prompt import build_prompt
+
+
+def _object(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError("Duplicate JSON key")
+        result[key] = value
+    return result
+
+
+def _constant(value):
+    raise ValueError("Nonfinite JSON number")
+
+
+class ArtProducer:
+    def __init__(self, config: ArtProducerConfig | None = None):
+        self.config = config or ArtProducerConfig()
+
+    @staticmethod
+    def _result(context, status, summary, **kwargs):
+        return RoleResult(request_id=context.request.request_id, role="art_producer",
+            state_revision=context.request.state_revision, status=status, summary=summary, **kwargs)
+
+    def _ref(self, context, artifact_id, path, data, *, kind="document", media_type="application/json"):
+        version = 1 + max((ref.version for ref in context.state.artifacts if ref.artifact_id == artifact_id), default=0)
+        return ArtifactRef(artifact_id=artifact_id, version=version, kind=kind, path=path,
+            created_by="art_producer", media_type=media_type, sha256=hashlib.sha256(data).hexdigest())
+
+    async def _inputs(self, context):
+        state, request, tools = context.state, context.request, context.tools
+        raw_design = await tools.read_bytes(state.design.document_ref.path)
+        if state.design.document_ref.sha256 and hashlib.sha256(raw_design).hexdigest() != state.design.document_ref.sha256:
+            raise InvalidSubmission("Design artifact digest does not match shared state")
+        previous = None
+        manifests = [r for r in state.artifacts if r.artifact_id == "art-manifest" and r.created_by == "art_producer"]
+        if manifests:
+            ref = max(manifests, key=lambda r: r.version)
+            data = await tools.read_bytes(ref.path)
+            if ref.sha256 != hashlib.sha256(data).hexdigest():
+                raise InvalidSubmission("Art manifest digest mismatch")
+            previous = ArtManifest.model_validate_json(data)
+            if (previous.task_id, previous.version, previous.config) != (state.task.task_id, ref.version, self.config):
+                raise InvalidSubmission("Art manifest task, version, or frozen configuration mismatch")
+            records = {a.asset_id: a for a in state.assets}
+            if any(records.get(a.record.asset_id) != a.record for a in previous.assets):
+                raise InvalidSubmission("Art manifest disagrees with shared assets")
+        selected = set(request.work_item_ids)
+        issues = [i.model_dump(mode="json") for i in state.issues if i.issue_id in selected or
+                  bool(selected.intersection(i.requirement_ids)) or
+                  (not selected and i.status != "closed" and (i.suggested_role == "art_producer" or i.issue_type == "visual"))]
+        attachments = []
+        for ref in request.artifact_refs:
+            item = {"ref": ref.model_dump(mode="json"), "visually_inspected": False}
+            if ref.kind in ("document", "report") and ref.media_type in ("text/plain", "text/markdown", "application/json"):
+                item["text"] = await tools.read_text(ref.path)
+            attachments.append(item)
+        sources = await tools.asset_sources()
+        inputs = {
+            "task": state.task.model_dump(mode="json"),
+            "objective": request.objective, "completion_criteria": request.completion_criteria,
+            "work_item_ids": request.work_item_ids,
+            "requirements": [r.model_dump(mode="json", exclude={"status", "verification"}) for r in state.requirements],
+            "design": raw_design.decode("utf-8"),
+            "existing_assets": [a.model_dump(mode="json") for a in state.assets],
+            "previous_manifest": previous.model_dump(mode="json") if previous else None,
+            "issues": issues, "attachments": attachments, "sources": sources,
+        }
+        return inputs, previous, sources
+
+    def _validate_plan(self, context, plan, catalog, previous, sources):
+        if len(plan.assets) > self.config.max_assets:
+            raise InvalidSubmission("Art plan exceeds the asset count limit")
+        known_requirements = {r.requirement_id for r in context.state.requirements}
+        kept = {a.record.asset_id: a for a in previous.assets} if previous else {}
+        targets = {a.request.target_path.casefold(): key for key, a in kept.items()}
+        final_targets = {key: value.request.target_path.casefold() for key, value in kept.items()}
+        final_targets.update({a.asset_id: a.target_path.casefold() for a in plan.assets})
+        paths = list(final_targets.values())
+        if any(a == b or a.startswith(b + "/") or b.startswith(a + "/")
+               for index, a in enumerate(paths) for b in paths[index + 1:]):
+            raise InvalidSubmission("Art targets collide as files or directories")
+        for index, asset in enumerate(plan.assets):
+            location = f"assets.{index}"
+            if set(asset.requirement_ids) - known_requirements:
+                raise InvalidSubmission(f"{location}.requirement_ids: Art plan references unknown requirements")
+            owner = targets.get(asset.target_path.casefold())
+            if owner is not None and owner != asset.asset_id:
+                raise InvalidSubmission("Art target path belongs to another asset")
+            if asset.source == "generate":
+                if not self.config.allow_generation or not sources["image_service"]:
+                    raise InvalidSubmission("Image generation is not configured or permitted")
+            else:
+                candidate = catalog.get((asset.source, asset.source_path))
+                if candidate is None:
+                    raise InvalidSubmission(f"{location}.source_path: Library asset was not returned by a metered search; select an exact source/path pair from search_observations or search again")
+                if (asset.width, asset.height) != (candidate.width, candidate.height):
+                    raise InvalidSubmission(f"{location}: Plan must preserve library asset dimensions: width={candidate.width}, height={candidate.height}")
+                if PurePosixPath(asset.target_path).suffix.lower() != PurePosixPath(candidate.path).suffix.lower():
+                    raise InvalidSubmission("Plan must preserve the library file extension")
+                if asset.transparent_background and not candidate.has_alpha:
+                    raise InvalidSubmission("Library asset does not have an alpha channel")
+
+    def _validate_submission(self, context, plan, catalog, previous, sources):
+        if plan.status == "completed":
+            self._validate_plan(context, plan, catalog, previous, sources)
+            return
+        if plan.status == "no_op" and not context.state.assets:
+            raise InvalidSubmission("Initial Art Producer invocation cannot return no_op")
+        known = {r.requirement_id for r in context.state.requirements} | {i.issue_id for i in context.state.issues}
+        if any(set(b.dependency_ids) - known for b in plan.blockers):
+            raise InvalidSubmission("Art blocker references unknown dependencies")
+
+    async def __call__(self, context: RoleContext):
+        if context.request.role != "art_producer":
+            raise PermissionDenied("Art Producer requires an art_producer request")
+        if context.state.design is None or not context.state.requirements:
+            return self._result(context, "blocked", "A public Designer specification is required",
+                blockers=(Blocker(description="Provide the Designer document and grounded requirements"),))
+        inputs, previous, sources = await self._inputs(context)
+        catalog, observations, rejections = {}, [], []
+        rejected = None
+        plan = None
+        search_turns = 0
+        for turn in range(self.config.max_model_turns):
+            prompt = build_prompt(inputs, self.config, observations, self.config.max_model_turns - turn,
+                                  rejections, rejected, search_turns=search_turns)
+            if len(prompt.encode("utf-8")) > self.config.max_prompt_bytes:
+                raise InvalidSubmission("Art Producer input exceeds the prompt limit")
+            raw = await context.tools.generate_text(prompt, max_output_tokens=self.config.max_output_tokens)
+            if len(raw.encode("utf-8")) > self.config.max_response_bytes:
+                raise InvalidSubmission("Art Producer response exceeds the byte limit")
+            try:
+                plan = ArtTurn.model_validate(json.loads(raw, object_pairs_hook=_object, parse_constant=_constant))
+                if (plan.action == "search" and self.config.max_search_turns is not None
+                        and search_turns >= self.config.max_search_turns):
+                    raise InvalidSubmission("Search turn allowance exhausted; submit a complete plan using existing catalog results or report a concrete blocker")
+                if plan.action == "submit":
+                    self._validate_submission(context, plan, catalog, previous, sources)
+            except (ValueError, InvalidSubmission) as exc:
+                # Only model-authored proposals are repairable. Provider, permission,
+                # budget and image failures remain outside this bounded correction loop.
+                if self.config.prompt_version != "art-producer.v4":
+                    if isinstance(exc, InvalidSubmission):
+                        raise
+                    raise InvalidSubmission("Art Producer returned an invalid JSON proposal") from None
+                if isinstance(exc, ValidationError):
+                    errors = tuple((".".join(map(str, e["loc"])) + ": " + e["msg"])[:320]
+                        for e in exc.errors(include_input=False, include_context=False, include_url=False)[:16])
+                elif isinstance(exc, json.JSONDecodeError):
+                    errors = (f"Invalid or incomplete JSON at line {exc.lineno}, column {exc.colno}: {exc.msg}. "
+                              "Return a complete, shorter JSON object; do not continue the previous response.",)
+                else:
+                    errors = (str(exc)[:320],)
+                rejections.append(ProposalRejection(model_turn=turn + 1, errors=errors))
+                if turn + 1 == self.config.max_model_turns:
+                    raise InvalidSubmission("Art Producer proposal validation budget exhausted: " + "; ".join(errors)[:1200]) from None
+                # Full replies stay in the provider capture. Do not feed an unbounded
+                # tile enumeration back into the next prompt.
+                encoded = raw.encode("utf-8")
+                rejected = {"excerpt": encoded[:8192].decode("utf-8", errors="ignore"),
+                            "truncated": len(encoded) > 8192, "original_bytes": len(encoded)}
+                continue
+            rejected = None
+            if plan.action == "submit":
+                break
+            if turn + 1 == self.config.max_model_turns:
+                return self._result(context, "blocked", "Asset discovery reached the configured model-turn limit",
+                    blockers=(Blocker(description="No final asset plan was submitted within the bounded discovery allowance"),))
+            search_turns += 1
+            for search in plan.searches:
+                found = await context.tools.search_assets(search.library, search.query,
+                    offset=search.offset, limit=self.config.search_results)
+                observations.append(found.model_dump(mode="json"))
+                catalog.update({(a.library, a.path): a for a in found.assets})
+        if plan.status != "completed":
+            return self._result(context, plan.status, plan.summary, blockers=plan.blockers)
+        # The entire proposal was validated before importing bytes or spending image calls.
+        tools, refs, produced = context.tools, [], []
+        for asset in plan.assets:
+            license_ref, job, candidate = None, None, None
+            if asset.source == "generate":
+                service = sources["image_service"]
+                job = ImageJob(prompt=plan.style_guide + "\n\n" + asset.generation_prompt,
+                    width=asset.width, height=asset.height, transparent_background=asset.transparent_background,
+                    columns=asset.columns, rows=asset.rows, frame_names=asset.frame_names)
+                path = await tools.generate_image(job.model_dump_json(), asset.target_path)
+                data = await tools.read_bytes(path)
+                media = raster_info(data)
+                if media["media_type"] != "image/png" or (media["width"], media["height"]) != (asset.width, asset.height):
+                    raise InvalidSubmission("Image service output does not match the requested PNG dimensions")
+                if asset.transparent_background and not media["has_alpha"]:
+                    raise InvalidSubmission("Image service omitted the requested alpha channel")
+                is_mock, license_text = service["is_mock"], service["license"]
+                source = ("mock:" if is_mock else "generated:") + service["provider_id"]
+            else:
+                candidate = catalog[(asset.source, asset.source_path)]
+                path = await tools.import_asset(candidate, asset.target_path)
+                data = await tools.read_bytes(path)
+                media = {"media_type": candidate.media_type, "width": candidate.width,
+                         "height": candidate.height, "has_alpha": candidate.has_alpha}
+                is_mock, license_text = False, candidate.license_text
+                source = f"{candidate.library}:{candidate.path}"
+                license_bytes = license_text.encode("utf-8")
+                license_path = await tools.write_bytes(f"licenses/{asset.asset_id}.txt", license_bytes)
+                license_ref = self._ref(context, "art-license-" + asset.asset_id, license_path,
+                                        license_bytes, media_type="text/plain")
+                refs.append(license_ref)
+            ref = self._ref(context, "art-asset-" + asset.asset_id, path, data, kind="asset", media_type=media["media_type"])
+            refs.append(ref)
+            notes = (f"Copy to {asset.target_path}. Filter: {asset.filter_mode}. Grid: {asset.columns} x {asset.rows}. "
+                     f"Frames (row-major): {', '.join(asset.frame_names)}. " + asset.integration_notes +
+                     " License handling: " + asset.license_handling +
+                     (" MOCK PLACEHOLDER: replace before visual acceptance." if is_mock else "") +
+                     " Visual review has not been performed.")
+            record = AssetRecord(asset_id=asset.asset_id, artifact_ref=ref, purpose=asset.purpose,
+                source=source, license=license_text, integration_notes=notes)
+            produced.append(ProducedAsset(request=asset, record=record, is_mock=is_mock,
+                width=media["width"], height=media["height"], has_alpha=media["has_alpha"],
+                source_sha256=candidate.sha256 if candidate else None,
+                source_license_path=candidate.license_path if candidate else None,
+                source_license_sha256=candidate.license_sha256 if candidate else None,
+                license_ref=license_ref, image_job=job))
+        merged = {a.record.asset_id: a for a in previous.assets} if previous else {}
+        merged.update({a.record.asset_id: a for a in produced})
+        limitations = ["Images were checked for file format and dimensions, not visually reviewed or integrated into a game."]
+        placeholders = any(a.is_mock for a in merged.values())
+        if placeholders:
+            limitations.append("Mock-generated images are test placeholders and do not fulfill final artwork requirements.")
+        manifest = ArtManifest(task_id=context.state.task.task_id, version=previous.version + 1 if previous else 1,
+            config=self.config, proposal_rejections=tuple(rejections),
+            design_ref=context.state.design.document_ref, style_guide=plan.style_guide,
+            summary=plan.summary, assets=tuple(merged.values()),
+            affected_scenes=tuple(sorted({s for a in produced for s in a.request.affected_scenes})),
+            limitations=tuple(limitations))
+        data = (manifest.model_dump_json(indent=2) + "\n").encode("utf-8")
+        path = await tools.write_bytes("asset_manifest.json", data)
+        refs.append(self._ref(context, "art-manifest", path, data))
+        markdown = self._render(manifest)
+        path = await tools.write_text("art_handoff.md", markdown)
+        refs.append(self._ref(context, "art-handoff", path, markdown.encode("utf-8"), media_type="text/markdown"))
+        return self._result(context, "partial" if placeholders else "completed",
+            plan.summary + (" Image generation was mocked; final artwork remains pending." if placeholders else ""),
+            artifact_refs=tuple(refs), proposed_updates=ProposedUpdates(assets=tuple(a.record for a in produced)))
+
+    @staticmethod
+    def _render(manifest):
+        lines = ["# Art Producer handoff", "", manifest.summary, "", "## Style guide", "", manifest.style_guide,
+                 "", "## Limitations", "", *["- " + value for value in manifest.limitations], "",
+                 "## Changed scenes", "", *["- " + scene for scene in manifest.affected_scenes], "", "## Asset inventory", ""]
+        for item in manifest.assets:
+            draft, record = item.request, item.record
+            lines.extend([f"### {record.asset_id}", "", f"- Target: `{draft.target_path}`",
+                f"- Published artifact: `{record.artifact_ref.path}` (version {record.artifact_ref.version})",
+                f"- Source: `{record.source}`; mock: `{item.is_mock}`",
+                f"- Dimensions: {item.width} x {item.height}; alpha channel: {item.has_alpha}",
+                f"- Requirements: {', '.join(draft.requirement_ids)}",
+                f"- Affected scenes: {', '.join(draft.affected_scenes)}", "", record.integration_notes, "",
+                "License:", "", record.license, ""])
+        return "\n".join(lines)

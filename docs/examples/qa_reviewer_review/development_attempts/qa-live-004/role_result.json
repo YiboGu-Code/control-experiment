@@ -1,0 +1,25 @@
+{
+  "schema_version": "1.0",
+  "request_id": "import-recorded-player",
+  "role": "player",
+  "state_revision": 3,
+  "status": "failed",
+  "summary": "Invocation failed; no state changes were accepted",
+  "artifact_refs": [],
+  "proposed_updates": {
+    "requirements": [],
+    "design": null,
+    "assets": [],
+    "game_revision": null,
+    "evidence": [],
+    "issues": [],
+    "readiness": null
+  },
+  "evidence_refs": [],
+  "blockers": [],
+  "error": {
+    "code": "execution_error",
+    "message": "Invocation failed (PermissionError)",
+    "retryable": false
+  }
+}

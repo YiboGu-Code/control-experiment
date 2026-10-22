@@ -1,0 +1,14 @@
+{"frame":10,"type":"wait"}
+{"frame":30,"keycode":"D","type":"key_down"}
+{"frame":90,"keycode":"D","type":"key_up"}
+{"frame":110,"keycode":"SPACE","type":"key_down"}
+{"frame":111,"keycode":"SPACE","type":"key_up"}
+{"frame":140,"type":"wait"}
+{"frame":180,"keycode":"E","type":"key_down"}
+{"frame":181,"keycode":"E","type":"key_up"}
+{"frame":210,"type":"wait"}
+{"frame":240,"type":"wait"}
+{"frame":300,"type":"wait"}
+{"frame":360,"keycode":"A","type":"key_down"}
+{"frame":420,"keycode":"A","type":"key_up"}
+{"frame":500,"type":"wait"}

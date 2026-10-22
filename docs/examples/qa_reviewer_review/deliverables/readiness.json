@@ -1,0 +1,24 @@
+{
+  "game_revision_id": "game-0001",
+  "ready": false,
+  "rationale": "Not ready. The build passes and a few requirements are evidenced (Godot 4 project layout except demo_outputs, clean headless launch, title first screen, four chapters of six level buttons, scenario skip-to-level and seeded entry, timer visible at 30.00, flash/rewind/respawn observed, several trace-format rules), but the game is not a shippable micro-game: the player falls out of the world (QA-002), interact is inert (QA-003), level content is a degenerate template with no temporal puzzles (QA-001), completion and reset were never observed (QA-005, QA-006), ghost interactions are unexercised (QA-004), the title trace is non-deterministic (QA-008), zero delivery traces are packaged (QA-007), and all art is mock placeholder (QA-010). Open blocker/major issues remain, and the host gates packaged_traces_replayed and final_art are false. Host abstained on 18 criterion decisions and withheld 3 issue updates. Host gate failures: packaged_traces_replayed, final_art, all_requirements_verified, no_blocking_issues, no_open_design_or_evidence_gaps.",
+  "evidence_ids": [
+    "build-0001",
+    "player-0001-play-01",
+    "player-0001-play-04",
+    "player-0001-play-07",
+    "player-0001-replay-03"
+  ],
+  "blocking_issue_ids": [
+    "QA-002",
+    "QA-003",
+    "QA-004",
+    "QA-005",
+    "QA-006",
+    "QA-008",
+    "QA-009",
+    "QA-host-evidence-gaps",
+    "QA-host-failed-acceptance",
+    "QA-host-rejected-issues"
+  ]
+}

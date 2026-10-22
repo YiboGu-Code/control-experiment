@@ -1,0 +1,411 @@
+{
+  "schema_version": "player.1",
+  "config": {
+    "prompt_version": "player.v1",
+    "harness_version": "godot-player.v1",
+    "max_output_tokens": 8192,
+    "max_model_turns": 4,
+    "max_traces": 3,
+    "replay_runs": 2,
+    "probe_frames": 6,
+    "session_timeout_seconds": 180.0,
+    "max_prompt_bytes": 786432,
+    "max_response_bytes": 131072,
+    "max_checkpoints": 6,
+    "driver_executable": "python3",
+    "driver_path": "/opt/gamecraft/player_driver.py",
+    "seed": 1337
+  },
+  "task_id": "platformer-time-loop",
+  "game_revision_id": "game-0001",
+  "project_ref": {
+    "artifact_id": "game-project",
+    "version": 1,
+    "kind": "game_project",
+    "path": "artifacts/developer/8ce726a9ecad90a140719624/game",
+    "created_by": "developer",
+    "media_type": null,
+    "sha256": "eb929b96a5bdd894db35ea59191e8f109a38221372d62b6d5d28a8ab4f244d22"
+  },
+  "developer_report_ref": {
+    "artifact_id": "developer-report",
+    "version": 1,
+    "kind": "report",
+    "path": "artifacts/developer/8ce726a9ecad90a140719624/developer_report.json",
+    "created_by": "developer",
+    "media_type": "application/json",
+    "sha256": "933a30cb09b8ac5e995a07e65b166e8808e7ba027f702a101b204aabbc5b5be5"
+  },
+  "sessions": [
+    {
+      "session_id": "probe",
+      "mode": "probe",
+      "trace_id": null,
+      "scenario": null,
+      "status": "passed",
+      "reason": "Real frame-indexed input capture completed; gameplay objectives and QA acceptance are separate",
+      "completed_frames": 6,
+      "log_ref": {
+        "artifact_id": "player-session-probe",
+        "version": 1,
+        "kind": "log",
+        "path": "artifacts/player/5fc2120edf4680b305663565/logs/probe.json",
+        "created_by": "player",
+        "media_type": "application/json",
+        "sha256": "4a34c526e5810d0df11cfbed1be9bc065a1e2552bd29bb95f6b3e3d353a55c8b"
+      },
+      "trace_ref": null,
+      "executed_trace": {
+        "scenario": null,
+        "duration_frames": 6,
+        "events": []
+      },
+      "screenshot_refs": [
+        {
+          "artifact_id": "player-probe-frame_0000-png",
+          "version": 1,
+          "kind": "screenshot",
+          "path": "artifacts/player/5fc2120edf4680b305663565/sessions/probe/frame_0000.png",
+          "created_by": "player",
+          "media_type": "image/png",
+          "sha256": "d1c1924cbbf7511dd791b731a892cec75af223cc7520e7e1567c1b161f70f060"
+        },
+        {
+          "artifact_id": "player-probe-frame_0005-png",
+          "version": 1,
+          "kind": "screenshot",
+          "path": "artifacts/player/5fc2120edf4680b305663565/sessions/probe/frame_0005.png",
+          "created_by": "player",
+          "media_type": "image/png",
+          "sha256": "7883f91cf305e5cc06a51fac18ee38a973443c8576d02e0fd4c44adb917862d0"
+        }
+      ],
+      "observation_refs": [
+        {
+          "artifact_id": "player-probe-frame_0000-json",
+          "version": 1,
+          "kind": "log",
+          "path": "artifacts/player/5fc2120edf4680b305663565/sessions/probe/frame_0000.json",
+          "created_by": "player",
+          "media_type": "application/json",
+          "sha256": "f02021bf60ed92eb8c5dc08a11a4238f1f378b2ed229f72d1edfe26aa5701124"
+        },
+        {
+          "artifact_id": "player-probe-frame_0005-json",
+          "version": 1,
+          "kind": "log",
+          "path": "artifacts/player/5fc2120edf4680b305663565/sessions/probe/frame_0005.json",
+          "created_by": "player",
+          "media_type": "application/json",
+          "sha256": "362e3c8c1d9daf5bb624f477eace0d828ef9c122afd555ed2ec3f1099066f817"
+        }
+      ],
+      "state_digests": [
+        "f02021bf60ed92eb8c5dc08a11a4238f1f378b2ed229f72d1edfe26aa5701124",
+        "6ecae1f15cbc69f924e18eaa2335fac87f5a26173d99d33a969fdf7ac5bb6064",
+        "01730e82901b00988cb571b04a0595c9c68cedfbb265282e257322a2df25ddb4",
+        "a972e347f3f42d1bdf145bb889ce7d3ba407b4fa5525a2a6478b346f7fd861d9",
+        "2910d3dea2457d4e7d07014dce47d79938fee54bdce7cc17e52421998ac2e683",
+        "362e3c8c1d9daf5bb624f477eace0d828ef9c122afd555ed2ec3f1099066f817"
+      ],
+      "pixel_digests": [
+        "f9e1de474e649dcb1c721f17159e7f4b9e72b1f644c12b0ca48fc87625e70ef4",
+        "100047357e3a411b0b0e1431efd3a0a3b5d10a8287656dda641535c556a76c89",
+        "5d3f31e1a58059d1c165da33c975de23aea89cb6afba30c56d5f4811669b468b",
+        "c72333cd491ba453ba0119835e0b27d8364cef7543b590c588cd0d4dc5decd18",
+        "8f7d7d5270ac325576962a24ac0b9ca26f04c476237e51ff9c844b00ac79f29a",
+        "1c5b5a1cfd5cd455eb10fe52af502377ae8d1e695af7418b5074ec2f94988012"
+      ],
+      "observations": [
+        {
+          "frame": 0,
+          "nodes": [
+            {
+              "class": "Node",
+              "path": "Main",
+              "properties": {
+                "current_level_index": 0,
+                "current_screen": "Main/TitleScreen",
+                "demo_duration": 0,
+                "demo_events": [],
+                "demo_frame": 0,
+                "demo_index": 0,
+                "play_demo": false
+              },
+              "scripted": true
+            },
+            {
+              "class": "Control",
+              "path": "Main/TitleScreen",
+              "properties": {
+                "hands": [
+                  "Main/TitleScreen/Hands/HandA",
+                  "Main/TitleScreen/Hands/HandB",
+                  "Main/TitleScreen/Hands/HandC"
+                ],
+                "main": "Main",
+                "play_button": "Main/TitleScreen/Menu/PlayButton",
+                "position": [
+                  0.0,
+                  0.0
+                ],
+                "rotation": 0.0,
+                "scale": [
+                  1.0,
+                  1.0
+                ],
+                "screen_rect": [
+                  0.0,
+                  0.0,
+                  1280.0,
+                  720.0
+                ],
+                "visible": true,
+                "visible_in_tree": true
+              },
+              "scripted": true
+            },
+            {
+              "class": "Label",
+              "path": "Main/TitleScreen/TitleLabel",
+              "properties": {
+                "position": [
+                  340.0,
+                  200.0
+                ],
+                "rotation": 0.0,
+                "scale": [
+                  1.0,
+                  1.0
+                ],
+                "screen_rect": [
+                  340.0,
+                  200.0,
+                  600.0,
+                  100.0
+                ],
+                "text": "TIME LOOP",
+                "visible": true,
+                "visible_in_tree": true
+              },
+              "scripted": false
+            },
+            {
+              "class": "Label",
+              "path": "Main/TitleScreen/SubLabel",
+              "properties": {
+                "position": [
+                  0.0,
+                  620.0
+                ],
+                "rotation": 0.0,
+                "scale": [
+                  1.0,
+                  1.0
+                ],
+                "screen_rect": [
+                  0.0,
+                  620.0,
+                  1280.0,
+                  40.0
+                ],
+                "text": "A/D move  Space jump  E interact  R reset  Esc menu",
+                "visible": true,
+                "visible_in_tree": true
+              },
+              "scripted": false
+            },
+            {
+              "class": "Button",
+              "path": "Main/TitleScreen/Menu/PlayButton",
+              "properties": {
+                "button_pressed": false,
+                "disabled": false,
+                "position": [
+                  0.0,
+                  0.0
+                ],
+                "rotation": 0.0,
+                "scale": [
+                  1.0,
+                  1.0
+                ],
+                "screen_rect": [
+                  490.0,
+                  380.0,
+                  300.0,
+                  64.0
+                ],
+                "text": "Play",
+                "visible": true,
+                "visible_in_tree": true
+              },
+              "scripted": false
+            }
+          ],
+          "truncations": 0
+        },
+        {
+          "frame": 5,
+          "nodes": [
+            {
+              "class": "Node",
+              "path": "Main",
+              "properties": {
+                "current_level_index": 0,
+                "current_screen": "Main/TitleScreen",
+                "demo_duration": 0,
+                "demo_events": [],
+                "demo_frame": 0,
+                "demo_index": 0,
+                "play_demo": false
+              },
+              "scripted": true
+            },
+            {
+              "class": "Control",
+              "path": "Main/TitleScreen",
+              "properties": {
+                "hands": [
+                  "Main/TitleScreen/Hands/HandA",
+                  "Main/TitleScreen/Hands/HandB",
+                  "Main/TitleScreen/Hands/HandC"
+                ],
+                "main": "Main",
+                "play_button": "Main/TitleScreen/Menu/PlayButton",
+                "position": [
+                  0.0,
+                  0.0
+                ],
+                "rotation": 0.0,
+                "scale": [
+                  1.0,
+                  1.0
+                ],
+                "screen_rect": [
+                  0.0,
+                  0.0,
+                  1280.0,
+                  720.0
+                ],
+                "visible": true,
+                "visible_in_tree": true
+              },
+              "scripted": true
+            },
+            {
+              "class": "Label",
+              "path": "Main/TitleScreen/TitleLabel",
+              "properties": {
+                "position": [
+                  340.0,
+                  200.0
+                ],
+                "rotation": 0.0,
+                "scale": [
+                  1.0,
+                  1.0
+                ],
+                "screen_rect": [
+                  340.0,
+                  200.0,
+                  600.0,
+                  100.0
+                ],
+                "text": "TIME LOOP",
+                "visible": true,
+                "visible_in_tree": true
+              },
+              "scripted": false
+            },
+            {
+              "class": "Label",
+              "path": "Main/TitleScreen/SubLabel",
+              "properties": {
+                "position": [
+                  0.0,
+                  620.0
+                ],
+                "rotation": 0.0,
+                "scale": [
+                  1.0,
+                  1.0
+                ],
+                "screen_rect": [
+                  0.0,
+                  620.0,
+                  1280.0,
+                  40.0
+                ],
+                "text": "A/D move  Space jump  E interact  R reset  Esc menu",
+                "visible": true,
+                "visible_in_tree": true
+              },
+              "scripted": false
+            },
+            {
+              "class": "Button",
+              "path": "Main/TitleScreen/Menu/PlayButton",
+              "properties": {
+                "button_pressed": false,
+                "disabled": false,
+                "position": [
+                  0.0,
+                  0.0
+                ],
+                "rotation": 0.0,
+                "scale": [
+                  1.0,
+                  1.0
+                ],
+                "screen_rect": [
+                  490.0,
+                  380.0,
+                  300.0,
+                  64.0
+                ],
+                "text": "Play",
+                "visible": true,
+                "visible_in_tree": true
+              },
+              "scripted": false
+            }
+          ],
+          "truncations": 0
+        }
+      ]
+    }
+  ],
+  "comparisons": [],
+  "decisions": [],
+  "protocol_errors": [
+    {
+      "model_turn": 1,
+      "error": "Invalid checkpoint frame or checkpoint budget",
+      "rejected_response": "{\"action\": \"play\", \"summary\": \"Probe shows the title screen (TIME LOOP, three clock hands, Play button at rect x490 y380 w300 h64). First run ordinary title->menu->level navigation with a mouse click on Play using the observed rectangle; second run the supported near_rewind scenario to exercise imminent loop rewind with real movement and jump input. No input traces are fabricated beyond these executed trials, and QA acceptance is not claimed.\", \"trials\": [{\"trace_id\": \"title_to_level_probe\", \"purpose\": \"Ordinary launch from title screen: click Play at the observed button center, wait for the chapter menu to settle, capture its layout, then descend into level 1 to observe the countdown/HUD and ordinary gameplay inputs.\", \"requirement_ids\": [\"R007\", \"R008\", \"R009\", \"R010\", \"R027\"], \"trace\": {\"scenario\": null, \"duration_frames\": 420, \"events\": [{\"frame\": 20, \"type\": \"mouse_click\", \"button\": \"left\", \"x\": 640, \"y\": 412}, {\"frame\": 60, \"type\": \"wait\"}, {\"frame\": 90, \"type\": \"wait\"}, {\"frame\": 120, \"type\": \"wait\"}, {\"frame\": 150, \"type\": \"wait\"}, {\"frame\": 180, \"type\": \"wait\"}, {\"frame\": 210, \"type\": \"mouse_click\", \"button\": \"left\", \"x\": 640, \"y\": 360}, {\"frame\": 250, \"type\": \"wait\"}, {\"frame\": 280, \"type\": \"key_down\", \"keycode\": \"D\"}, {\"frame\": 330, \"type\": \"key_up\", \"keycode\": \"D\"}, {\"frame\": 350, \"type\": \"key_press\", \"keycode\": \"SPACE\"}, {\"frame\": 380, \"type\": \"key_down\", \"keycode\": \"A\"}, {\"frame\": 400, \"type\": \"key_up\", \"keycode\": \"A\"}, {\"frame\": 415, \"type\": \"wait\"}]}, \"checkpoint_frames\": [30, 60, 100, 190, 215, 290]}, {\"trace_id\": \"near_rewind_play\", \"purpose\": \"Meaningful scenario: launch near_rewind (level 1 with three ghost replays, clock at ~24s) and act so the imminent rewind occurs, then verify the player restarts at spawn with a ghost replay and the HUD/timeline reflects it.\", \"requirement_ids\": [\"R001\", \"R002\", \"R011\", \"R012\", \"R014\", \"R030\"], \"trace\": {\"scenario\": \"near_rewind\", \"duration_frames\": 420, \"events\": [{\"frame\": 10, \"type\": \"key_down\", \"keycode\": \"D\"}, {\"frame\": 50, \"type\": \"key_press\", \"keycode\": \"SPACE\"}, {\"frame\": 90, \"type\": \"key_up\", \"keycode\": \"D\"}, {\"frame\": 110, \"type\": \"key_press\", \"keycode\": \"SPACE\"}, {\"frame\": 150, \"type\": \"key_press\", \"keycode\": \"E\"}, {\"frame\": 190, \"type\": \"wait\"}, {\"frame\": 230, \"type\": \"key_down\", \"keycode\": \"A\"}, {\"frame\": 270, \"type\": \"key_up\", \"keycode\": \"A\"}, {\"frame\": 310, \"type\": \"key_press\", \"keycode\": \"SPACE\"}, {\"frame\": 360, \"type\": \"wait\"}, {\"frame\": 415, \"type\": \"wait\"}]}, \"checkpoint_frames\": [20, 100, 200, 260, 340, 415]}]}"
+    },
+    {
+      "model_turn": 2,
+      "error": "Invalid checkpoint frame or checkpoint budget",
+      "rejected_response": "{\"action\": \"play\", \"summary\": \"Probe confirmed the ordinary title screen with TIME LOOP, three clock hands, and a Play button at screen rect x490 y380 w300 h64 (center ~640,412). Two trials: (1) ordinary title->menu->level navigation clicking the observed Play rectangle, then entering a level and driving real movement/jump input; (2) the supported near_rewind scenario to exercise imminent rewind with real input. No traces fabricated beyond these executed trials; no QA acceptance claimed.\", \"trials\": [{\"trace_id\": \"title_to_level_probe\", \"purpose\": \"Ordinary launch from title screen: click Play at the observed button center, wait for the chapter menu to settle, capture its layout, then descend into level 1 to observe the countdown/HUD and ordinary gameplay inputs.\", \"requirement_ids\": [\"R007\", \"R008\", \"R009\", \"R010\", \"R027\"], \"trace\": {\"scenario\": null, \"duration_frames\": 420, \"events\": [{\"frame\": 20, \"type\": \"mouse_click\", \"button\": \"left\", \"x\": 640, \"y\": 412}, {\"frame\": 90, \"type\": \"wait\"}, {\"frame\": 180, \"type\": \"wait\"}, {\"frame\": 210, \"type\": \"mouse_click\", \"button\": \"left\", \"x\": 640, \"y\": 360}, {\"frame\": 260, \"type\": \"wait\"}, {\"frame\": 280, \"type\": \"key_down\", \"keycode\": \"D\"}, {\"frame\": 330, \"type\": \"key_up\", \"keycode\": \"D\"}, {\"frame\": 350, \"type\": \"key_press\", \"keycode\": \"SPACE\"}, {\"frame\": 380, \"type\": \"key_down\", \"keycode\": \"A\"}, {\"frame\": 400, \"type\": \"key_up\", \"keycode\": \"A\"}, {\"frame\": 415, \"type\": \"wait\"}]}, \"checkpoint_frames\": [30, 100]}, {\"trace_id\": \"near_rewind_play\", \"purpose\": \"Meaningful scenario: launch near_rewind (level 1 with three ghost replays, clock ~24s) and act so the imminent rewind occurs, then observe whether the player restarts at spawn with ghost replay and HUD/timeline reflect it.\", \"requirement_ids\": [\"R001\", \"R002\", \"R011\", \"R012\", \"R014\", \"R030\"], \"trace\": {\"scenario\": \"near_rewind\", \"duration_frames\": 420, \"events\": [{\"frame\": 10, \"type\": \"key_down\", \"keycode\": \"D\"}, {\"frame\": 50, \"type\": \"key_press\", \"keycode\": \"SPACE\"}, {\"frame\": 90, \"type\": \"key_up\", \"keycode\": \"D\"}, {\"frame\": 110, \"type\": \"key_press\", \"keycode\": \"SPACE\"}, {\"frame\": 150, \"type\": \"key_press\", \"keycode\": \"E\"}, {\"frame\": 230, \"type\": \"key_down\", \"keycode\": \"A\"}, {\"frame\": 270, \"type\": \"key_up\", \"keycode\": \"A\"}, {\"frame\": 310, \"type\": \"key_press\", \"keycode\": \"SPACE\"}, {\"frame\": 415, \"type\": \"wait\"}]}, \"checkpoint_frames\": [20, 100, 200, 260, 340, 415]}]}"
+    },
+    {
+      "model_turn": 3,
+      "error": "1 validation error for PlayerDecision\ntrials.0.trace.events_note\n  Extra inputs are not permitted [type=extra_forbidden, input_value=None, input_type=NoneType]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden",
+      "rejected_response": "{\"action\": \"play\", \"summary\": \"Probe confirms the ordinary title screen (TIME LOOP, three clock hands, Play button rect x490 y380 w300 h64, center ~640,412). Two executed trials: (1) ordinary launch from the title, clicking the observed Play rectangle to reach the chapter menu, then attempting to enter a level and drive real movement/jump input; (2) the supported near_rewind scenario to exercise an imminent loop rewind under real input. Checkpoints stay within the 6-per-trial budget. No traces are fabricated beyond these executed trials and no QA acceptance is claimed.\", \"trials\": [{\"trace_id\": \"title_to_level_probe\", \"purpose\": \"Ordinary launch from title screen: click Play at observed center (640,412), let the chapter menu settle and capture its layout, then attempt to enter level 1 and observe the countdown/HUD and ordinary movement/jump input.\", \"requirement_ids\": [\"R007\", \"R008\", \"R009\", \"R010\", \"R027\"], \"trace\": {\"scenario\": null, \"duration_frames\": 420, \"events\": [{\"frame\": 20, \"type\": \"mouse_click\", \"button\": \"left\", \"x\": 640, \"y\": 412}, {\"frame\": 100, \"type\": \"wait\"}, {\"frame\": 200, \"type\": \"mouse_click\", \"button\": \"left\", \"x\": 320, \"y\": 360}, {\"frame\": 260, \"type\": \"wait\"}, {\"frame\": 280, \"type\": \"key_down\", \"keycode\": \"D\"}, {\"frame\": 330, \"type\": \"key_up\", \"keycode\": \"D\"}, {\"frame\": 350, \"type\": \"key_press\", \"keycode\": \"SPACE\"}, {\"frame\": 380, \"type\": \"key_down\", \"keycode\": \"A\"}, {\"frame\": 400, \"type\": \"key_up\", \"keycode\": \"A\"}, {\"frame\": 415, \"type\": \"wait\"}], \"events_note\": null}, \"checkpoint_frames\": [30, 60, 205, 270, 340, 415]}, {\"trace_id\": \"near_rewind_play\", \"purpose\": \"Meaningful scenario: launch near_rewind (level 1, three ghost replays, clock ~24s) and act with real input so the imminent rewind occurs, then observe whether the player restarts at spawn with a ghost replay and the HUD/timeline reflect it.\", \"requirement_ids\": [\"R001\", \"R002\", \"R011\", \"R012\", \"R014\", \"R030\"], \"trace\": {\"scenario\": \"near_rewind\", \"duration_frames\": 420, \"events\": [{\"frame\": 10, \"type\": \"key_down\", \"keycode\": \"D\"}, {\"frame\": 50, \"type\": \"key_press\", \"keycode\": \"SPACE\"}, {\"frame\": 90, \"type\": \"key_up\", \"keycode\": \"D\"}, {\"frame\": 110, \"type\": \"key_press\", \"keycode\": \"SPACE\"}, {\"frame\": 150, \"type\": \"key_press\", \"keycode\": \"E\"}, {\"frame\": 200, \"type\": \"wait\"}, {\"frame\": 230, \"type\": \"key_down\", \"keycode\": \"A\"}, {\"frame\": 270, \"type\": \"key_up\", \"keycode\": \"A\"}, {\"frame\": 310, \"type\": \"key_press\", \"keycode\": \"SPACE\"}, {\"frame\": 360, \"type\": \"wait\"}, {\"frame\": 415, \"type\": \"wait\"}]}, \"checkpoint_frames\": [20, 60, 130, 180, 230, 415]}]}"
+    },
+    {
+      "model_turn": 4,
+      "error": "Invalid checkpoint frame or checkpoint budget",
+      "rejected_response": "{\"action\": \"play\", \"summary\": \"Probe confirms the ordinary title screen (TIME LOOP, three clock hands under Main/TitleScreen/Hands, Play button screen_rect x490 y380 w300 h64, center ~640,412). Two executed trials within budget: (1) ordinary title launch, clicking the observed Play button center to reach the chapter menu, then attempting a level entry and driving real movement/jump input; (2) the supported near_rewind scenario to exercise an imminent loop rewind under real input. Checkpoints stay within 6 per trial. No traces beyond these executed trials are proposed, and no QA acceptance is claimed.\", \"trials\": [{\"trace_id\": \"title_to_level_probe\", \"purpose\": \"Ordinary launch from title screen: click Play at the observed center (640,412), let the chapter menu settle and capture its layout, then attempt to enter a level and observe the countdown/HUD and ordinary movement/jump input.\", \"requirement_ids\": [\"R007\", \"R008\", \"R009\", \"R010\", \"R027\"], \"trace\": {\"scenario\": null, \"duration_frames\": 420, \"events\": [{\"frame\": 20, \"type\": \"mouse_click\", \"button\": \"left\", \"x\": 640, \"y\": 412}, {\"frame\": 100, \"type\": \"wait\"}, {\"frame\": 200, \"type\": \"mouse_click\", \"button\": \"left\", \"x\": 320, \"y\": 360}, {\"frame\": 260, \"type\": \"wait\"}, {\"frame\": 280, \"type\": \"key_down\", \"keycode\": \"D\"}, {\"frame\": 330, \"type\": \"key_up\", \"keycode\": \"D\"}, {\"frame\": 350, \"type\": \"key_press\", \"keycode\": \"SPACE\"}, {\"frame\": 380, \"type\": \"key_down\", \"keycode\": \"A\"}, {\"frame\": 400, \"type\": \"key_up\", \"keycode\": \"A\"}, {\"frame\": 415, \"type\": \"wait\"}]}, \"checkpoint_frames\": [30, 60, 205, 270, 340, 415]}, {\"trace_id\": \"near_rewind_play\", \"purpose\": \"Meaningful scenario: launch near_rewind (level 1, three ghost replays, clock ~24s) and act with real input so the imminent rewind occurs, then observe whether the player restarts at spawn with a ghost replay and the HUD/timeline reflect it.\", \"requirement_ids\": [\"R001\", \"R002\", \"R011\", \"R012\", \"R014\", \"R030\"], \"trace\": {\"scenario\": \"near_rewind\", \"duration_frames\": 420, \"events\": [{\"frame\": 10, \"type\": \"key_down\", \"keycode\": \"D\"}, {\"frame\": 50, \"type\": \"key_press\", \"keycode\": \"SPACE\"}, {\"frame\": 90, \"type\": \"key_up\", \"keycode\": \"D\"}, {\"frame\": 110, \"type\": \"key_press\", \"keycode\": \"SPACE\"}, {\"frame\": 150, \"type\": \"key_press\", \"keycode\": \"E\"}, {\"frame\": 200, \"type\": \"wait\"}, {\"frame\": 230, \"type\": \"key_down\", \"keycode\": \"A\"}, {\"frame\": 270, \"type\": \"key_up\", \"keycode\": \"A\"}, {\"frame\": 310, \"type\": \"key_press\", \"keycode\": \"SPACE\"}, {\"frame\": 360, \"type\": \"wait\"}, {\"frame\": 415, \"type\": \"wait\"}]}, \"checkpoint_frames\": [20, 60, 130, 180, 230, 415]}]}"
+    }
+  ],
+  "limitations": [
+    "This is a custom public trace harness, not the hidden official evaluator or a QA verdict.",
+    "Determinism means matching bounded observed state and rendered pixels at every recorded frame on this fixed engine/image; hidden state, other seeds and other platforms are not proved.",
+    "The text model received actual scene observations and screenshot references, but did not visually inspect images.",
+    "Godot wall-clock time is not rewritten; wall-clock animations can legitimately fail exact visual replay.",
+    "The published Developer project and mock assets are unchanged. Copy accepted traces into the final package only during a later controlled assembly step.",
+    "A final model observation decision was not reached within the configured resources."
+  ]
+}

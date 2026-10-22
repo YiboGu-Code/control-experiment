@@ -1,0 +1,16 @@
+{
+  "started_at": "2026-10-19T08:54:27.146102+00:00",
+  "status": "completed",
+  "usage": {
+    "model_calls": 1,
+    "input_tokens": 19720,
+    "cached_input_tokens": 18048,
+    "output_tokens": 6877,
+    "image_calls": 0,
+    "tool_calls": 0,
+    "tool_seconds": 0.0,
+    "wall_seconds": 0.0,
+    "token_usage_complete": true
+  },
+  "finished_at": "2026-10-19T08:55:00.171586+00:00"
+}

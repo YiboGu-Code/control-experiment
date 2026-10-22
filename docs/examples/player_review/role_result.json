@@ -1,0 +1,2143 @@
+{
+  "schema_version": "1.0",
+  "request_id": "player-initial",
+  "role": "player",
+  "state_revision": 3,
+  "status": "partial",
+  "summary": "Captured 3 real input traces and checked 6 fresh replays; see original diagnostics and model findings.",
+  "artifact_refs": [
+    {
+      "artifact_id": "player-job-probe",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/requests/probe.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "2359ac5b4afa19ab189912658babfc12ca1301514a8f5f188a187411eae9eb8e"
+    },
+    {
+      "artifact_id": "player-probe-driver-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/probe/driver.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "c73f9cbd31652604378e527863cb4acdf95239337d62d6f76951d8eac0b14648"
+    },
+    {
+      "artifact_id": "player-probe-events-jsonl",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/probe/events.jsonl",
+      "created_by": "player",
+      "media_type": "application/x-ndjson",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "artifact_id": "player-probe-executed_trace-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/probe/executed_trace.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "49dc202e1305106f26b378c139d7b867c67bbf06b9c5ce1f5670001e35bac4b1"
+    },
+    {
+      "artifact_id": "player-probe-frame_0000-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/probe/frame_0000.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "d6cec58cd1eae3f10d1dbbf0e7824d7a6931c7a23d9ac0017282ed5e35a20731"
+    },
+    {
+      "artifact_id": "player-probe-frame_0000-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/probe/frame_0000.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "23d4cff8ce720bedc3aa19a8c84aafe0b5e02ef2dd36159af4fb27fe708a6dbf"
+    },
+    {
+      "artifact_id": "player-probe-frame_0005-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/probe/frame_0005.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "f74901072eb0246f409d2153781e3c172acb11e803aae31f8c123cdcca8c89dd"
+    },
+    {
+      "artifact_id": "player-probe-frame_0005-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/probe/frame_0005.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "ac9f3efb9f9c64555a562dfbe781c986eb8ad451331bf6324529e1456d800774"
+    },
+    {
+      "artifact_id": "player-probe-frames-jsonl",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/probe/frames.jsonl",
+      "created_by": "player",
+      "media_type": "application/x-ndjson",
+      "sha256": "8b1acd0213b91e3b9ed7fbfae760a69534a857e051245d2a9f8bf78a1a554d2d"
+    },
+    {
+      "artifact_id": "player-probe-receipt-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/probe/receipt.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "dc74e6b90697e59a26f66f7e28f63a63f291c2fd5e476a39b46f17cb435732b4"
+    },
+    {
+      "artifact_id": "player-session-probe",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/logs/probe.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "5e9b4e4006f5acaafbebcfd1b4c13856683dfa8282605c932e596b7d82d5724d"
+    },
+    {
+      "artifact_id": "player-job-title_nav_probe-capture",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/requests/title_nav_probe-capture.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "79dec8daac331261bfb12f005f688167e24a34826538339afd1d588a1173e79d"
+    },
+    {
+      "artifact_id": "player-title_nav_probe-capture-driver-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-capture/driver.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "6408775ca7ec8e2f244ff74320d9c52324ade9cec86a0b6e5b2c52e601b5fdc2"
+    },
+    {
+      "artifact_id": "player-title_nav_probe-capture-events-jsonl",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-capture/events.jsonl",
+      "created_by": "player",
+      "media_type": "application/x-ndjson",
+      "sha256": "3d205ce5eedbd623cb7093be6af4e298194ea7fd388ef18835e2e21384bb7339"
+    },
+    {
+      "artifact_id": "player-title_nav_probe-capture-executed_trace-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-capture/executed_trace.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "a3a5bef60fd6036ad7ba8edc881b7dbdfeb497a18b6bd2f3e00a8a233793050a"
+    },
+    {
+      "artifact_id": "player-title_nav_probe-capture-frame_0000-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-capture/frame_0000.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "449a02880c3554ca4640e8124dea8182b4f01b04c1721ce3f4440cf1d30ced9a"
+    },
+    {
+      "artifact_id": "player-title_nav_probe-capture-frame_0000-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-capture/frame_0000.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "05ed4962613701a64715d7d8f73375e4d7c6fd6192e9c4ef1036f31e9b7e3c39"
+    },
+    {
+      "artifact_id": "player-title_nav_probe-capture-frame_0120-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-capture/frame_0120.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "a3d74c0d8df85ee96d252d5cb8e62439a23b9d665fe8f2c5e3991b5d6761e22d"
+    },
+    {
+      "artifact_id": "player-title_nav_probe-capture-frame_0120-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-capture/frame_0120.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "a7ed52801046eee3a42a387840d721f9af5df2a7a670a78a9f470b9edc5ada8d"
+    },
+    {
+      "artifact_id": "player-title_nav_probe-capture-frame_0240-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-capture/frame_0240.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "a3d74c0d8df85ee96d252d5cb8e62439a23b9d665fe8f2c5e3991b5d6761e22d"
+    },
+    {
+      "artifact_id": "player-title_nav_probe-capture-frame_0240-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-capture/frame_0240.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "74c342208f23050cbcfed6b8d0231b5b8dd75a148ae291b8fa51037cd7ff4a3a"
+    },
+    {
+      "artifact_id": "player-title_nav_probe-capture-frame_0450-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-capture/frame_0450.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "a3d74c0d8df85ee96d252d5cb8e62439a23b9d665fe8f2c5e3991b5d6761e22d"
+    },
+    {
+      "artifact_id": "player-title_nav_probe-capture-frame_0450-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-capture/frame_0450.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "74c342208f23050cbcfed6b8d0231b5b8dd75a148ae291b8fa51037cd7ff4a3a"
+    },
+    {
+      "artifact_id": "player-title_nav_probe-capture-frame_0599-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-capture/frame_0599.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "a3d74c0d8df85ee96d252d5cb8e62439a23b9d665fe8f2c5e3991b5d6761e22d"
+    },
+    {
+      "artifact_id": "player-title_nav_probe-capture-frame_0599-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-capture/frame_0599.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "74c342208f23050cbcfed6b8d0231b5b8dd75a148ae291b8fa51037cd7ff4a3a"
+    },
+    {
+      "artifact_id": "player-title_nav_probe-capture-frames-jsonl",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-capture/frames.jsonl",
+      "created_by": "player",
+      "media_type": "application/x-ndjson",
+      "sha256": "9fe8537e442b847ac6a0a9dd794ab63af257f88422389e7dcc571794ed1c7122"
+    },
+    {
+      "artifact_id": "player-title_nav_probe-capture-receipt-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-capture/receipt.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "92c9e124251285b5ff4a451f2f2601f5e1056168afe2d0c346073a569926583c"
+    },
+    {
+      "artifact_id": "player-session-title_nav_probe-capture",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/logs/title_nav_probe-capture.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "545e42c2145fda422dba0d7cef9e2ec39ccdfc0292934d240cc7789c423a84d3"
+    },
+    {
+      "artifact_id": "player-trace-title_nav_probe",
+      "version": 1,
+      "kind": "input_trace",
+      "path": "artifacts/player/5fc2120edf4680b305663565/demo_outputs/title_nav_probe.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "f03649da60c70dedd507537a908d8c62baee0f177be96eeef93d481df49ad62a"
+    },
+    {
+      "artifact_id": "player-job-title_nav_probe-replay-1",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/requests/title_nav_probe-replay-1.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "79dec8daac331261bfb12f005f688167e24a34826538339afd1d588a1173e79d"
+    },
+    {
+      "artifact_id": "player-title_nav_probe-replay-1-driver-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-replay-1/driver.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "1bace3e7615d459852e842e57f1a40f836e3b2cae463dfa2f14e5040e9758b03"
+    },
+    {
+      "artifact_id": "player-title_nav_probe-replay-1-events-jsonl",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-replay-1/events.jsonl",
+      "created_by": "player",
+      "media_type": "application/x-ndjson",
+      "sha256": "3d205ce5eedbd623cb7093be6af4e298194ea7fd388ef18835e2e21384bb7339"
+    },
+    {
+      "artifact_id": "player-title_nav_probe-replay-1-executed_trace-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-replay-1/executed_trace.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "a3a5bef60fd6036ad7ba8edc881b7dbdfeb497a18b6bd2f3e00a8a233793050a"
+    },
+    {
+      "artifact_id": "player-title_nav_probe-replay-1-frame_0000-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-replay-1/frame_0000.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "78c74d27c5d7f7bb2eabfd33f204e1710d9b3555f3ddea6d7d67c22d822ce61a"
+    },
+    {
+      "artifact_id": "player-title_nav_probe-replay-1-frame_0000-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-replay-1/frame_0000.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "6e5c2f2084ba1a1d5dcab65b0779738dde60f827515f0ff6647c5e8bc43e5f8c"
+    },
+    {
+      "artifact_id": "player-title_nav_probe-replay-1-frame_0120-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-replay-1/frame_0120.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "a3d74c0d8df85ee96d252d5cb8e62439a23b9d665fe8f2c5e3991b5d6761e22d"
+    },
+    {
+      "artifact_id": "player-title_nav_probe-replay-1-frame_0120-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-replay-1/frame_0120.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "a7ed52801046eee3a42a387840d721f9af5df2a7a670a78a9f470b9edc5ada8d"
+    },
+    {
+      "artifact_id": "player-title_nav_probe-replay-1-frame_0240-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-replay-1/frame_0240.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "a3d74c0d8df85ee96d252d5cb8e62439a23b9d665fe8f2c5e3991b5d6761e22d"
+    },
+    {
+      "artifact_id": "player-title_nav_probe-replay-1-frame_0240-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-replay-1/frame_0240.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "74c342208f23050cbcfed6b8d0231b5b8dd75a148ae291b8fa51037cd7ff4a3a"
+    },
+    {
+      "artifact_id": "player-title_nav_probe-replay-1-frame_0450-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-replay-1/frame_0450.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "a3d74c0d8df85ee96d252d5cb8e62439a23b9d665fe8f2c5e3991b5d6761e22d"
+    },
+    {
+      "artifact_id": "player-title_nav_probe-replay-1-frame_0450-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-replay-1/frame_0450.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "74c342208f23050cbcfed6b8d0231b5b8dd75a148ae291b8fa51037cd7ff4a3a"
+    },
+    {
+      "artifact_id": "player-title_nav_probe-replay-1-frame_0599-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-replay-1/frame_0599.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "a3d74c0d8df85ee96d252d5cb8e62439a23b9d665fe8f2c5e3991b5d6761e22d"
+    },
+    {
+      "artifact_id": "player-title_nav_probe-replay-1-frame_0599-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-replay-1/frame_0599.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "74c342208f23050cbcfed6b8d0231b5b8dd75a148ae291b8fa51037cd7ff4a3a"
+    },
+    {
+      "artifact_id": "player-title_nav_probe-replay-1-frames-jsonl",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-replay-1/frames.jsonl",
+      "created_by": "player",
+      "media_type": "application/x-ndjson",
+      "sha256": "181f392e41c942dd23e57639e3c3931c1814a7cf7bdfd738493e21dfd75b40bc"
+    },
+    {
+      "artifact_id": "player-title_nav_probe-replay-1-receipt-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-replay-1/receipt.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "92c9e124251285b5ff4a451f2f2601f5e1056168afe2d0c346073a569926583c"
+    },
+    {
+      "artifact_id": "player-session-title_nav_probe-replay-1",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/logs/title_nav_probe-replay-1.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "48001c270fa878a942c5da54b56af1c72fae5eb2abd163a6b4ecfe37551ec283"
+    },
+    {
+      "artifact_id": "player-job-title_nav_probe-replay-2",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/requests/title_nav_probe-replay-2.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "79dec8daac331261bfb12f005f688167e24a34826538339afd1d588a1173e79d"
+    },
+    {
+      "artifact_id": "player-title_nav_probe-replay-2-driver-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-replay-2/driver.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "e8d69d666ed60eef89e583ad3e8738b8b7ce88c07e65edb286924ac44e215611"
+    },
+    {
+      "artifact_id": "player-title_nav_probe-replay-2-events-jsonl",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-replay-2/events.jsonl",
+      "created_by": "player",
+      "media_type": "application/x-ndjson",
+      "sha256": "3d205ce5eedbd623cb7093be6af4e298194ea7fd388ef18835e2e21384bb7339"
+    },
+    {
+      "artifact_id": "player-title_nav_probe-replay-2-executed_trace-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-replay-2/executed_trace.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "a3a5bef60fd6036ad7ba8edc881b7dbdfeb497a18b6bd2f3e00a8a233793050a"
+    },
+    {
+      "artifact_id": "player-title_nav_probe-replay-2-frame_0000-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-replay-2/frame_0000.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "26cffbc706e42287a75bc2504302d34b24742043176a3a5dfb22f63f3996c2ef"
+    },
+    {
+      "artifact_id": "player-title_nav_probe-replay-2-frame_0000-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-replay-2/frame_0000.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "874399751362e6bc97e030d6846e470b6813a08927a673978615f35863e733d3"
+    },
+    {
+      "artifact_id": "player-title_nav_probe-replay-2-frame_0120-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-replay-2/frame_0120.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "a3d74c0d8df85ee96d252d5cb8e62439a23b9d665fe8f2c5e3991b5d6761e22d"
+    },
+    {
+      "artifact_id": "player-title_nav_probe-replay-2-frame_0120-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-replay-2/frame_0120.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "a7ed52801046eee3a42a387840d721f9af5df2a7a670a78a9f470b9edc5ada8d"
+    },
+    {
+      "artifact_id": "player-title_nav_probe-replay-2-frame_0240-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-replay-2/frame_0240.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "a3d74c0d8df85ee96d252d5cb8e62439a23b9d665fe8f2c5e3991b5d6761e22d"
+    },
+    {
+      "artifact_id": "player-title_nav_probe-replay-2-frame_0240-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-replay-2/frame_0240.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "74c342208f23050cbcfed6b8d0231b5b8dd75a148ae291b8fa51037cd7ff4a3a"
+    },
+    {
+      "artifact_id": "player-title_nav_probe-replay-2-frame_0450-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-replay-2/frame_0450.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "a3d74c0d8df85ee96d252d5cb8e62439a23b9d665fe8f2c5e3991b5d6761e22d"
+    },
+    {
+      "artifact_id": "player-title_nav_probe-replay-2-frame_0450-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-replay-2/frame_0450.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "74c342208f23050cbcfed6b8d0231b5b8dd75a148ae291b8fa51037cd7ff4a3a"
+    },
+    {
+      "artifact_id": "player-title_nav_probe-replay-2-frame_0599-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-replay-2/frame_0599.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "a3d74c0d8df85ee96d252d5cb8e62439a23b9d665fe8f2c5e3991b5d6761e22d"
+    },
+    {
+      "artifact_id": "player-title_nav_probe-replay-2-frame_0599-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-replay-2/frame_0599.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "74c342208f23050cbcfed6b8d0231b5b8dd75a148ae291b8fa51037cd7ff4a3a"
+    },
+    {
+      "artifact_id": "player-title_nav_probe-replay-2-frames-jsonl",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-replay-2/frames.jsonl",
+      "created_by": "player",
+      "media_type": "application/x-ndjson",
+      "sha256": "afcc75055e994a312398a0f163902305716c06f1b5c173d71c3c1e7a190e8cd2"
+    },
+    {
+      "artifact_id": "player-title_nav_probe-replay-2-receipt-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-replay-2/receipt.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "92c9e124251285b5ff4a451f2f2601f5e1056168afe2d0c346073a569926583c"
+    },
+    {
+      "artifact_id": "player-session-title_nav_probe-replay-2",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/logs/title_nav_probe-replay-2.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "02c75032f3560010258d5e1fd5f457247ab9ab5f7bfd2d9c8adf23e9ec020e7f"
+    },
+    {
+      "artifact_id": "player-job-near_rewind_probe-capture",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/requests/near_rewind_probe-capture.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "85cc940ae1d49c6b8116a06a49f40bfe88aa6692f53263d13776f775e7058c50"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-capture-driver-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-capture/driver.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "2d2fb43c4a0d8d375903205965b3a7d2e9acf9f64cb7ea41350c7e61c412c137"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-capture-events-jsonl",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-capture/events.jsonl",
+      "created_by": "player",
+      "media_type": "application/x-ndjson",
+      "sha256": "f49065971c05db974511790518b68b2abba5003058cd03fc0923723352805be2"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-capture-executed_trace-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-capture/executed_trace.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "72e81cad1558abb29514e90c42b1440b2bbedba4c9ebbffad07a3a0e7cbc3029"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-capture-frame_0000-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-capture/frame_0000.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "70673cdbef56c9337b96f4f594b22674d68dbab7ee455f461999e97defb69925"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-capture-frame_0000-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-capture/frame_0000.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "f2d149af71f74608e31e20563daf7b756bfe447150109b9a8d0391e24e8d3d1a"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-capture-frame_0180-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-capture/frame_0180.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "dd2e372bc4d8eea7c03ac09ddc12da08f50d8dc1d2962442d5fb2f4e9c962949"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-capture-frame_0180-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-capture/frame_0180.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "ba0a91d6f2d5067ef64998157428da93af67cf8b694ed8e04f8b921fd4e10d9e"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-capture-frame_0240-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-capture/frame_0240.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "799c0d454f32ce980d43cf0f43f1ee00166c376ce64460c143d68ac7d879d1d4"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-capture-frame_0240-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-capture/frame_0240.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "91f632411bcd8774fb23d21652e8fa99bc33d15bf0dfb189dd89176ce4830ad5"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-capture-frame_0500-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-capture/frame_0500.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "1fe4885173f211bb4b7e09f1b804186f4262b2b9577aaced152db56fffa67f67"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-capture-frame_0500-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-capture/frame_0500.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "236b1c2e354dda7a141b2ffee7bd23faa9df54e0a53bd3b2de3760ea81373f1f"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-capture-frame_0599-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-capture/frame_0599.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "a891908b02ccf1e83856d388548c96d86ad42e070a945c9d565cb71d1434f3c4"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-capture-frame_0599-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-capture/frame_0599.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "aac04f26304de9e73a0dd67b1289916efb4484ad6cc84210f65ad06983af7d28"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-capture-frames-jsonl",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-capture/frames.jsonl",
+      "created_by": "player",
+      "media_type": "application/x-ndjson",
+      "sha256": "1e97a0d7e018b32549047b44084829a0e840d073f236517289dc6d5476040b42"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-capture-receipt-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-capture/receipt.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "b98a72d1d5ca2a8bfa593e33f9ec91ee7434fc6e24e55f56a069f5bca7a1bd2d"
+    },
+    {
+      "artifact_id": "player-session-near_rewind_probe-capture",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/logs/near_rewind_probe-capture.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "4a3fea4c3ca58eca62bcf4e9184728a7cd1e42c215b7e9df0bf1d6635b326b02"
+    },
+    {
+      "artifact_id": "player-trace-near_rewind_probe",
+      "version": 1,
+      "kind": "input_trace",
+      "path": "artifacts/player/5fc2120edf4680b305663565/demo_outputs/near_rewind_probe.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "25b42483d8a61132c8411e6ca6102697eff1e9c4fd27e612ea7d4f3d5214d202"
+    },
+    {
+      "artifact_id": "player-job-near_rewind_probe-replay-1",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/requests/near_rewind_probe-replay-1.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "85cc940ae1d49c6b8116a06a49f40bfe88aa6692f53263d13776f775e7058c50"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-replay-1-driver-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-replay-1/driver.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "21a7b1fb7fcb395d26e9bc207f133ef53ce2fe907022e1544fe58be7170672a4"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-replay-1-events-jsonl",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-replay-1/events.jsonl",
+      "created_by": "player",
+      "media_type": "application/x-ndjson",
+      "sha256": "f49065971c05db974511790518b68b2abba5003058cd03fc0923723352805be2"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-replay-1-executed_trace-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-replay-1/executed_trace.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "72e81cad1558abb29514e90c42b1440b2bbedba4c9ebbffad07a3a0e7cbc3029"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-replay-1-frame_0000-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-replay-1/frame_0000.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "70673cdbef56c9337b96f4f594b22674d68dbab7ee455f461999e97defb69925"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-replay-1-frame_0000-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-replay-1/frame_0000.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "f2d149af71f74608e31e20563daf7b756bfe447150109b9a8d0391e24e8d3d1a"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-replay-1-frame_0180-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-replay-1/frame_0180.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "dd2e372bc4d8eea7c03ac09ddc12da08f50d8dc1d2962442d5fb2f4e9c962949"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-replay-1-frame_0180-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-replay-1/frame_0180.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "ba0a91d6f2d5067ef64998157428da93af67cf8b694ed8e04f8b921fd4e10d9e"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-replay-1-frame_0240-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-replay-1/frame_0240.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "799c0d454f32ce980d43cf0f43f1ee00166c376ce64460c143d68ac7d879d1d4"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-replay-1-frame_0240-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-replay-1/frame_0240.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "91f632411bcd8774fb23d21652e8fa99bc33d15bf0dfb189dd89176ce4830ad5"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-replay-1-frame_0500-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-replay-1/frame_0500.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "1fe4885173f211bb4b7e09f1b804186f4262b2b9577aaced152db56fffa67f67"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-replay-1-frame_0500-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-replay-1/frame_0500.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "236b1c2e354dda7a141b2ffee7bd23faa9df54e0a53bd3b2de3760ea81373f1f"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-replay-1-frame_0599-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-replay-1/frame_0599.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "a891908b02ccf1e83856d388548c96d86ad42e070a945c9d565cb71d1434f3c4"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-replay-1-frame_0599-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-replay-1/frame_0599.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "aac04f26304de9e73a0dd67b1289916efb4484ad6cc84210f65ad06983af7d28"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-replay-1-frames-jsonl",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-replay-1/frames.jsonl",
+      "created_by": "player",
+      "media_type": "application/x-ndjson",
+      "sha256": "1e97a0d7e018b32549047b44084829a0e840d073f236517289dc6d5476040b42"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-replay-1-receipt-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-replay-1/receipt.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "b98a72d1d5ca2a8bfa593e33f9ec91ee7434fc6e24e55f56a069f5bca7a1bd2d"
+    },
+    {
+      "artifact_id": "player-session-near_rewind_probe-replay-1",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/logs/near_rewind_probe-replay-1.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "0893dfd7615287372aca3cf787d35f8346b6e5a87204af603411322a20869053"
+    },
+    {
+      "artifact_id": "player-job-near_rewind_probe-replay-2",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/requests/near_rewind_probe-replay-2.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "85cc940ae1d49c6b8116a06a49f40bfe88aa6692f53263d13776f775e7058c50"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-replay-2-driver-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-replay-2/driver.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "b807aef23ee826426326c35cc6ccdce3341e4a2dca34c10d234e201e37b48881"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-replay-2-events-jsonl",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-replay-2/events.jsonl",
+      "created_by": "player",
+      "media_type": "application/x-ndjson",
+      "sha256": "f49065971c05db974511790518b68b2abba5003058cd03fc0923723352805be2"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-replay-2-executed_trace-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-replay-2/executed_trace.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "72e81cad1558abb29514e90c42b1440b2bbedba4c9ebbffad07a3a0e7cbc3029"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-replay-2-frame_0000-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-replay-2/frame_0000.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "70673cdbef56c9337b96f4f594b22674d68dbab7ee455f461999e97defb69925"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-replay-2-frame_0000-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-replay-2/frame_0000.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "f2d149af71f74608e31e20563daf7b756bfe447150109b9a8d0391e24e8d3d1a"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-replay-2-frame_0180-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-replay-2/frame_0180.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "dd2e372bc4d8eea7c03ac09ddc12da08f50d8dc1d2962442d5fb2f4e9c962949"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-replay-2-frame_0180-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-replay-2/frame_0180.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "ba0a91d6f2d5067ef64998157428da93af67cf8b694ed8e04f8b921fd4e10d9e"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-replay-2-frame_0240-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-replay-2/frame_0240.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "799c0d454f32ce980d43cf0f43f1ee00166c376ce64460c143d68ac7d879d1d4"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-replay-2-frame_0240-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-replay-2/frame_0240.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "91f632411bcd8774fb23d21652e8fa99bc33d15bf0dfb189dd89176ce4830ad5"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-replay-2-frame_0500-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-replay-2/frame_0500.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "1fe4885173f211bb4b7e09f1b804186f4262b2b9577aaced152db56fffa67f67"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-replay-2-frame_0500-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-replay-2/frame_0500.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "236b1c2e354dda7a141b2ffee7bd23faa9df54e0a53bd3b2de3760ea81373f1f"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-replay-2-frame_0599-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-replay-2/frame_0599.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "a891908b02ccf1e83856d388548c96d86ad42e070a945c9d565cb71d1434f3c4"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-replay-2-frame_0599-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-replay-2/frame_0599.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "aac04f26304de9e73a0dd67b1289916efb4484ad6cc84210f65ad06983af7d28"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-replay-2-frames-jsonl",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-replay-2/frames.jsonl",
+      "created_by": "player",
+      "media_type": "application/x-ndjson",
+      "sha256": "1e97a0d7e018b32549047b44084829a0e840d073f236517289dc6d5476040b42"
+    },
+    {
+      "artifact_id": "player-near_rewind_probe-replay-2-receipt-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-replay-2/receipt.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "b98a72d1d5ca2a8bfa593e33f9ec91ee7434fc6e24e55f56a069f5bca7a1bd2d"
+    },
+    {
+      "artifact_id": "player-session-near_rewind_probe-replay-2",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/logs/near_rewind_probe-replay-2.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "fab06f5b74dbf4999a70f0b46a956cdad320df171f148057cc71172078937076"
+    },
+    {
+      "artifact_id": "player-job-near_victory_probe-capture",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/requests/near_victory_probe-capture.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "fc38d432f573a805534b2e36ad7e514fc4cae5f81986cfdea5dbc2a603fbfd9c"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-capture-driver-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-capture/driver.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "0aeab7506c712a4a7321ad0aa9b9a4129871c74abcc2e9c07330dc050106382c"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-capture-events-jsonl",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-capture/events.jsonl",
+      "created_by": "player",
+      "media_type": "application/x-ndjson",
+      "sha256": "5fb83f2ca9135cc9936b862cb1c3021dd08e6be889231d97f34454de1dc55f20"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-capture-executed_trace-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-capture/executed_trace.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "cb77219c80003963ae5217d68210c7b42d46397af0a48ba9a2367945c028be9d"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-capture-frame_0000-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-capture/frame_0000.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "e947573228bfdd01fbe42b098e3b987b33e3aef1a1629679ce63faf814932370"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-capture-frame_0000-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-capture/frame_0000.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "2f1df3996b36f0fac429c9844960e77e0e0d86fa886bded0998a5783dec084cf"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-capture-frame_0200-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-capture/frame_0200.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "0a356cba4ef895cede13aff68b1d0474b1679e7a4bc5009628076f784e1348cf"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-capture-frame_0200-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-capture/frame_0200.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "1ca63464ee50f8836a1648f02360ef477cbd2fdac78c7efae348773f3429aeef"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-capture-frame_0300-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-capture/frame_0300.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "c5e35ce5a444116f9fa77cf3f7153a679d063b26a9b75fcbfb2dba994e44cd86"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-capture-frame_0300-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-capture/frame_0300.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "c4ad302b1c304bf694bf1a76a4d184f9774f69ba6a3209a1b8e83ecb5b54decb"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-capture-frame_0450-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-capture/frame_0450.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "803054a54baa89c520f763d08c6d165cc09e81cc489ce90f066657c778a0ad94"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-capture-frame_0450-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-capture/frame_0450.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "8b7a04fc17ab83b863cfc11e55c548fa85fde8d08fe3c548d81b4383202c5461"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-capture-frame_0599-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-capture/frame_0599.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "ab5e28130a6ac37cdd5accb0155d2c7024f79a5a0f0f322ec9c0aad7cefb1587"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-capture-frame_0599-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-capture/frame_0599.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "853c5602a06eb118d9abda6b09b2afb3f44e6b36e07ca431d81181001d463433"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-capture-frames-jsonl",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-capture/frames.jsonl",
+      "created_by": "player",
+      "media_type": "application/x-ndjson",
+      "sha256": "d227305a9ff93191bf3456130bbe824543a21dc54c62e9d1ca666b4651aa9be3"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-capture-receipt-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-capture/receipt.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "9b69e6ab3d6574446ffec2cfe30a3d304c409b0d08769b6862a7fb71d614c975"
+    },
+    {
+      "artifact_id": "player-session-near_victory_probe-capture",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/logs/near_victory_probe-capture.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "d0d84cc673e7427eb2874739de9692d3fa05f05115bbcfc1cb878a0da7845a7f"
+    },
+    {
+      "artifact_id": "player-trace-near_victory_probe",
+      "version": 1,
+      "kind": "input_trace",
+      "path": "artifacts/player/5fc2120edf4680b305663565/demo_outputs/near_victory_probe.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "1670522c7f213e174ea7190bd82d3a7025339b7da1fd9f2aa5521dd35835ca1d"
+    },
+    {
+      "artifact_id": "player-job-near_victory_probe-replay-1",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/requests/near_victory_probe-replay-1.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "fc38d432f573a805534b2e36ad7e514fc4cae5f81986cfdea5dbc2a603fbfd9c"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-replay-1-driver-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-replay-1/driver.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "a043042aed3bc69861073b98b2999e3a7e79b14ef78715fa9a64c8300c17e2e0"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-replay-1-events-jsonl",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-replay-1/events.jsonl",
+      "created_by": "player",
+      "media_type": "application/x-ndjson",
+      "sha256": "5fb83f2ca9135cc9936b862cb1c3021dd08e6be889231d97f34454de1dc55f20"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-replay-1-executed_trace-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-replay-1/executed_trace.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "cb77219c80003963ae5217d68210c7b42d46397af0a48ba9a2367945c028be9d"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-replay-1-frame_0000-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-replay-1/frame_0000.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "e947573228bfdd01fbe42b098e3b987b33e3aef1a1629679ce63faf814932370"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-replay-1-frame_0000-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-replay-1/frame_0000.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "2f1df3996b36f0fac429c9844960e77e0e0d86fa886bded0998a5783dec084cf"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-replay-1-frame_0200-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-replay-1/frame_0200.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "0a356cba4ef895cede13aff68b1d0474b1679e7a4bc5009628076f784e1348cf"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-replay-1-frame_0200-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-replay-1/frame_0200.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "1ca63464ee50f8836a1648f02360ef477cbd2fdac78c7efae348773f3429aeef"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-replay-1-frame_0300-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-replay-1/frame_0300.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "c5e35ce5a444116f9fa77cf3f7153a679d063b26a9b75fcbfb2dba994e44cd86"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-replay-1-frame_0300-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-replay-1/frame_0300.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "c4ad302b1c304bf694bf1a76a4d184f9774f69ba6a3209a1b8e83ecb5b54decb"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-replay-1-frame_0450-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-replay-1/frame_0450.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "803054a54baa89c520f763d08c6d165cc09e81cc489ce90f066657c778a0ad94"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-replay-1-frame_0450-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-replay-1/frame_0450.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "8b7a04fc17ab83b863cfc11e55c548fa85fde8d08fe3c548d81b4383202c5461"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-replay-1-frame_0599-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-replay-1/frame_0599.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "ab5e28130a6ac37cdd5accb0155d2c7024f79a5a0f0f322ec9c0aad7cefb1587"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-replay-1-frame_0599-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-replay-1/frame_0599.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "853c5602a06eb118d9abda6b09b2afb3f44e6b36e07ca431d81181001d463433"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-replay-1-frames-jsonl",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-replay-1/frames.jsonl",
+      "created_by": "player",
+      "media_type": "application/x-ndjson",
+      "sha256": "d227305a9ff93191bf3456130bbe824543a21dc54c62e9d1ca666b4651aa9be3"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-replay-1-receipt-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-replay-1/receipt.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "9b69e6ab3d6574446ffec2cfe30a3d304c409b0d08769b6862a7fb71d614c975"
+    },
+    {
+      "artifact_id": "player-session-near_victory_probe-replay-1",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/logs/near_victory_probe-replay-1.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "e609002d593f41a3a428b0e4a95c2edf12f221a18167a5ebd20732b3a03b522f"
+    },
+    {
+      "artifact_id": "player-job-near_victory_probe-replay-2",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/requests/near_victory_probe-replay-2.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "fc38d432f573a805534b2e36ad7e514fc4cae5f81986cfdea5dbc2a603fbfd9c"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-replay-2-driver-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-replay-2/driver.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "763d1340059e1fa2631412430823e93fd294d88b6402a8efb1b94d8a7f30c74f"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-replay-2-events-jsonl",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-replay-2/events.jsonl",
+      "created_by": "player",
+      "media_type": "application/x-ndjson",
+      "sha256": "5fb83f2ca9135cc9936b862cb1c3021dd08e6be889231d97f34454de1dc55f20"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-replay-2-executed_trace-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-replay-2/executed_trace.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "cb77219c80003963ae5217d68210c7b42d46397af0a48ba9a2367945c028be9d"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-replay-2-frame_0000-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-replay-2/frame_0000.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "e947573228bfdd01fbe42b098e3b987b33e3aef1a1629679ce63faf814932370"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-replay-2-frame_0000-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-replay-2/frame_0000.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "2f1df3996b36f0fac429c9844960e77e0e0d86fa886bded0998a5783dec084cf"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-replay-2-frame_0200-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-replay-2/frame_0200.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "0a356cba4ef895cede13aff68b1d0474b1679e7a4bc5009628076f784e1348cf"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-replay-2-frame_0200-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-replay-2/frame_0200.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "1ca63464ee50f8836a1648f02360ef477cbd2fdac78c7efae348773f3429aeef"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-replay-2-frame_0300-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-replay-2/frame_0300.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "c5e35ce5a444116f9fa77cf3f7153a679d063b26a9b75fcbfb2dba994e44cd86"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-replay-2-frame_0300-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-replay-2/frame_0300.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "c4ad302b1c304bf694bf1a76a4d184f9774f69ba6a3209a1b8e83ecb5b54decb"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-replay-2-frame_0450-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-replay-2/frame_0450.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "803054a54baa89c520f763d08c6d165cc09e81cc489ce90f066657c778a0ad94"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-replay-2-frame_0450-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-replay-2/frame_0450.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "8b7a04fc17ab83b863cfc11e55c548fa85fde8d08fe3c548d81b4383202c5461"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-replay-2-frame_0599-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-replay-2/frame_0599.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "ab5e28130a6ac37cdd5accb0155d2c7024f79a5a0f0f322ec9c0aad7cefb1587"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-replay-2-frame_0599-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-replay-2/frame_0599.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "853c5602a06eb118d9abda6b09b2afb3f44e6b36e07ca431d81181001d463433"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-replay-2-frames-jsonl",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-replay-2/frames.jsonl",
+      "created_by": "player",
+      "media_type": "application/x-ndjson",
+      "sha256": "d227305a9ff93191bf3456130bbe824543a21dc54c62e9d1ca666b4651aa9be3"
+    },
+    {
+      "artifact_id": "player-near_victory_probe-replay-2-receipt-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-replay-2/receipt.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "9b69e6ab3d6574446ffec2cfe30a3d304c409b0d08769b6862a7fb71d614c975"
+    },
+    {
+      "artifact_id": "player-session-near_victory_probe-replay-2",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/logs/near_victory_probe-replay-2.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "ef3a7049bd5c5d749bc288380b98bb0e7fd154727b9e2358766b3a93b42797e6"
+    },
+    {
+      "artifact_id": "player-report",
+      "version": 1,
+      "kind": "report",
+      "path": "artifacts/player/5fc2120edf4680b305663565/player_report.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "1504514ab49c8669798a9805f55b486b2cff55f8cd66a946d86ae3365128efda"
+    },
+    {
+      "artifact_id": "player-handoff",
+      "version": 1,
+      "kind": "report",
+      "path": "artifacts/player/5fc2120edf4680b305663565/player_handoff.md",
+      "created_by": "player",
+      "media_type": "text/markdown",
+      "sha256": "e12b60c43a81bee735d5d7778640cf15df237c36a38be0bdafa498e323384920"
+    }
+  ],
+  "proposed_updates": {
+    "requirements": [],
+    "design": null,
+    "assets": [],
+    "game_revision": null,
+    "evidence": [
+      {
+        "evidence_id": "player-0001-play-01",
+        "kind": "playthrough",
+        "game_revision_id": "game-0001",
+        "requirement_ids": [
+          "R007",
+          "R008",
+          "R009",
+          "R027",
+          "R031"
+        ],
+        "artifact_refs": [
+          {
+            "artifact_id": "player-trace-title_nav_probe",
+            "version": 1,
+            "kind": "input_trace",
+            "path": "artifacts/player/5fc2120edf4680b305663565/demo_outputs/title_nav_probe.json",
+            "created_by": "player",
+            "media_type": "application/json",
+            "sha256": "f03649da60c70dedd507537a908d8c62baee0f177be96eeef93d481df49ad62a"
+          },
+          {
+            "artifact_id": "player-session-title_nav_probe-capture",
+            "version": 1,
+            "kind": "log",
+            "path": "artifacts/player/5fc2120edf4680b305663565/logs/title_nav_probe-capture.json",
+            "created_by": "player",
+            "media_type": "application/json",
+            "sha256": "545e42c2145fda422dba0d7cef9e2ec39ccdfc0292934d240cc7789c423a84d3"
+          },
+          {
+            "artifact_id": "player-title_nav_probe-capture-frame_0000-png",
+            "version": 1,
+            "kind": "screenshot",
+            "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-capture/frame_0000.png",
+            "created_by": "player",
+            "media_type": "image/png",
+            "sha256": "05ed4962613701a64715d7d8f73375e4d7c6fd6192e9c4ef1036f31e9b7e3c39"
+          },
+          {
+            "artifact_id": "player-title_nav_probe-capture-frame_0120-png",
+            "version": 1,
+            "kind": "screenshot",
+            "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-capture/frame_0120.png",
+            "created_by": "player",
+            "media_type": "image/png",
+            "sha256": "a7ed52801046eee3a42a387840d721f9af5df2a7a670a78a9f470b9edc5ada8d"
+          },
+          {
+            "artifact_id": "player-title_nav_probe-capture-frame_0240-png",
+            "version": 1,
+            "kind": "screenshot",
+            "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-capture/frame_0240.png",
+            "created_by": "player",
+            "media_type": "image/png",
+            "sha256": "74c342208f23050cbcfed6b8d0231b5b8dd75a148ae291b8fa51037cd7ff4a3a"
+          },
+          {
+            "artifact_id": "player-title_nav_probe-capture-frame_0450-png",
+            "version": 1,
+            "kind": "screenshot",
+            "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-capture/frame_0450.png",
+            "created_by": "player",
+            "media_type": "image/png",
+            "sha256": "74c342208f23050cbcfed6b8d0231b5b8dd75a148ae291b8fa51037cd7ff4a3a"
+          },
+          {
+            "artifact_id": "player-title_nav_probe-capture-frame_0599-png",
+            "version": 1,
+            "kind": "screenshot",
+            "path": "artifacts/player/5fc2120edf4680b305663565/sessions/title_nav_probe-capture/frame_0599.png",
+            "created_by": "player",
+            "media_type": "image/png",
+            "sha256": "74c342208f23050cbcfed6b8d0231b5b8dd75a148ae291b8fa51037cd7ff4a3a"
+          }
+        ],
+        "observation": "Real input dispatch and frame capture completed; this outcome describes execution, not satisfaction of gameplay requirements.",
+        "outcome": "passed",
+        "scenario": null,
+        "recorded_at": "2026-10-19T12:02:46.065526Z"
+      },
+      {
+        "evidence_id": "player-0001-play-04",
+        "kind": "playthrough",
+        "game_revision_id": "game-0001",
+        "requirement_ids": [
+          "R001",
+          "R002",
+          "R011",
+          "R012",
+          "R030",
+          "R037"
+        ],
+        "artifact_refs": [
+          {
+            "artifact_id": "player-trace-near_rewind_probe",
+            "version": 1,
+            "kind": "input_trace",
+            "path": "artifacts/player/5fc2120edf4680b305663565/demo_outputs/near_rewind_probe.json",
+            "created_by": "player",
+            "media_type": "application/json",
+            "sha256": "25b42483d8a61132c8411e6ca6102697eff1e9c4fd27e612ea7d4f3d5214d202"
+          },
+          {
+            "artifact_id": "player-session-near_rewind_probe-capture",
+            "version": 1,
+            "kind": "log",
+            "path": "artifacts/player/5fc2120edf4680b305663565/logs/near_rewind_probe-capture.json",
+            "created_by": "player",
+            "media_type": "application/json",
+            "sha256": "4a3fea4c3ca58eca62bcf4e9184728a7cd1e42c215b7e9df0bf1d6635b326b02"
+          },
+          {
+            "artifact_id": "player-near_rewind_probe-capture-frame_0000-png",
+            "version": 1,
+            "kind": "screenshot",
+            "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-capture/frame_0000.png",
+            "created_by": "player",
+            "media_type": "image/png",
+            "sha256": "f2d149af71f74608e31e20563daf7b756bfe447150109b9a8d0391e24e8d3d1a"
+          },
+          {
+            "artifact_id": "player-near_rewind_probe-capture-frame_0180-png",
+            "version": 1,
+            "kind": "screenshot",
+            "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-capture/frame_0180.png",
+            "created_by": "player",
+            "media_type": "image/png",
+            "sha256": "ba0a91d6f2d5067ef64998157428da93af67cf8b694ed8e04f8b921fd4e10d9e"
+          },
+          {
+            "artifact_id": "player-near_rewind_probe-capture-frame_0240-png",
+            "version": 1,
+            "kind": "screenshot",
+            "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-capture/frame_0240.png",
+            "created_by": "player",
+            "media_type": "image/png",
+            "sha256": "91f632411bcd8774fb23d21652e8fa99bc33d15bf0dfb189dd89176ce4830ad5"
+          },
+          {
+            "artifact_id": "player-near_rewind_probe-capture-frame_0500-png",
+            "version": 1,
+            "kind": "screenshot",
+            "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-capture/frame_0500.png",
+            "created_by": "player",
+            "media_type": "image/png",
+            "sha256": "236b1c2e354dda7a141b2ffee7bd23faa9df54e0a53bd3b2de3760ea81373f1f"
+          },
+          {
+            "artifact_id": "player-near_rewind_probe-capture-frame_0599-png",
+            "version": 1,
+            "kind": "screenshot",
+            "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_rewind_probe-capture/frame_0599.png",
+            "created_by": "player",
+            "media_type": "image/png",
+            "sha256": "aac04f26304de9e73a0dd67b1289916efb4484ad6cc84210f65ad06983af7d28"
+          }
+        ],
+        "observation": "Real input dispatch and frame capture completed; this outcome describes execution, not satisfaction of gameplay requirements.",
+        "outcome": "passed",
+        "scenario": "near_rewind",
+        "recorded_at": "2026-10-19T12:02:46.065526Z"
+      },
+      {
+        "evidence_id": "player-0001-play-07",
+        "kind": "playthrough",
+        "game_revision_id": "game-0001",
+        "requirement_ids": [
+          "R015",
+          "R017",
+          "R030",
+          "R014"
+        ],
+        "artifact_refs": [
+          {
+            "artifact_id": "player-trace-near_victory_probe",
+            "version": 1,
+            "kind": "input_trace",
+            "path": "artifacts/player/5fc2120edf4680b305663565/demo_outputs/near_victory_probe.json",
+            "created_by": "player",
+            "media_type": "application/json",
+            "sha256": "1670522c7f213e174ea7190bd82d3a7025339b7da1fd9f2aa5521dd35835ca1d"
+          },
+          {
+            "artifact_id": "player-session-near_victory_probe-capture",
+            "version": 1,
+            "kind": "log",
+            "path": "artifacts/player/5fc2120edf4680b305663565/logs/near_victory_probe-capture.json",
+            "created_by": "player",
+            "media_type": "application/json",
+            "sha256": "d0d84cc673e7427eb2874739de9692d3fa05f05115bbcfc1cb878a0da7845a7f"
+          },
+          {
+            "artifact_id": "player-near_victory_probe-capture-frame_0000-png",
+            "version": 1,
+            "kind": "screenshot",
+            "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-capture/frame_0000.png",
+            "created_by": "player",
+            "media_type": "image/png",
+            "sha256": "2f1df3996b36f0fac429c9844960e77e0e0d86fa886bded0998a5783dec084cf"
+          },
+          {
+            "artifact_id": "player-near_victory_probe-capture-frame_0200-png",
+            "version": 1,
+            "kind": "screenshot",
+            "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-capture/frame_0200.png",
+            "created_by": "player",
+            "media_type": "image/png",
+            "sha256": "1ca63464ee50f8836a1648f02360ef477cbd2fdac78c7efae348773f3429aeef"
+          },
+          {
+            "artifact_id": "player-near_victory_probe-capture-frame_0300-png",
+            "version": 1,
+            "kind": "screenshot",
+            "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-capture/frame_0300.png",
+            "created_by": "player",
+            "media_type": "image/png",
+            "sha256": "c4ad302b1c304bf694bf1a76a4d184f9774f69ba6a3209a1b8e83ecb5b54decb"
+          },
+          {
+            "artifact_id": "player-near_victory_probe-capture-frame_0450-png",
+            "version": 1,
+            "kind": "screenshot",
+            "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-capture/frame_0450.png",
+            "created_by": "player",
+            "media_type": "image/png",
+            "sha256": "8b7a04fc17ab83b863cfc11e55c548fa85fde8d08fe3c548d81b4383202c5461"
+          },
+          {
+            "artifact_id": "player-near_victory_probe-capture-frame_0599-png",
+            "version": 1,
+            "kind": "screenshot",
+            "path": "artifacts/player/5fc2120edf4680b305663565/sessions/near_victory_probe-capture/frame_0599.png",
+            "created_by": "player",
+            "media_type": "image/png",
+            "sha256": "853c5602a06eb118d9abda6b09b2afb3f44e6b36e07ca431d81181001d463433"
+          }
+        ],
+        "observation": "Real input dispatch and frame capture completed; this outcome describes execution, not satisfaction of gameplay requirements.",
+        "outcome": "passed",
+        "scenario": "near_victory",
+        "recorded_at": "2026-10-19T12:02:46.065526Z"
+      },
+      {
+        "evidence_id": "player-0001-replay-00",
+        "kind": "replay",
+        "game_revision_id": "game-0001",
+        "requirement_ids": [
+          "R007",
+          "R008",
+          "R009",
+          "R027",
+          "R031"
+        ],
+        "artifact_refs": [
+          {
+            "artifact_id": "player-trace-title_nav_probe",
+            "version": 1,
+            "kind": "input_trace",
+            "path": "artifacts/player/5fc2120edf4680b305663565/demo_outputs/title_nav_probe.json",
+            "created_by": "player",
+            "media_type": "application/json",
+            "sha256": "f03649da60c70dedd507537a908d8c62baee0f177be96eeef93d481df49ad62a"
+          },
+          {
+            "artifact_id": "player-session-title_nav_probe-capture",
+            "version": 1,
+            "kind": "log",
+            "path": "artifacts/player/5fc2120edf4680b305663565/logs/title_nav_probe-capture.json",
+            "created_by": "player",
+            "media_type": "application/json",
+            "sha256": "545e42c2145fda422dba0d7cef9e2ec39ccdfc0292934d240cc7789c423a84d3"
+          },
+          {
+            "artifact_id": "player-session-title_nav_probe-replay-1",
+            "version": 1,
+            "kind": "log",
+            "path": "artifacts/player/5fc2120edf4680b305663565/logs/title_nav_probe-replay-1.json",
+            "created_by": "player",
+            "media_type": "application/json",
+            "sha256": "48001c270fa878a942c5da54b56af1c72fae5eb2abd163a6b4ecfe37551ec283"
+          },
+          {
+            "artifact_id": "player-report",
+            "version": 1,
+            "kind": "report",
+            "path": "artifacts/player/5fc2120edf4680b305663565/player_report.json",
+            "created_by": "player",
+            "media_type": "application/json",
+            "sha256": "1504514ab49c8669798a9805f55b486b2cff55f8cd66a946d86ae3365128efda"
+          }
+        ],
+        "observation": "Fresh replay diverged; inspect first differing frames and actual screenshots",
+        "outcome": "failed",
+        "scenario": null,
+        "recorded_at": "2026-10-19T12:02:46.065526Z"
+      },
+      {
+        "evidence_id": "player-0001-replay-01",
+        "kind": "replay",
+        "game_revision_id": "game-0001",
+        "requirement_ids": [
+          "R007",
+          "R008",
+          "R009",
+          "R027",
+          "R031"
+        ],
+        "artifact_refs": [
+          {
+            "artifact_id": "player-trace-title_nav_probe",
+            "version": 1,
+            "kind": "input_trace",
+            "path": "artifacts/player/5fc2120edf4680b305663565/demo_outputs/title_nav_probe.json",
+            "created_by": "player",
+            "media_type": "application/json",
+            "sha256": "f03649da60c70dedd507537a908d8c62baee0f177be96eeef93d481df49ad62a"
+          },
+          {
+            "artifact_id": "player-session-title_nav_probe-capture",
+            "version": 1,
+            "kind": "log",
+            "path": "artifacts/player/5fc2120edf4680b305663565/logs/title_nav_probe-capture.json",
+            "created_by": "player",
+            "media_type": "application/json",
+            "sha256": "545e42c2145fda422dba0d7cef9e2ec39ccdfc0292934d240cc7789c423a84d3"
+          },
+          {
+            "artifact_id": "player-session-title_nav_probe-replay-2",
+            "version": 1,
+            "kind": "log",
+            "path": "artifacts/player/5fc2120edf4680b305663565/logs/title_nav_probe-replay-2.json",
+            "created_by": "player",
+            "media_type": "application/json",
+            "sha256": "02c75032f3560010258d5e1fd5f457247ab9ab5f7bfd2d9c8adf23e9ec020e7f"
+          },
+          {
+            "artifact_id": "player-report",
+            "version": 1,
+            "kind": "report",
+            "path": "artifacts/player/5fc2120edf4680b305663565/player_report.json",
+            "created_by": "player",
+            "media_type": "application/json",
+            "sha256": "1504514ab49c8669798a9805f55b486b2cff55f8cd66a946d86ae3365128efda"
+          }
+        ],
+        "observation": "Fresh replay diverged; inspect first differing frames and actual screenshots",
+        "outcome": "failed",
+        "scenario": null,
+        "recorded_at": "2026-10-19T12:02:46.065526Z"
+      },
+      {
+        "evidence_id": "player-0001-replay-02",
+        "kind": "replay",
+        "game_revision_id": "game-0001",
+        "requirement_ids": [
+          "R001",
+          "R002",
+          "R011",
+          "R012",
+          "R030",
+          "R037"
+        ],
+        "artifact_refs": [
+          {
+            "artifact_id": "player-trace-near_rewind_probe",
+            "version": 1,
+            "kind": "input_trace",
+            "path": "artifacts/player/5fc2120edf4680b305663565/demo_outputs/near_rewind_probe.json",
+            "created_by": "player",
+            "media_type": "application/json",
+            "sha256": "25b42483d8a61132c8411e6ca6102697eff1e9c4fd27e612ea7d4f3d5214d202"
+          },
+          {
+            "artifact_id": "player-session-near_rewind_probe-capture",
+            "version": 1,
+            "kind": "log",
+            "path": "artifacts/player/5fc2120edf4680b305663565/logs/near_rewind_probe-capture.json",
+            "created_by": "player",
+            "media_type": "application/json",
+            "sha256": "4a3fea4c3ca58eca62bcf4e9184728a7cd1e42c215b7e9df0bf1d6635b326b02"
+          },
+          {
+            "artifact_id": "player-session-near_rewind_probe-replay-1",
+            "version": 1,
+            "kind": "log",
+            "path": "artifacts/player/5fc2120edf4680b305663565/logs/near_rewind_probe-replay-1.json",
+            "created_by": "player",
+            "media_type": "application/json",
+            "sha256": "0893dfd7615287372aca3cf787d35f8346b6e5a87204af603411322a20869053"
+          },
+          {
+            "artifact_id": "player-report",
+            "version": 1,
+            "kind": "report",
+            "path": "artifacts/player/5fc2120edf4680b305663565/player_report.json",
+            "created_by": "player",
+            "media_type": "application/json",
+            "sha256": "1504514ab49c8669798a9805f55b486b2cff55f8cd66a946d86ae3365128efda"
+          }
+        ],
+        "observation": "All recorded state and rendered-pixel digests match",
+        "outcome": "passed",
+        "scenario": "near_rewind",
+        "recorded_at": "2026-10-19T12:02:46.066539Z"
+      },
+      {
+        "evidence_id": "player-0001-replay-03",
+        "kind": "replay",
+        "game_revision_id": "game-0001",
+        "requirement_ids": [
+          "R001",
+          "R002",
+          "R011",
+          "R012",
+          "R030",
+          "R037"
+        ],
+        "artifact_refs": [
+          {
+            "artifact_id": "player-trace-near_rewind_probe",
+            "version": 1,
+            "kind": "input_trace",
+            "path": "artifacts/player/5fc2120edf4680b305663565/demo_outputs/near_rewind_probe.json",
+            "created_by": "player",
+            "media_type": "application/json",
+            "sha256": "25b42483d8a61132c8411e6ca6102697eff1e9c4fd27e612ea7d4f3d5214d202"
+          },
+          {
+            "artifact_id": "player-session-near_rewind_probe-capture",
+            "version": 1,
+            "kind": "log",
+            "path": "artifacts/player/5fc2120edf4680b305663565/logs/near_rewind_probe-capture.json",
+            "created_by": "player",
+            "media_type": "application/json",
+            "sha256": "4a3fea4c3ca58eca62bcf4e9184728a7cd1e42c215b7e9df0bf1d6635b326b02"
+          },
+          {
+            "artifact_id": "player-session-near_rewind_probe-replay-2",
+            "version": 1,
+            "kind": "log",
+            "path": "artifacts/player/5fc2120edf4680b305663565/logs/near_rewind_probe-replay-2.json",
+            "created_by": "player",
+            "media_type": "application/json",
+            "sha256": "fab06f5b74dbf4999a70f0b46a956cdad320df171f148057cc71172078937076"
+          },
+          {
+            "artifact_id": "player-report",
+            "version": 1,
+            "kind": "report",
+            "path": "artifacts/player/5fc2120edf4680b305663565/player_report.json",
+            "created_by": "player",
+            "media_type": "application/json",
+            "sha256": "1504514ab49c8669798a9805f55b486b2cff55f8cd66a946d86ae3365128efda"
+          }
+        ],
+        "observation": "All recorded state and rendered-pixel digests match",
+        "outcome": "passed",
+        "scenario": "near_rewind",
+        "recorded_at": "2026-10-19T12:02:46.066539Z"
+      },
+      {
+        "evidence_id": "player-0001-replay-04",
+        "kind": "replay",
+        "game_revision_id": "game-0001",
+        "requirement_ids": [
+          "R015",
+          "R017",
+          "R030",
+          "R014"
+        ],
+        "artifact_refs": [
+          {
+            "artifact_id": "player-trace-near_victory_probe",
+            "version": 1,
+            "kind": "input_trace",
+            "path": "artifacts/player/5fc2120edf4680b305663565/demo_outputs/near_victory_probe.json",
+            "created_by": "player",
+            "media_type": "application/json",
+            "sha256": "1670522c7f213e174ea7190bd82d3a7025339b7da1fd9f2aa5521dd35835ca1d"
+          },
+          {
+            "artifact_id": "player-session-near_victory_probe-capture",
+            "version": 1,
+            "kind": "log",
+            "path": "artifacts/player/5fc2120edf4680b305663565/logs/near_victory_probe-capture.json",
+            "created_by": "player",
+            "media_type": "application/json",
+            "sha256": "d0d84cc673e7427eb2874739de9692d3fa05f05115bbcfc1cb878a0da7845a7f"
+          },
+          {
+            "artifact_id": "player-session-near_victory_probe-replay-1",
+            "version": 1,
+            "kind": "log",
+            "path": "artifacts/player/5fc2120edf4680b305663565/logs/near_victory_probe-replay-1.json",
+            "created_by": "player",
+            "media_type": "application/json",
+            "sha256": "e609002d593f41a3a428b0e4a95c2edf12f221a18167a5ebd20732b3a03b522f"
+          },
+          {
+            "artifact_id": "player-report",
+            "version": 1,
+            "kind": "report",
+            "path": "artifacts/player/5fc2120edf4680b305663565/player_report.json",
+            "created_by": "player",
+            "media_type": "application/json",
+            "sha256": "1504514ab49c8669798a9805f55b486b2cff55f8cd66a946d86ae3365128efda"
+          }
+        ],
+        "observation": "All recorded state and rendered-pixel digests match",
+        "outcome": "passed",
+        "scenario": "near_victory",
+        "recorded_at": "2026-10-19T12:02:46.066539Z"
+      },
+      {
+        "evidence_id": "player-0001-replay-05",
+        "kind": "replay",
+        "game_revision_id": "game-0001",
+        "requirement_ids": [
+          "R015",
+          "R017",
+          "R030",
+          "R014"
+        ],
+        "artifact_refs": [
+          {
+            "artifact_id": "player-trace-near_victory_probe",
+            "version": 1,
+            "kind": "input_trace",
+            "path": "artifacts/player/5fc2120edf4680b305663565/demo_outputs/near_victory_probe.json",
+            "created_by": "player",
+            "media_type": "application/json",
+            "sha256": "1670522c7f213e174ea7190bd82d3a7025339b7da1fd9f2aa5521dd35835ca1d"
+          },
+          {
+            "artifact_id": "player-session-near_victory_probe-capture",
+            "version": 1,
+            "kind": "log",
+            "path": "artifacts/player/5fc2120edf4680b305663565/logs/near_victory_probe-capture.json",
+            "created_by": "player",
+            "media_type": "application/json",
+            "sha256": "d0d84cc673e7427eb2874739de9692d3fa05f05115bbcfc1cb878a0da7845a7f"
+          },
+          {
+            "artifact_id": "player-session-near_victory_probe-replay-2",
+            "version": 1,
+            "kind": "log",
+            "path": "artifacts/player/5fc2120edf4680b305663565/logs/near_victory_probe-replay-2.json",
+            "created_by": "player",
+            "media_type": "application/json",
+            "sha256": "ef3a7049bd5c5d749bc288380b98bb0e7fd154727b9e2358766b3a93b42797e6"
+          },
+          {
+            "artifact_id": "player-report",
+            "version": 1,
+            "kind": "report",
+            "path": "artifacts/player/5fc2120edf4680b305663565/player_report.json",
+            "created_by": "player",
+            "media_type": "application/json",
+            "sha256": "1504514ab49c8669798a9805f55b486b2cff55f8cd66a946d86ae3365128efda"
+          }
+        ],
+        "observation": "All recorded state and rendered-pixel digests match",
+        "outcome": "passed",
+        "scenario": "near_victory",
+        "recorded_at": "2026-10-19T12:02:46.066539Z"
+      },
+      {
+        "evidence_id": "player-0001-observations",
+        "kind": "observation",
+        "game_revision_id": "game-0001",
+        "requirement_ids": [],
+        "artifact_refs": [
+          {
+            "artifact_id": "player-report",
+            "version": 1,
+            "kind": "report",
+            "path": "artifacts/player/5fc2120edf4680b305663565/player_report.json",
+            "created_by": "player",
+            "media_type": "application/json",
+            "sha256": "1504514ab49c8669798a9805f55b486b2cff55f8cd66a946d86ae3365128efda"
+          }
+        ],
+        "observation": "Recorded runtime diagnostics and explicitly attributed model interpretations; no requirement or readiness verdict was made.",
+        "outcome": "passed",
+        "scenario": null,
+        "recorded_at": "2026-10-19T12:02:46.066539Z"
+      }
+    ],
+    "issues": [],
+    "readiness": null
+  },
+  "evidence_refs": [
+    "player-0001-play-01",
+    "player-0001-play-04",
+    "player-0001-play-07",
+    "player-0001-replay-00",
+    "player-0001-replay-01",
+    "player-0001-replay-02",
+    "player-0001-replay-03",
+    "player-0001-replay-04",
+    "player-0001-replay-05",
+    "player-0001-observations"
+  ],
+  "blockers": [],
+  "error": null
+}

@@ -1,0 +1,341 @@
+{
+  "schema_version": "1.0",
+  "request_id": "art-initial",
+  "role": "art_producer",
+  "state_revision": 1,
+  "status": "partial",
+  "summary": "Initial Time Loop art package: 12 reusable raster placeholder assets covering the player, ghost replay silhouette, level tileset, switch, pressure plate, door, laser emitter/beam, enemy, exit crystal, HUD panel with timeline track, UI buttons plus ghost timeline markers and clock hand, and a title backdrop with overlapping clock hands and ghost silhouettes. Both mounted libraries reported available=false in this environment, so no library paths or licenses are claimed; every asset is an image-service placeholder (mock-image.v1) generated to final target dimensions so Developer can integrate now. Libraries remain permitted for later replacement, and all generated visuals are placeholders pending final visual acceptance. No engine run, screenshot inspection, or gameplay/visual quality verification is claimed. Image generation was mocked; final artwork remains pending.",
+  "artifact_refs": [
+    {
+      "artifact_id": "art-asset-player_sheet",
+      "version": 1,
+      "kind": "asset",
+      "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/sprites/player_sheet.png",
+      "created_by": "art_producer",
+      "media_type": "image/png",
+      "sha256": "081dc213f7c8f838ea754bf184ba2c9afec75fc201847f1b48a3569f477c73ca"
+    },
+    {
+      "artifact_id": "art-asset-ghost_sheet",
+      "version": 1,
+      "kind": "asset",
+      "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/sprites/ghost_sheet.png",
+      "created_by": "art_producer",
+      "media_type": "image/png",
+      "sha256": "081dc213f7c8f838ea754bf184ba2c9afec75fc201847f1b48a3569f477c73ca"
+    },
+    {
+      "artifact_id": "art-asset-tileset_platform",
+      "version": 1,
+      "kind": "asset",
+      "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/tiles/tileset_platform.png",
+      "created_by": "art_producer",
+      "media_type": "image/png",
+      "sha256": "946f87b17cb7458e775e08a8e199172e68d900c1a871c66ed9a53c1cd0047e73"
+    },
+    {
+      "artifact_id": "art-asset-switch_button",
+      "version": 1,
+      "kind": "asset",
+      "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/props/switch_button.png",
+      "created_by": "art_producer",
+      "media_type": "image/png",
+      "sha256": "c226178e5c714b2db8b979e5c00c77fa5df2112703a5c8a21ac021179751feca"
+    },
+    {
+      "artifact_id": "art-asset-pressure_plate",
+      "version": 1,
+      "kind": "asset",
+      "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/props/pressure_plate.png",
+      "created_by": "art_producer",
+      "media_type": "image/png",
+      "sha256": "c226178e5c714b2db8b979e5c00c77fa5df2112703a5c8a21ac021179751feca"
+    },
+    {
+      "artifact_id": "art-asset-door_gate",
+      "version": 1,
+      "kind": "asset",
+      "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/props/door_gate.png",
+      "created_by": "art_producer",
+      "media_type": "image/png",
+      "sha256": "c226178e5c714b2db8b979e5c00c77fa5df2112703a5c8a21ac021179751feca"
+    },
+    {
+      "artifact_id": "art-asset-laser_hazard",
+      "version": 1,
+      "kind": "asset",
+      "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/props/laser_hazard.png",
+      "created_by": "art_producer",
+      "media_type": "image/png",
+      "sha256": "c226178e5c714b2db8b979e5c00c77fa5df2112703a5c8a21ac021179751feca"
+    },
+    {
+      "artifact_id": "art-asset-enemy_patroller",
+      "version": 1,
+      "kind": "asset",
+      "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/sprites/enemy_patroller.png",
+      "created_by": "art_producer",
+      "media_type": "image/png",
+      "sha256": "c226178e5c714b2db8b979e5c00c77fa5df2112703a5c8a21ac021179751feca"
+    },
+    {
+      "artifact_id": "art-asset-exit_crystal",
+      "version": 1,
+      "kind": "asset",
+      "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/props/exit_crystal.png",
+      "created_by": "art_producer",
+      "media_type": "image/png",
+      "sha256": "c226178e5c714b2db8b979e5c00c77fa5df2112703a5c8a21ac021179751feca"
+    },
+    {
+      "artifact_id": "art-asset-hud_panel",
+      "version": 1,
+      "kind": "asset",
+      "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/ui/hud_panel.png",
+      "created_by": "art_producer",
+      "media_type": "image/png",
+      "sha256": "c5213e17331175be34ce516c1e0127679d3d854ca2a1eb65dda3d7797f05ec42"
+    },
+    {
+      "artifact_id": "art-asset-ui_controls",
+      "version": 1,
+      "kind": "asset",
+      "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/ui/ui_controls.png",
+      "created_by": "art_producer",
+      "media_type": "image/png",
+      "sha256": "95336d2d67797ded9ef9b9e08792355515fffaf75bc2622a4828a3b661d0ce33"
+    },
+    {
+      "artifact_id": "art-asset-title_backdrop",
+      "version": 1,
+      "kind": "asset",
+      "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/ui/title_backdrop.png",
+      "created_by": "art_producer",
+      "media_type": "image/png",
+      "sha256": "bf137e5842b15092838d0c6ef14310ca93c9bf07845e62b338c2be42e0a5487a"
+    },
+    {
+      "artifact_id": "art-manifest",
+      "version": 1,
+      "kind": "document",
+      "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/asset_manifest.json",
+      "created_by": "art_producer",
+      "media_type": "application/json",
+      "sha256": "d837be1e49b787c7c60213d6b8c2b1c575271052a7693174de3bd3a084f076bf"
+    },
+    {
+      "artifact_id": "art-handoff",
+      "version": 1,
+      "kind": "document",
+      "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/art_handoff.md",
+      "created_by": "art_producer",
+      "media_type": "text/markdown",
+      "sha256": "67a3aa5307c6189c739cc928cfa56c3ee5d6b595ac176180b7593e91e118fcb4"
+    }
+  ],
+  "proposed_updates": {
+    "requirements": [],
+    "design": null,
+    "assets": [
+      {
+        "asset_id": "player_sheet",
+        "artifact_ref": {
+          "artifact_id": "art-asset-player_sheet",
+          "version": 1,
+          "kind": "asset",
+          "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/sprites/player_sheet.png",
+          "created_by": "art_producer",
+          "media_type": "image/png",
+          "sha256": "081dc213f7c8f838ea754bf184ba2c9afec75fc201847f1b48a3569f477c73ca"
+        },
+        "purpose": "Base player character sprite sheet for running, idle and jumping, reused as the temporal anchor of every loop.",
+        "source": "mock:mock-image.v1",
+        "license": "Synthetic test placeholder; replace before assessing art quality. No third-party artwork used.",
+        "integration_notes": "Copy to assets/sprites/player_sheet.png. Filter: nearest. Grid: 4 x 1. Frames (row-major): player_idle, player_run_a, player_run_b, player_jump. Import as SpriteFrames with a 4x1 grid, nearest filtering, no mipmaps. AnimatedSprite2D on the player scene; draw at integer scale 2x (64x64 on screen) inside the 1280x720 viewport. Ground baseline sits at the bottom row of each cell, so place the sprite origin at the feet. Frame timing: idle loop 8 fps, run 12 fps, jump held static. Do not bake a shadow; add a separate simple ellipse if needed. License handling: Generated by the host-configured mock image service (mock-image.v1), which is declared a synthetic test placeholder by the host. No third-party artwork is contained, no attribution or redistribution obligation applies, and the placeholder license is host-defined only; treat the file as temporary and replace with licensed Kenney/OpenGameArt art or a final generated set before shipping. MOCK PLACEHOLDER: replace before visual acceptance. Visual review has not been performed."
+      },
+      {
+        "asset_id": "ghost_sheet",
+        "artifact_ref": {
+          "artifact_id": "art-asset-ghost_sheet",
+          "version": 1,
+          "kind": "asset",
+          "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/sprites/ghost_sheet.png",
+          "created_by": "art_producer",
+          "media_type": "image/png",
+          "sha256": "081dc213f7c8f838ea754bf184ba2c9afec75fc201847f1b48a3569f477c73ca"
+        },
+        "purpose": "Translucent ghost silhouette sheet so past-loop replays are visually distinct from the current player.",
+        "source": "mock:mock-image.v1",
+        "license": "Synthetic test placeholder; replace before assessing art quality. No third-party artwork used.",
+        "integration_notes": "Copy to assets/sprites/ghost_sheet.png. Filter: nearest. Grid: 4 x 1. Frames (row-major): ghost_idle, ghost_run_a, ghost_run_b, ghost_jump. Import identical to the player sheet (4x1 grid, nearest). Spawn one instance per recorded loop, cap four. Drive opacity with CanvasItem.modulate.a between 0.45 and 0.65 and vary hue slightly per loop index so layered ghosts stay distinguishable; also tint the marker cell from ui_controls to match. Ghosts must not collide with the current player. Developer may alternatively reuse player_sheet with runtime tint/opacity, but this dedicated silhouette is the preferred primary art. License handling: Generated by the mock image service (mock-image.v1) as a host-declared synthetic test placeholder; no third-party artwork, no attribution obligation, host-defined placeholder license only. Replace before shippable release. MOCK PLACEHOLDER: replace before visual acceptance. Visual review has not been performed."
+      },
+      {
+        "asset_id": "tileset_platform",
+        "artifact_ref": {
+          "artifact_id": "art-asset-tileset_platform",
+          "version": 1,
+          "kind": "asset",
+          "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/tiles/tileset_platform.png",
+          "created_by": "art_producer",
+          "media_type": "image/png",
+          "sha256": "946f87b17cb7458e775e08a8e199172e68d900c1a871c66ed9a53c1cd0047e73"
+        },
+        "purpose": "Single shared 32x32 level tileset for ground, platforms, bridges, background decor and spikes across all chapters.",
+        "source": "mock:mock-image.v1",
+        "license": "Synthetic test placeholder; replace before assessing art quality. No third-party artwork used.",
+        "integration_notes": "Copy to assets/tiles/tileset_platform.png. Filter: nearest. Grid: 8 x 4. Frames (row-major): tile_ground_top, tile_ground_fill, tile_ground_left, tile_ground_right, tile_platform_left, tile_platform_mid, tile_platform_right, tile_platform_single, tile_wall, tile_wall_top, tile_bridge_left, tile_bridge_mid, tile_bridge_right, tile_bridge_single, tile_ladder, tile_pipe, tile_decor_pillar, tile_decor_vent, tile_decor_panel, tile_decor_lamp, tile_decor_crate, tile_decor_barrel, tile_decor_stand, tile_decor_sign, tile_bg_brick, tile_bg_window, tile_bg_clock, tile_bg_gear, tile_bg_cloud, tile_bg_silhouette, tile_hazard_spike, tile_slope. Import as TileSet atlas with 8x4 grid, nearest filtering. One TileSet resource is shared by all 24 levels; chapter variance is applied as a TileMap modulate tint, never as extra art. Solid collisions only on rows 1 and 2 ground/wall/bridge cells; decor and background rows are non-colliding. Build the 'bridge' cells so a ghost-body interaction can occupy them for the R004 bridge puzzle. License handling: Generated by the mock image service (mock-image.v1) as a host-declared synthetic test placeholder; no third-party artwork, no attribution obligation, host-defined placeholder license only. No library pack is claimed because /workspace/assets/library was reported unavailable. MOCK PLACEHOLDER: replace before visual acceptance. Visual review has not been performed."
+      },
+      {
+        "asset_id": "switch_button",
+        "artifact_ref": {
+          "artifact_id": "art-asset-switch_button",
+          "version": 1,
+          "kind": "asset",
+          "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/props/switch_button.png",
+          "created_by": "art_producer",
+          "media_type": "image/png",
+          "sha256": "c226178e5c714b2db8b979e5c00c77fa5df2112703a5c8a21ac021179751feca"
+        },
+        "purpose": "Two-state wall/floor switch that ghosts and the player can hold down to gate the exit.",
+        "source": "mock:mock-image.v1",
+        "license": "Synthetic test placeholder; replace before assessing art quality. No third-party artwork used.",
+        "integration_notes": "Copy to assets/props/switch_button.png. Filter: nearest. Grid: 2 x 1. Frames (row-major): switch_off, switch_on. Import as a 2x1 atlas, nearest filtering. Draw at 2x scale. Switch state must be driven by any overlapping body tagged as player or ghost; when a ghost holds it, keep frame switch_on and optionally pulse modulate. Expose a boolean 'held' the exit crystal reads for R015. License handling: Generated by the mock image service (mock-image.v1) as a host-declared synthetic test placeholder; no third-party artwork, no attribution obligation, host-defined placeholder license only. MOCK PLACEHOLDER: replace before visual acceptance. Visual review has not been performed."
+      },
+      {
+        "asset_id": "pressure_plate",
+        "artifact_ref": {
+          "artifact_id": "art-asset-pressure_plate",
+          "version": 1,
+          "kind": "asset",
+          "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/props/pressure_plate.png",
+          "created_by": "art_producer",
+          "media_type": "image/png",
+          "sha256": "c226178e5c714b2db8b979e5c00c77fa5df2112703a5c8a21ac021179751feca"
+        },
+        "purpose": "Two-state floor plate ghosts can stand on to hold switches or create bridges.",
+        "source": "mock:mock-image.v1",
+        "license": "Synthetic test placeholder; replace before assessing art quality. No third-party artwork used.",
+        "integration_notes": "Copy to assets/props/pressure_plate.png. Filter: nearest. Grid: 2 x 1. Frames (row-major): plate_up, plate_down. Import as a 2x1 atlas, nearest filtering, draw at 2x. Plate activates while any player or ghost body overlaps its Area2D; ghost occupancy must count as held for R003. Pair each plate with a switch id so the exit crystal can query it. License handling: Generated by the mock image service (mock-image.v1) as a host-declared synthetic test placeholder; no third-party artwork, no attribution obligation, host-defined placeholder license only. MOCK PLACEHOLDER: replace before visual acceptance. Visual review has not been performed."
+      },
+      {
+        "asset_id": "door_gate",
+        "artifact_ref": {
+          "artifact_id": "art-asset-door_gate",
+          "version": 1,
+          "kind": "asset",
+          "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/props/door_gate.png",
+          "created_by": "art_producer",
+          "media_type": "image/png",
+          "sha256": "c226178e5c714b2db8b979e5c00c77fa5df2112703a5c8a21ac021179751feca"
+        },
+        "purpose": "Two-state door a ghost can hold open across loops for later-loop traversal.",
+        "source": "mock:mock-image.v1",
+        "license": "Synthetic test placeholder; replace before assessing art quality. No third-party artwork used.",
+        "integration_notes": "Copy to assets/props/door_gate.png. Filter: nearest. Grid: 2 x 1. Frames (row-major): door_closed, door_open. Import as a 2x1 atlas, nearest filtering. The 32x32 cell is door-slab sized; scale to the level's actual door height using a Sprite2D region plus a separate collision rectangle, or repeat the frame vertically. Collision is disabled only while a ghost or the player occupies the hold Area2D; hold state must persist for as long as the ghost replay remains there (R012). License handling: Generated by the mock image service (mock-image.v1) as a host-declared synthetic test placeholder; no third-party artwork, no attribution obligation, host-defined placeholder license only. MOCK PLACEHOLDER: replace before visual acceptance. Visual review has not been performed."
+      },
+      {
+        "asset_id": "laser_hazard",
+        "artifact_ref": {
+          "artifact_id": "art-asset-laser_hazard",
+          "version": 1,
+          "kind": "asset",
+          "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/props/laser_hazard.png",
+          "created_by": "art_producer",
+          "media_type": "image/png",
+          "sha256": "c226178e5c714b2db8b979e5c00c77fa5df2112703a5c8a21ac021179751feca"
+        },
+        "purpose": "Laser emitter plus beam cell so a ghost body visibly blocks a beam at its position.",
+        "source": "mock:mock-image.v1",
+        "license": "Synthetic test placeholder; replace before assessing art quality. No third-party artwork used.",
+        "integration_notes": "Copy to assets/props/laser_hazard.png. Filter: nearest. Grid: 2 x 1. Frames (row-major): laser_emitter, laser_beam. Import as a 2x1 atlas, nearest filtering. Tile laser_beam horizontally inside a thin Sprite2D or Line2D so the beam stretches to the first blocker. When a ghost or the player intersects the ray, the beam visual must terminate at that contact point instead of the usual endpoint (R012). Beam and emitter are non-solid decoration; only the blocking logic matters. License handling: Generated by the mock image service (mock-image.v1) as a host-declared synthetic test placeholder; no third-party artwork, no attribution obligation, host-defined placeholder license only. MOCK PLACEHOLDER: replace before visual acceptance. Visual review has not been performed."
+      },
+      {
+        "asset_id": "enemy_patroller",
+        "artifact_ref": {
+          "artifact_id": "art-asset-enemy_patroller",
+          "version": 1,
+          "kind": "asset",
+          "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/sprites/enemy_patroller.png",
+          "created_by": "art_producer",
+          "media_type": "image/png",
+          "sha256": "c226178e5c714b2db8b979e5c00c77fa5df2112703a5c8a21ac021179751feca"
+        },
+        "purpose": "Patrolling enemy that switches to a distracted state while a ghost is nearby.",
+        "source": "mock:mock-image.v1",
+        "license": "Synthetic test placeholder; replace before assessing art quality. No third-party artwork used.",
+        "integration_notes": "Copy to assets/sprites/enemy_patroller.png. Filter: nearest. Grid: 2 x 1. Frames (row-major): enemy_walk_a, enemy_walk_b. Import as a 2x1 atlas, nearest filtering, draw at 2x, loop the two frames at 6 fps while patrolling. For the distracted state, stop the walk loop and apply a brief modulate tint (for example amber) plus a small '?' style reaction via modulate pulse rather than extra frames. Distraction range and timing belong to the enemy script, not the art. License handling: Generated by the mock image service (mock-image.v1) as a host-declared synthetic test placeholder; no third-party artwork, no attribution obligation, host-defined placeholder license only. MOCK PLACEHOLDER: replace before visual acceptance. Visual review has not been performed."
+      },
+      {
+        "asset_id": "exit_crystal",
+        "artifact_ref": {
+          "artifact_id": "art-asset-exit_crystal",
+          "version": 1,
+          "kind": "asset",
+          "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/props/exit_crystal.png",
+          "created_by": "art_producer",
+          "media_type": "image/png",
+          "sha256": "c226178e5c714b2db8b979e5c00c77fa5df2112703a5c8a21ac021179751feca"
+        },
+        "purpose": "Exit crystal with dormant and all-switches-held states to signal completion gating.",
+        "source": "mock:mock-image.v1",
+        "license": "Synthetic test placeholder; replace before assessing art quality. No third-party artwork used.",
+        "integration_notes": "Copy to assets/props/exit_crystal.png. Filter: nearest. Grid: 2 x 1. Frames (row-major): crystal_dormant, crystal_active. Import as a 2x1 atlas, nearest filtering, draw at 2x with a slow 2-frame pulse between dormant and active brightness when active. Show crystal_dormant while any required switch is unheld and switch to crystal_active only when all required switches are held by any player or ghost combination (R015). Touching an active crystal triggers the completion overlay; an inactive crystal should give a short rejected flash instead of completing. License handling: Generated by the mock image service (mock-image.v1) as a host-declared synthetic test placeholder; no third-party artwork, no attribution obligation, host-defined placeholder license only. MOCK PLACEHOLDER: replace before visual acceptance. Visual review has not been performed."
+      },
+      {
+        "asset_id": "hud_panel",
+        "artifact_ref": {
+          "artifact_id": "art-asset-hud_panel",
+          "version": 1,
+          "kind": "asset",
+          "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/ui/hud_panel.png",
+          "created_by": "art_producer",
+          "media_type": "image/png",
+          "sha256": "c5213e17331175be34ce516c1e0127679d3d854ca2a1eb65dda3d7797f05ec42"
+        },
+        "purpose": "HUD frame, timer badge and 0-30 second timeline track for the play screen.",
+        "source": "mock:mock-image.v1",
+        "license": "Synthetic test placeholder; replace before assessing art quality. No third-party artwork used.",
+        "integration_notes": "Copy to assets/ui/hud_panel.png. Filter: nearest. Grid: 3 x 1. Frames (row-major): panel_bg, timer_badge, timeline_track. Import as a 3x1 atlas, nearest filtering; slice panel_bg as a NinePatchRect with 12-pixel margins. Use timeline_track as a stretched TextureRect (or repeat) spanning left to right with the 0-30 s mapping done in code; ghost markers from ui_controls are positioned as children on top. Timer numbers are rendered with the built-in font as a Label centered on timer_badge; nothing numeric is baked into the art. License handling: Generated by the mock image service (mock-image.v1) as a host-declared synthetic test placeholder; no third-party artwork, no attribution obligation, host-defined placeholder license only. MOCK PLACEHOLDER: replace before visual acceptance. Visual review has not been performed."
+      },
+      {
+        "asset_id": "ui_controls",
+        "artifact_ref": {
+          "artifact_id": "art-asset-ui_controls",
+          "version": 1,
+          "kind": "asset",
+          "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/ui/ui_controls.png",
+          "created_by": "art_producer",
+          "media_type": "image/png",
+          "sha256": "95336d2d67797ded9ef9b9e08792355515fffaf75bc2622a4828a3b661d0ce33"
+        },
+        "purpose": "Button states, ghost timeline markers and a clock-hand graphic shared by menus and the HUD.",
+        "source": "mock:mock-image.v1",
+        "license": "Synthetic test placeholder; replace before assessing art quality. No third-party artwork used.",
+        "integration_notes": "Copy to assets/ui/ui_controls.png. Filter: nearest. Grid: 3 x 2. Frames (row-major): button_normal, button_hover, button_pressed, ghost_marker_a, ghost_marker_b, clock_hand. Import as a 3x2 atlas, nearest filtering; slice buttons into TextureButton normal/hover/pressed with 16-pixel nine-patch margins. Use ghost_marker_a and ghost_marker_b alternately by loop index (maximum four markers) as children of the timeline track, positioned by playback time; keep markers small enough to stay legible at 1x. clock_hand is reused by the title screen at large scale and by decorative UI to keep the clock motif consistent. License handling: Generated by the mock image service (mock-image.v1) as a host-declared synthetic test placeholder; no third-party artwork, no attribution obligation, host-defined placeholder license only. MOCK PLACEHOLDER: replace before visual acceptance. Visual review has not been performed."
+      },
+      {
+        "asset_id": "title_backdrop",
+        "artifact_ref": {
+          "artifact_id": "art-asset-title_backdrop",
+          "version": 1,
+          "kind": "asset",
+          "path": "artifacts/art_producer/0506d1233d02ae4aeae66b3e/assets/ui/title_backdrop.png",
+          "created_by": "art_producer",
+          "media_type": "image/png",
+          "sha256": "bf137e5842b15092838d0c6ef14310ca93c9bf07845e62b338c2be42e0a5487a"
+        },
+        "purpose": "Title screen backdrop with overlapping clock hands and ghost silhouettes as required for the first screen.",
+        "source": "mock:mock-image.v1",
+        "license": "Synthetic test placeholder; replace before assessing art quality. No third-party artwork used.",
+        "integration_notes": "Copy to assets/ui/title_backdrop.png. Filter: nearest. Grid: 1 x 1. Frames (row-major): title_background. Import as a single Texture2D with nearest filtering, placed full-rect behind the title UI; no scaling beyond the fixed 1280x720 viewport. Keep the center band clear so the game's own title Label and buttons remain readable. For a subtle idle animation, Developer can offset the ghost silhouettes with a low-amplitude position tween, but the image itself is static. License handling: Generated by the mock image service (mock-image.v1) as a host-declared synthetic test placeholder; no third-party artwork, no attribution obligation, host-defined placeholder license only. All twelve assets in this package are placeholders until the host confirms a real image service or licensed library art; final visual acceptance is pending. MOCK PLACEHOLDER: replace before visual acceptance. Visual review has not been performed."
+      }
+    ],
+    "game_revision": null,
+    "evidence": [],
+    "issues": [],
+    "readiness": null
+  },
+  "evidence_refs": [],
+  "blockers": [],
+  "error": null
+}

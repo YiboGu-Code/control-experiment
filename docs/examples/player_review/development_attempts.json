@@ -1,0 +1,74 @@
+{
+  "attempts": [
+    {
+      "run": "player-live-001",
+      "usage": {
+        "model_calls": 2,
+        "input_tokens": 75839,
+        "cached_input_tokens": 9728,
+        "output_tokens": 2661,
+        "image_calls": 0,
+        "tool_calls": 314,
+        "tool_seconds": 238.59799999989627,
+        "wall_seconds": 248.73399999999674,
+        "token_usage_complete": true
+      },
+      "published": false
+    },
+    {
+      "run": "player-live-002",
+      "usage": {
+        "model_calls": 0,
+        "input_tokens": 0,
+        "cached_input_tokens": 0,
+        "output_tokens": 0,
+        "image_calls": 0,
+        "tool_calls": 15,
+        "tool_seconds": 0.15800000001036096,
+        "wall_seconds": 0.8120000000053551,
+        "token_usage_complete": true
+      },
+      "published": false
+    },
+    {
+      "run": "player-live-003",
+      "usage": {
+        "model_calls": 4,
+        "input_tokens": 60918,
+        "cached_input_tokens": 39040,
+        "output_tokens": 3312,
+        "image_calls": 0,
+        "tool_calls": 100,
+        "tool_seconds": 28.708999999958905,
+        "wall_seconds": 31.687000000005355,
+        "token_usage_complete": true
+      },
+      "published": true
+    },
+    {
+      "run": "player-live-004",
+      "usage": {
+        "model_calls": 4,
+        "input_tokens": 184425,
+        "cached_input_tokens": 38912,
+        "output_tokens": 6937,
+        "image_calls": 0,
+        "tool_calls": 433,
+        "tool_seconds": 340.4640000000072,
+        "wall_seconds": 354.8429999999935,
+        "token_usage_complete": true
+      },
+      "published": true
+    }
+  ],
+  "totals": {
+    "model_calls": 10,
+    "input_tokens": 321182,
+    "cached_input_tokens": 87680,
+    "output_tokens": 12910,
+    "image_calls": 0,
+    "tool_calls": 862,
+    "tool_seconds": 607.9289999998728,
+    "wall_seconds": 636.0760000000009
+  }
+}

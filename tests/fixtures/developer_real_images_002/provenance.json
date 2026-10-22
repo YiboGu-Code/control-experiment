@@ -1,0 +1,12 @@
+{
+  "source_run": "runs/fixed-loop-real-images-002",
+  "description": "Public generated sources and the final failed build step; no hidden evaluation material. Used only for offline regression.",
+  "source_sha256": {
+    "project.godot": "ad19bc4750d30b3b8b0e149609e0df2bdb5de5c1b67b1dfc0170283df09e1c10",
+    "scripts/main.gd": "33e6d77a0de31e607fd040989b65c4fb598cfb84d6f60befb1632ff94fbbabff",
+    "scenes/Gameplay.tscn": "7a386e7cc50d3b9b609881950334cba917328df5dc609370ed2924ab80196a0b",
+    "scenes/TitleScreen.tscn": "74baab545586e84a38e43ff58b912eaf77363d9e0ad9820c92dac2b7040297dd",
+    "scenes/LevelCompleteScreen.tscn": "1cc5134d6678240e95e30631bf76e101b9e7cacda1bf984295ed3539085f42d4"
+  },
+  "build_report": "artifacts/developer/cfd713236975b982a708e00c/developer_report.json"
+}

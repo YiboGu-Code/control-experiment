@@ -1,0 +1,291 @@
+[
+  {
+    "issue_id": "QA-002",
+    "issue_type": "runtime",
+    "severity": "major",
+    "description": "Player can leave the ground platform and fall unbounded with no out-of-bounds death or respawn, leaving the player unrecoverable and preventing completion attempts: near_rewind reaches y~34033 at frame 599 with velocity 8980 and near_victory reaches y~29004 at frame 450, both outside the 720-pixel view.",
+    "suggested_role": "developer",
+    "requirement_ids": [
+      "R010",
+      "R015",
+      "R018"
+    ],
+    "evidence_ids": [
+      "player-0001-play-04",
+      "player-0001-play-07"
+    ],
+    "reproduction_steps": [
+      "Run scenario near_rewind; step off the ground platform; observe Player position y growing past 540 without any respawn within 600 frames.",
+      "Run scenario near_victory; jump at frame 140 and move right; observe Player y beyond the platform with no recovery."
+    ],
+    "status": "open",
+    "resolution": null
+  },
+  {
+    "issue_id": "QA-003",
+    "issue_type": "runtime",
+    "severity": "major",
+    "description": "Interact input is inert: Level.handle_interact() is empty and no interaction radius exists, so the E action cannot trigger switches or objects. Switches only react to body-overlap queries, never to the player's interact action as specified.",
+    "suggested_role": "developer",
+    "requirement_ids": [
+      "R010",
+      "R012"
+    ],
+    "evidence_ids": [
+      "build-0001"
+    ],
+    "reproduction_steps": [
+      "Inspect scripts/Level.gd handle_interact(): the body is 'pass'.",
+      "Launch a level, stand near a switch, send E; observe no switch state change."
+    ],
+    "status": "open",
+    "resolution": null
+  },
+  {
+    "issue_id": "QA-004",
+    "issue_type": "evidence_gap",
+    "severity": "major",
+    "description": "Ghost physical interactions are unverified by any mapped playthrough: no run places a ghost on a switch/pressure plate, holds a door, blocks a laser, or distracts an enemy while the player acts elsewhere. A mapped scenario transcript covering each interaction with observed held/door-open/enemy-distracted/beam-length state is required, and a run to four active ghosts with per-ghost timeline markers.",
+    "suggested_role": "player",
+    "requirement_ids": [
+      "R003",
+      "R012",
+      "R013",
+      "R014"
+    ],
+    "evidence_ids": [],
+    "reproduction_steps": [
+      "Provide a scenario and trace where a ghost occupies a switch and a plate while the player is distant; record ghost positions plus switches_held, door open, enemy distracted and laser beam length.",
+      "Drive a loop to four active ghosts and capture four distinct per-ghost timeline markers at different positions."
+    ],
+    "status": "open",
+    "resolution": null
+  },
+  {
+    "issue_id": "QA-005",
+    "issue_type": "evidence_gap",
+    "severity": "major",
+    "description": "The level-complete overlay path was never observed: no mapped playthrough drove the player to the exit crystal with all required switches held, so loops-used and final-loop exit time display remain unverified, and rejection-with-unheld-switch was never exercised.",
+    "suggested_role": "player",
+    "requirement_ids": [
+      "R015",
+      "R017"
+    ],
+    "evidence_ids": [],
+    "reproduction_steps": [
+      "Using scenario near_victory, provide a trace that touches the exit while s1 is unheld (expect rejected flash) and then when s1 is held; capture CompleteOverlay visible with LoopsLabel and TimeLabel values."
+    ],
+    "status": "open",
+    "resolution": null
+  },
+  {
+    "issue_id": "QA-006",
+    "issue_type": "evidence_gap",
+    "severity": "major",
+    "description": "Reset behavior is unverified: no mapped playthrough activates reset and confirms all ghosts are removed and the level restarts at spawn with a fresh 30-second timer and no retained replay. The reset_flow scenario exists but was never run.",
+    "suggested_role": "player",
+    "requirement_ids": [
+      "R016"
+    ],
+    "evidence_ids": [],
+    "reproduction_steps": [
+      "Launch scenario reset_flow, click ResetButton (screen_rect 1080,8,184,40), and capture a frame where ghosts list is empty, tick=0, TimerLabel=30.00."
+    ],
+    "status": "open",
+    "resolution": null
+  },
+  {
+    "issue_id": "QA-008",
+    "issue_type": "runtime",
+    "severity": "major",
+    "description": "Title trace replay is non-deterministic: title_nav_probe failed both fresh replays with state and pixel mismatch at frame 0, traced to TitleScreen.gd driving hand rotation from Time.get_ticks_msec(), a wall-clock source. Deterministic demo replay requires a fixed simulated clock for title animation.",
+    "suggested_role": "developer",
+    "requirement_ids": [
+      "R028",
+      "R037"
+    ],
+    "evidence_ids": [
+      "player-0001-replay-00",
+      "player-0001-replay-01"
+    ],
+    "reproduction_steps": [
+      "Run title_nav trace twice from fresh launches; observe comparison:title_nav_probe-replay-1/2 status failed with first_state_difference=0 and first_pixel_difference=0.",
+      "Change TitleScreen animation to advance from a fixed simulated delta so title state is reproducible."
+    ],
+    "status": "open",
+    "resolution": null
+  },
+  {
+    "issue_id": "QA-009",
+    "issue_type": "evidence_gap",
+    "severity": "major",
+    "description": "Full 30-second loop duration from a fresh clock (expiry at exactly 30s) and ordinary level entry starting the countdown are unexercised; the 600-frame cap prevents a full loop from an ordinary start and all rewind evidence used preloaded scenarios. A clock-exposing run and a normal (no scenario) level-entry trace are needed.",
+    "suggested_role": "player",
+    "requirement_ids": [
+      "R001",
+      "R009"
+    ],
+    "evidence_ids": [],
+    "reproduction_steps": [
+      "Provide a scenario starting at tick=0 with TimerLabel 30.00 and capture the frame where tick crosses TICKS_PER_LOOP and TimerLabel reads 00.00 (or expose loop tick and verify expiry tick==900).",
+      "Provide a normal (no scenario) trace that clicks the Level 1 button rect [678,130,300,36] and captures level entry with TimerLabel 30.00."
+    ],
+    "status": "open",
+    "resolution": null
+  },
+  {
+    "issue_id": "QA-011",
+    "issue_type": "evidence_gap",
+    "severity": "minor",
+    "description": "The screenshot helper usage requirement is unverified: no mapped evidence records invoking /workspace/tools/screenshot.sh with --path/--out/--frames/--scenario, and rendered title, active-play, multi-ghost and completion screens have not been pixel-inspected by this reviewer.",
+    "suggested_role": "player",
+    "requirement_ids": [
+      "R024"
+    ],
+    "evidence_ids": [],
+    "reproduction_steps": [
+      "Run /workspace/tools/screenshot.sh --path /workspace/game -- --out <file> --frames N and with --scenario <id>, and supply the rendered captures for title, active play, multi-ghost and completion screens."
+    ],
+    "status": "open",
+    "resolution": null
+  },
+  {
+    "issue_id": "QA-012",
+    "issue_type": "evidence_gap",
+    "severity": "minor",
+    "description": "A drag trace has never been exercised: no mouse_down/mouse_move/mouse_up drag segment exists in any supplied trace, so drag ordering and bracketed-move semantics could not be validated even though the game does not currently need drags.",
+    "suggested_role": "player",
+    "requirement_ids": [
+      "R035"
+    ],
+    "evidence_ids": [],
+    "reproduction_steps": [
+      "Provide a trace with mouse_down at a start point, at least one mouse_move, and mouse_up after the moves, and confirm replay respects the bracketed ordering."
+    ],
+    "status": "open",
+    "resolution": null
+  },
+  {
+    "issue_id": "QA-host-evidence-gaps",
+    "issue_type": "evidence_gap",
+    "severity": "major",
+    "description": "Acceptance remains unverified. Collect or correctly map current evidence for the listed criteria; no missing test is claimed as a gameplay defect.",
+    "suggested_role": "player",
+    "requirement_ids": [
+      "R002",
+      "R004",
+      "R005",
+      "R006",
+      "R007",
+      "R010",
+      "R011",
+      "R018",
+      "R019",
+      "R026",
+      "R027",
+      "R028",
+      "R029",
+      "R030",
+      "R031",
+      "R032",
+      "R033",
+      "R034",
+      "R036",
+      "R037"
+    ],
+    "evidence_ids": [
+      "build-0001",
+      "player-0001-play-01"
+    ],
+    "reproduction_steps": [
+      "Review R002 criterion 2: Ghost positions advance with playback_frame, but no mapped evidence samples a ghost's recorded state against the contemporaneous recorded player stream to confirm frame-correspondence at the same loop time.",
+      "Review R004 criterion 0: No authored level data requires simultaneous contributions from two prior ghosts before the current player reaches the exit, and no mapped playthrough demonstrates such cooperation; this is an implementation/content defect needing a mapped scenario, not a contradiction of the instruction.",
+      "Review R004 criterion 1: Removing a ghost contribution is not shown to make the exit unreachable; the authored template uses independent switch/plate holds all reachable by the current player, so there is no observed removable ghost dependency.",
+      "Review R004 criterion 2: No mapped playthrough keeps multiple ghost contributions alive across successive loops to confirm persistence until reset or the loop ceiling.",
+      "Review R005 criterion 0: No mapped playthrough shows any level that cannot be solved in a single loop; the authored template is a collection of independent holds, but no run confirms single-loop solvability or non-solvability.",
+      "Review R005 criterion 1: No observed solution schedules distinct actions in different loop iterations at specified times; the shared template provides no cross-time dependency in the inspected data or snapshots.",
+      "Review R005 criterion 2: Earlier-loop ghost actions are not observed to be necessary for later-loop success in any mapped playthrough; only static level data is available and it does not encode this dependency.",
+      "Review R006 criterion 1: Host withheld the model's 'pass' decision: Criterion evidence does not cover its requirement: R006. Obtain valid current evidence before acceptance; the original rationale is retained in the model proposal.",
+      "Review R007 criterion 0: Title snapshot shows three HandA/HandB/HandC Sprite2D nodes at [640,340] (overlapping by position), but confirming rendering of overlapping clock-hand graphics requires pixel inspection, which this text-only model has not performed.",
+      "Review R007 criterion 1: Ghost silhouettes on the title exist only via the mock backdrop texture; no node-level silhouette is present and pixel inspection is unavailable, and the mock art cannot establish final visual compliance.",
+      "Review R007 criterion 2: Host withheld the model's 'pass' decision: Acceptance basis lacks a corresponding inspected source: R007. Obtain valid current evidence before acceptance; the original rationale is retained in the model proposal.",
+      "Review R010 criterion 0: Host withheld the model's 'pass' decision: Criterion evidence does not cover its requirement: R010. Obtain valid current evidence before acceptance; the original rationale is retained in the model proposal.",
+      "Review R010 criterion 1: No mapped observation captures Player velocity.y becoming negative (an upward jump) while grounded; the player instead fell off the platform, so grounded jump behavior is untested.",
+      "Review R011 criterion 2: Ghost.gd sets modulate alpha 0.55, but confirming a translucent ghost is actually shown requires rendered pixel inspection, which this text-only model has not performed.",
+      "Review R011 criterion 3: No mapped evidence proves the ghost reproduces the prior loop's exact state sequence rather than an approximation; matching replays cover the whole session but not an isolated ghost-vs-recording state comparison.",
+      "Review R018 criterion 1: The ordinary path never demonstrated the full chain (title, level entry, timer expiry, ghost replay, exit completion, metrics): the title trace missed the Level 1 button and completion was never reached.",
+      "Review R019 criterion 2: No OpenGameArt-derived file is present, so there are no LICENSE.txt obligations to check, but also no evidence of correct OGA usage or attribution.",
+      "Review R026 criterion 0: The project viewport is 1280x720 and player traces use in-range coordinates, but they are not packaged delivery traces and only three were run, so fresh-launch 1280x720 evaluation is only partially exercised.",
+      "Review R026 criterion 1: Most scenario replays matched, but title_nav diverged in both fresh replays (state and pixel mismatch), showing at least one trace is not reproducible from a fresh launch.",
+      "Review R026 criterion 3: Player traces are exactly 600 frames (20s) and thus not sampled, but no packaged demo exists to assess random 20-second sampling robustness.",
+      "Review R027 criterion 2: The ordinary trace never entered a level (later clicks missed the Level 1 rect), so it did not demonstrate movement, timer expiry, ghost replay, and an exit attempt in normal play.",
+      "Review R028 criterion 0: near_rewind and near_victory replays matched, but title_nav failed both fresh replays at frame 0; determinism of the same trace is not established because a wall-clock title animation breaks exact replay.",
+      "Review R028 criterion 1: Level.gd does not seed any RNG for ordinary play; the only seed(1337) is in Main._boot_scenario, so randomized elements in ordinary play are not shown to be seeded.",
+      "Review R028 criterion 2: TitleScreen.gd drives hand rotation from Time.get_ticks_msec(), a timing-dependent value that causes the observed title replay divergence, so identical trace runs vary.",
+      "Review R029 criterion 1: Host withheld the model's 'pass' decision: Criterion evidence does not cover its requirement: R029. Obtain valid current evidence before acceptance; the original rationale is retained in the model proposal.",
+      "Review R030 criterion 1: near_victory frame 0 shows switches_held {s1:true} and one ghost matching intent, but near_rewind seeds three ghosts on a level whose max_ghosts is 1 and preloads tick=720 rather than a frame-zero state, so exact scenario-definition match at frame zero is not demonstrated.",
+      "Review R031 criterion 1: Host withheld the model's 'pass' decision: Criterion evidence does not cover its requirement: R031. Obtain valid current evidence before acceptance; the original rationale is retained in the model proposal.",
+      "Review R032 criterion 0: Host withheld the model's 'pass' decision: Acceptance basis lacks a corresponding inspected source: R032. Obtain valid current evidence before acceptance; the original rationale is retained in the model proposal.",
+      "Review R032 criterion 1: Host withheld the model's 'pass' decision: Acceptance basis lacks a corresponding inspected source: R032. Obtain valid current evidence before acceptance; the original rationale is retained in the model proposal.",
+      "Review R032 criterion 2: No mapped evidence confirms the evaluator interprets trace event frames at exactly 30 fps; the player harness ran at engine frame rate and cannot establish the 30 fps interpretation.",
+      "Review R033 criterion 0: Host withheld the model's 'pass' decision: Acceptance basis lacks a corresponding inspected source: R033. Obtain valid current evidence before acceptance; the original rationale is retained in the model proposal.",
+      "Review R033 criterion 1: Host withheld the model's 'pass' decision: Acceptance basis lacks a corresponding inspected source: R033. Obtain valid current evidence before acceptance; the original rationale is retained in the model proposal.",
+      "Review R033 criterion 2: Host withheld the model's 'pass' decision: Acceptance basis lacks a corresponding inspected source: R033. Obtain valid current evidence before acceptance; the original rationale is retained in the model proposal.",
+      "Review R034 criterion 0: Host withheld the model's 'pass' decision: Acceptance basis lacks a corresponding inspected source: R034. Obtain valid current evidence before acceptance; the original rationale is retained in the model proposal.",
+      "Review R034 criterion 1: Host withheld the model's 'pass' decision: Acceptance basis lacks a corresponding inspected source: R034. Obtain valid current evidence before acceptance; the original rationale is retained in the model proposal.",
+      "Review R034 criterion 2: Host withheld the model's 'pass' decision: Acceptance basis lacks a corresponding inspected source: R034. Obtain valid current evidence before acceptance; the original rationale is retained in the model proposal.",
+      "Review R036 criterion 0: Host withheld the model's 'pass' decision: Acceptance basis lacks a corresponding inspected source: R036. Obtain valid current evidence before acceptance; the original rationale is retained in the model proposal.",
+      "Review R036 criterion 1: No mapped evidence proves a wait event leaves game state unchanged; wait frames were only anchors and state changes at those frames were not isolated to wait behavior.",
+      "Review R036 criterion 2: Host withheld the model's 'pass' decision: Acceptance basis lacks a corresponding inspected source: R036. Obtain valid current evidence before acceptance; the original rationale is retained in the model proposal.",
+      "Review R037 criterion 0: near_rewind and near_victory replays matched, but title_nav diverged in both replays, so two identical fresh replays of one trace do not always produce the same outcome.",
+      "Review R037 criterion 2: Level completion was never observed in any trace, so timing, ghost playback, and level-completion reproducibility for a completing trace is untested."
+    ],
+    "status": "open",
+    "resolution": null
+  },
+  {
+    "issue_id": "QA-host-failed-acceptance",
+    "issue_type": "requirement_gap",
+    "severity": "major",
+    "description": "Address the failed acceptance criteria using their current cited evidence, then collect fresh verification.",
+    "suggested_role": "developer",
+    "requirement_ids": [
+      "R006",
+      "R019",
+      "R021",
+      "R025",
+      "R026"
+    ],
+    "evidence_ids": [
+      "build-0001"
+    ],
+    "reproduction_steps": [
+      "Review R006 criterion 2: Chapter 1 uses max_ghosts=1 but no level data distinguishes progressive escalation and no level requires four active loops; max_ghosts returns 1/2/3/3 with identical geometry, so the escalation to four-loop orchestrations is not implemented.",
+      "Review R019 criterion 0: project-inventory lists only the asset paths, and the art manifest declares all 12 assets mock-image.v1 placeholders with both mounted libraries reported unavailable; imports are not sourced from the Kenney/OGA libraries.",
+      "Review R019 criterion 1: No file in the project is Kenney-sourced; all art files match the mock placeholder set, so no CC0 Kenney assets are used.",
+      "Review R021 criterion 2: scripts/, scenes/, and assets/ exist, but the project inventory contains no demo_outputs/ directory, so the required layout is incomplete.",
+      "Review R025 criterion 0: The deliverable project inventory contains no demo_outputs/ directory or trace files; player traces live in the player artifact area, not the packaged game.",
+      "Review R025 criterion 1: No .json trace files exist under the packaged demo_outputs/ per the project inventory.",
+      "Review R025 criterion 2: There are no packaged trace files, so the one-trace-per-demo uniqueness condition cannot hold in the delivery package.",
+      "Review R026 criterion 2: No traces are shipped in the package, so the delivery set is empty and the 'no more than 10 traces' condition is not demonstrated."
+    ],
+    "status": "open",
+    "resolution": null
+  },
+  {
+    "issue_id": "QA-host-rejected-issues",
+    "issue_type": "evidence_gap",
+    "severity": "major",
+    "description": "Some proposed model issue updates lack valid grounding. Existing issues remain unchanged unless a valid update was accepted.",
+    "suggested_role": "qa_reviewer",
+    "requirement_ids": [],
+    "evidence_ids": [],
+    "reproduction_steps": [
+      "Reassess model issue QA-001 using inspected current sources: Issue instruction excerpt is not verbatim",
+      "Reassess model issue QA-007 using inspected current sources: Issue instruction excerpt is not verbatim",
+      "Reassess model issue QA-010 using inspected current sources: Issue instruction excerpt is not verbatim"
+    ],
+    "status": "open",
+    "resolution": null
+  }
+]

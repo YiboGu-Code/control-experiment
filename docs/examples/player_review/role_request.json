@@ -1,0 +1,25 @@
+{
+  "schema_version": "1.0",
+  "request_id": "player-initial",
+  "run_id": "player-live",
+  "task_id": "platformer-time-loop",
+  "role": "player",
+  "work_item_ids": [],
+  "objective": "Play the Time Loop game using actual inputs and investigate reproducible behavior",
+  "completion_criteria": [
+    "Explore the ordinary title/menu/game path and a meaningful gameplay scenario such as near_rewind",
+    "Capture executed input traces and render screenshots, then replay each trace twice from a fresh process and empty save",
+    "Report frame-level state/pixel agreement and disagreement with honest coverage limits; do not modify the game or make QA verdicts"
+  ],
+  "state_revision": 3,
+  "artifact_refs": [],
+  "limits": {
+    "max_model_calls": 4,
+    "max_input_tokens": 3000000,
+    "max_output_tokens": 32768,
+    "max_image_calls": 0,
+    "max_tool_calls": 2000,
+    "max_tool_seconds": 3000.0,
+    "max_wall_seconds": 3300.0
+  }
+}

@@ -1,0 +1,12 @@
+{
+    "jobs_dir": "/root/adaptive_game_generation/benchmark_resources/FreedomIntelligence-gamecraft-bench-a433475/../gamecraft-bench-jobs",
+    "environment": {
+        "import_path": "gamecraft_bench.local_env:LocalSubprocessEnvironment",
+        "delete": false
+    },
+    "tasks": [
+        {
+            "path": "tasks/cardgame-autobattler"
+        }
+    ]
+}

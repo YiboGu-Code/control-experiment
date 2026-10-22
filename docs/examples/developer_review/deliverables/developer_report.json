@@ -1,0 +1,475 @@
+{
+  "schema_version": "developer.1",
+  "config": {
+    "prompt_version": "developer.v1",
+    "max_output_tokens": 65536,
+    "max_model_turns": 3,
+    "max_patch_files": 48,
+    "max_file_bytes": 262144,
+    "max_source_bytes": 1048576,
+    "max_prompt_bytes": 2097152,
+    "max_response_bytes": 1048576,
+    "godot_executable": "godot",
+    "check_timeout_seconds": 90.0,
+    "max_scenario_checks": 2,
+    "scenario_frames": 60
+  },
+  "task_id": "platformer-time-loop",
+  "game_revision_id": "game-0001",
+  "parent_revision_id": null,
+  "project_ref": {
+    "artifact_id": "game-project",
+    "version": 1,
+    "kind": "game_project",
+    "path": "artifacts/developer/c3018e16c26f75b186cd5127/game",
+    "created_by": "developer",
+    "media_type": null,
+    "sha256": "eb929b96a5bdd894db35ea59191e8f109a38221372d62b6d5d28a8ab4f244d22"
+  },
+  "design_ref": {
+    "artifact_id": "designer-specification",
+    "version": 1,
+    "kind": "document",
+    "path": "artifacts/designer/047cd30e0026f06f86a3e5a9/design.json",
+    "created_by": "designer",
+    "media_type": "application/json",
+    "sha256": "060ef8850723b647440e0fe92ee871f83a46595a068eacea5a07b188a8ce3a39"
+  },
+  "art_manifest_ref": {
+    "artifact_id": "art-manifest",
+    "version": 1,
+    "kind": "document",
+    "path": "artifacts/art_producer/b92ba4f9403ab29df1c92ca6/asset_manifest.json",
+    "created_by": "art_producer",
+    "media_type": "application/json",
+    "sha256": "b2b939a8dee79ab16f08a5a18f8094e32275b1c8c7e692ae6fd200fe2a641545"
+  },
+  "summaries": [
+    "Initial full implementation of Time Loop as a Godot 4 project at project root: title screen with rotating overlapping clock hands and the supplied backdrop, chapter menu (4 chapters x 6 levels with locked/unlocked state), 24 procedurally-defined levels with chapter escalation, a 30-second loop with deterministic 30 Hz player recording, ghost replays driven by recorded state, ghost-driven switch/plate/door/laser/enemy interactions, timeline HUD with per-ghost markers, reset, exit-crystal gating, and level-complete metrics (loops used + final-loop exit time). Uses the supplied Art package textures verbatim via res:// paths with nearest filtering and integer scaling; all art remains documented as mock placeholders. Interprets 'up to four loops' as three recorded ghosts plus the current controlled loop, as instructed. Deterministic named scenarios are implemented, with near_rewind and near_victory first. No input traces are fabricated (Player owns demo_outputs)."
+  ],
+  "changed_files": [
+    "Main.tscn",
+    "project.godot",
+    "scenes/ChapterMenu.tscn",
+    "scenes/Ghost.tscn",
+    "scenes/Level.tscn",
+    "scenes/Player.tscn",
+    "scenes/TitleScreen.tscn",
+    "scripts/ChapterMenu.gd",
+    "scripts/Ghost.gd",
+    "scripts/Hud.gd",
+    "scripts/Level.gd",
+    "scripts/LevelData.gd",
+    "scripts/Main.gd",
+    "scripts/Player.gd",
+    "scripts/Progress.gd",
+    "scripts/TitleScreen.gd"
+  ],
+  "deleted_files": [],
+  "affected_requirement_ids": [
+    "R001",
+    "R002",
+    "R003",
+    "R004",
+    "R005",
+    "R006",
+    "R007",
+    "R008",
+    "R009",
+    "R010",
+    "R011",
+    "R012",
+    "R013",
+    "R014",
+    "R015",
+    "R016",
+    "R017",
+    "R018",
+    "R019",
+    "R020",
+    "R021",
+    "R022",
+    "R023",
+    "R024",
+    "R025",
+    "R026",
+    "R027",
+    "R028",
+    "R029",
+    "R030",
+    "R031",
+    "R032",
+    "R033",
+    "R034",
+    "R035",
+    "R036",
+    "R037"
+  ],
+  "model_implementation_claims": [
+    "R001",
+    "R002",
+    "R003",
+    "R004",
+    "R005",
+    "R006",
+    "R007",
+    "R008",
+    "R009",
+    "R010",
+    "R011",
+    "R012",
+    "R013",
+    "R014",
+    "R015",
+    "R016",
+    "R017",
+    "R018",
+    "R021",
+    "R022",
+    "R023",
+    "R028",
+    "R029",
+    "R030"
+  ],
+  "integrated_assets": [
+    {
+      "asset_id": "player_sheet",
+      "artifact_ref": {
+        "artifact_id": "art-asset-player_sheet",
+        "version": 1,
+        "kind": "asset",
+        "path": "artifacts/art_producer/b92ba4f9403ab29df1c92ca6/assets/sprites/player_sheet.png",
+        "created_by": "art_producer",
+        "media_type": "image/png",
+        "sha256": "081dc213f7c8f838ea754bf184ba2c9afec75fc201847f1b48a3569f477c73ca"
+      },
+      "target_path": "assets/sprites/player_sheet.png",
+      "is_mock": true,
+      "license_target": null
+    },
+    {
+      "asset_id": "ghost_sheet",
+      "artifact_ref": {
+        "artifact_id": "art-asset-ghost_sheet",
+        "version": 1,
+        "kind": "asset",
+        "path": "artifacts/art_producer/b92ba4f9403ab29df1c92ca6/assets/sprites/ghost_sheet.png",
+        "created_by": "art_producer",
+        "media_type": "image/png",
+        "sha256": "081dc213f7c8f838ea754bf184ba2c9afec75fc201847f1b48a3569f477c73ca"
+      },
+      "target_path": "assets/sprites/ghost_sheet.png",
+      "is_mock": true,
+      "license_target": null
+    },
+    {
+      "asset_id": "tileset_platform",
+      "artifact_ref": {
+        "artifact_id": "art-asset-tileset_platform",
+        "version": 1,
+        "kind": "asset",
+        "path": "artifacts/art_producer/b92ba4f9403ab29df1c92ca6/assets/tiles/tileset_platform.png",
+        "created_by": "art_producer",
+        "media_type": "image/png",
+        "sha256": "946f87b17cb7458e775e08a8e199172e68d900c1a871c66ed9a53c1cd0047e73"
+      },
+      "target_path": "assets/tiles/tileset_platform.png",
+      "is_mock": true,
+      "license_target": null
+    },
+    {
+      "asset_id": "switch_button",
+      "artifact_ref": {
+        "artifact_id": "art-asset-switch_button",
+        "version": 1,
+        "kind": "asset",
+        "path": "artifacts/art_producer/b92ba4f9403ab29df1c92ca6/assets/props/switch_button.png",
+        "created_by": "art_producer",
+        "media_type": "image/png",
+        "sha256": "c226178e5c714b2db8b979e5c00c77fa5df2112703a5c8a21ac021179751feca"
+      },
+      "target_path": "assets/props/switch_button.png",
+      "is_mock": true,
+      "license_target": null
+    },
+    {
+      "asset_id": "pressure_plate",
+      "artifact_ref": {
+        "artifact_id": "art-asset-pressure_plate",
+        "version": 1,
+        "kind": "asset",
+        "path": "artifacts/art_producer/b92ba4f9403ab29df1c92ca6/assets/props/pressure_plate.png",
+        "created_by": "art_producer",
+        "media_type": "image/png",
+        "sha256": "c226178e5c714b2db8b979e5c00c77fa5df2112703a5c8a21ac021179751feca"
+      },
+      "target_path": "assets/props/pressure_plate.png",
+      "is_mock": true,
+      "license_target": null
+    },
+    {
+      "asset_id": "door_gate",
+      "artifact_ref": {
+        "artifact_id": "art-asset-door_gate",
+        "version": 1,
+        "kind": "asset",
+        "path": "artifacts/art_producer/b92ba4f9403ab29df1c92ca6/assets/props/door_gate.png",
+        "created_by": "art_producer",
+        "media_type": "image/png",
+        "sha256": "c226178e5c714b2db8b979e5c00c77fa5df2112703a5c8a21ac021179751feca"
+      },
+      "target_path": "assets/props/door_gate.png",
+      "is_mock": true,
+      "license_target": null
+    },
+    {
+      "asset_id": "laser_hazard",
+      "artifact_ref": {
+        "artifact_id": "art-asset-laser_hazard",
+        "version": 1,
+        "kind": "asset",
+        "path": "artifacts/art_producer/b92ba4f9403ab29df1c92ca6/assets/props/laser_hazard.png",
+        "created_by": "art_producer",
+        "media_type": "image/png",
+        "sha256": "c226178e5c714b2db8b979e5c00c77fa5df2112703a5c8a21ac021179751feca"
+      },
+      "target_path": "assets/props/laser_hazard.png",
+      "is_mock": true,
+      "license_target": null
+    },
+    {
+      "asset_id": "enemy_patroller",
+      "artifact_ref": {
+        "artifact_id": "art-asset-enemy_patroller",
+        "version": 1,
+        "kind": "asset",
+        "path": "artifacts/art_producer/b92ba4f9403ab29df1c92ca6/assets/sprites/enemy_patroller.png",
+        "created_by": "art_producer",
+        "media_type": "image/png",
+        "sha256": "c226178e5c714b2db8b979e5c00c77fa5df2112703a5c8a21ac021179751feca"
+      },
+      "target_path": "assets/sprites/enemy_patroller.png",
+      "is_mock": true,
+      "license_target": null
+    },
+    {
+      "asset_id": "exit_crystal",
+      "artifact_ref": {
+        "artifact_id": "art-asset-exit_crystal",
+        "version": 1,
+        "kind": "asset",
+        "path": "artifacts/art_producer/b92ba4f9403ab29df1c92ca6/assets/props/exit_crystal.png",
+        "created_by": "art_producer",
+        "media_type": "image/png",
+        "sha256": "c226178e5c714b2db8b979e5c00c77fa5df2112703a5c8a21ac021179751feca"
+      },
+      "target_path": "assets/props/exit_crystal.png",
+      "is_mock": true,
+      "license_target": null
+    },
+    {
+      "asset_id": "hud_panel",
+      "artifact_ref": {
+        "artifact_id": "art-asset-hud_panel",
+        "version": 1,
+        "kind": "asset",
+        "path": "artifacts/art_producer/b92ba4f9403ab29df1c92ca6/assets/ui/hud_panel.png",
+        "created_by": "art_producer",
+        "media_type": "image/png",
+        "sha256": "c5213e17331175be34ce516c1e0127679d3d854ca2a1eb65dda3d7797f05ec42"
+      },
+      "target_path": "assets/ui/hud_panel.png",
+      "is_mock": true,
+      "license_target": null
+    },
+    {
+      "asset_id": "ui_controls",
+      "artifact_ref": {
+        "artifact_id": "art-asset-ui_controls",
+        "version": 1,
+        "kind": "asset",
+        "path": "artifacts/art_producer/b92ba4f9403ab29df1c92ca6/assets/ui/ui_controls.png",
+        "created_by": "art_producer",
+        "media_type": "image/png",
+        "sha256": "95336d2d67797ded9ef9b9e08792355515fffaf75bc2622a4828a3b661d0ce33"
+      },
+      "target_path": "assets/ui/ui_controls.png",
+      "is_mock": true,
+      "license_target": null
+    },
+    {
+      "asset_id": "title_backdrop",
+      "artifact_ref": {
+        "artifact_id": "art-asset-title_backdrop",
+        "version": 1,
+        "kind": "asset",
+        "path": "artifacts/art_producer/b92ba4f9403ab29df1c92ca6/assets/ui/title_backdrop.png",
+        "created_by": "art_producer",
+        "media_type": "image/png",
+        "sha256": "bf137e5842b15092838d0c6ef14310ca93c9bf07845e62b338c2be42e0a5487a"
+      },
+      "target_path": "assets/ui/title_backdrop.png",
+      "is_mock": true,
+      "license_target": null
+    }
+  ],
+  "scenarios": [
+    {
+      "scenario_id": "near_rewind",
+      "description": "Start level 1 with three recorded ghost replays present and the loop clock advanced to 24 seconds so the imminent rewind is exercised quickly."
+    },
+    {
+      "scenario_id": "near_victory",
+      "description": "Start level 1 with one recorded ghost and all required switches held, clock advanced to 12 seconds so the exit crystal is active and completion is one touch away."
+    },
+    {
+      "scenario_id": "title_flow",
+      "description": "Ordinary title screen; normal flow to chapter menu and gameplay."
+    },
+    {
+      "scenario_id": "level_1_single_ghost",
+      "description": "Chapter 1 level with one active ghost replay for a single-ghost puzzle demonstration."
+    },
+    {
+      "scenario_id": "level_2_two_loop",
+      "description": "Chapter 2 level with two active ghost replays exercising layered temporal cooperation."
+    },
+    {
+      "scenario_id": "level_3_three_loop",
+      "description": "Chapter 3 level with three active ghosts, plus doors, lasers and enemy distraction."
+    },
+    {
+      "scenario_id": "level_complete",
+      "description": "Loads level 1 already completed so the Level Complete overlay with loops used and exit time is shown."
+    },
+    {
+      "scenario_id": "reset_flow",
+      "description": "Level 1 with two ghosts loaded so the reset button can be demonstrated clearing all ghosts."
+    },
+    {
+      "scenario_id": "final_chapter",
+      "description": "Chapter 4 four-loop-orchestration level with three active ghosts and the maximum interactable set."
+    }
+  ],
+  "controls": [
+    "A / Left Arrow: move left",
+    "D / Right Arrow: move right",
+    "Space / Up Arrow: jump",
+    "E: interact",
+    "R: reset level and clear all ghosts",
+    "Esc: return to menu / back",
+    "Mouse: menu and chapter/level selection, reset button"
+  ],
+  "build_attempts": [
+    {
+      "attempt": 1,
+      "model_turn": 2,
+      "source_digest": "411dacc5d1e270be7b766d25a2b2591c08be28b5137b709b4900b8994db11b59",
+      "status": "passed",
+      "steps": [
+        {
+          "name": "engine_version",
+          "argv": [
+            "godot",
+            "--headless",
+            "--version"
+          ],
+          "status": "passed",
+          "returncode": 0,
+          "stdout": "4.5.1.stable.official.f62fdbde1\n",
+          "stderr": "",
+          "reason": null
+        },
+        {
+          "name": "import",
+          "argv": [
+            "godot",
+            "--headless",
+            "--path",
+            "/output/game",
+            "--import"
+          ],
+          "status": "passed",
+          "returncode": 0,
+          "stdout": "Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org\n\n[   0% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | Started Project initialization (5 steps)\u001b[39m\u001b[0m\n[   0% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | Scanning file structure...\u001b[39m\u001b[0m\n[  16% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | Loading global class names...\u001b[39m\u001b[0m\n[  33% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | Verifying GDExtensions...\u001b[39m\u001b[0m\n[  50% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | Creating autoload scripts...\u001b[39m\u001b[0m\n[  66% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | Initializing plugins...\u001b[39m\u001b[0m\n[  83% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | Starting file scan...\u001b[39m\u001b[0m\n\u001b[92m[ DONE ]\u001b[39m \u001b[1mfirst_scan_filesystem\u001b[22m\n\u001b[0m\n[   0% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | Started Registering global classes... (9 steps)\u001b[39m\u001b[0m\n[   0% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | \u001b[39m\u001b[0m\n[  10% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | \u001b[39m\u001b[0m\n[  20% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | \u001b[39m\u001b[0m\n[  30% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | \u001b[39m\u001b[0m\n[  40% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | \u001b[39m\u001b[0m\n[  50% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | \u001b[39m\u001b[0m\n[  60% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | \u001b[39m\u001b[0m\n[  70% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | \u001b[39m\u001b[0m\n[  80% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | \u001b[39m\u001b[0m\n\u001b[92m[ DONE ]\u001b[39m \u001b[1mupdate_scripts_classes\u001b[22m\n\u001b[0m\n[   0% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | Started Scanning actions... (12 steps)\u001b[39m\u001b[0m\n[   0% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | door_gate.png\u001b[39m\u001b[0m\n[   7% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | exit_crystal.png\u001b[39m\u001b[0m\n[  15% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | laser_hazard.png\u001b[39m\u001b[0m\n[  23% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | pressure_plate.png\u001b[39m\u001b[0m\n[  30% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | switch_button.png\u001b[39m\u001b[0m\n[  38% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | enemy_patroller.png\u001b[39m\u001b[0m\n[  46% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | ghost_sheet.png\u001b[39m\u001b[0m\n[  53% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | player_sheet.png\u001b[39m\u001b[0m\n[  61% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | tileset_platform.png\u001b[39m\u001b[0m\n[  69% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | hud_panel.png\u001b[39m\u001b[0m\n[  76% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | title_backdrop.png\u001b[39m\u001b[0m\n[  84% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | ui_controls.png\u001b[39m\u001b[0m\n\u001b[92m[ DONE ]\u001b[39m \u001b[1m_update_scan_actions\u001b[22m\n\u001b[0m\n[   0% ] \u001b[90m\u001b[1mreimport\u001b[22m | Started (Re)Importing Assets (12 steps)\u001b[39m\u001b[0m\n[   0% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[   7% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  15% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  23% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  30% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  38% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  46% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  53% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  61% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  69% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  76% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  84% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[   0% ] \u001b[90m\u001b[1mreimport\u001b[22m | Executing pre-reimport operations...\u001b[39m\u001b[0m\n[   0% ] \u001b[90m\u001b[1mreimport\u001b[22m | door_gate.png\u001b[39m\u001b[0m\n[   7% ] \u001b[90m\u001b[1mreimport\u001b[22m | exit_crystal.png\u001b[39m\u001b[0m\n[  15% ] \u001b[90m\u001b[1mreimport\u001b[22m | laser_hazard.png\u001b[39m\u001b[0m\n[  23% ] \u001b[90m\u001b[1mreimport\u001b[22m | pressure_plate.png\u001b[39m\u001b[0m\n[  30% ] \u001b[90m\u001b[1mreimport\u001b[22m | switch_button.png\u001b[39m\u001b[0m\n[  38% ] \u001b[90m\u001b[1mreimport\u001b[22m | enemy_patroller.png\u001b[39m\u001b[0m\n[  46% ] \u001b[90m\u001b[1mreimport\u001b[22m | ghost_sheet.png\u001b[39m\u001b[0m\n[  53% ] \u001b[90m\u001b[1mreimport\u001b[22m | player_sheet.png\u001b[39m\u001b[0m\n[  61% ] \u001b[90m\u001b[1mreimport\u001b[22m | tileset_platform.png\u001b[39m\u001b[0m\n[  69% ] \u001b[90m\u001b[1mreimport\u001b[22m | hud_panel.png\u001b[39m\u001b[0m\n[  76% ] \u001b[90m\u001b[1mreimport\u001b[22m | title_backdrop.png\u001b[39m\u001b[0m\n[  84% ] \u001b[90m\u001b[1mreimport\u001b[22m | ui_controls.png\u001b[39m\u001b[0m\n[  92% ] \u001b[90m\u001b[1mreimport\u001b[22m | Finalizing Asset Import...\u001b[39m\u001b[0m\n\u001b[92m[ DONE ]\u001b[39m \u001b[1mreimport\u001b[22m\n\u001b[0m\n[   0% ] \u001b[90m\u001b[1mreimport\u001b[22m | Started (Re)Importing Assets (12 steps)\u001b[39m\u001b[0m\n[   0% ] \u001b[90m\u001b[1mreimport\u001b[22m | Executing post-reimport operations...\u001b[39m\u001b[0m\n\u001b[92m[ DONE ]\u001b[39m \u001b[1mreimport\u001b[22m\n\u001b[0m\n[   0% ] \u001b[90m\u001b[1mloading_editor_layout\u001b[22m | Started Loading editor (5 steps)\u001b[39m\u001b[0m\n[   0% ] \u001b[90m\u001b[1mloading_editor_layout\u001b[22m | Loading editor layout...\u001b[39m\u001b[0m\n\u001b[92m[ DONE ]\u001b[39m \u001b[1mloading_editor_layout\u001b[22m\n\u001b[0m\n",
+          "stderr": "",
+          "reason": null
+        },
+        {
+          "name": "ordinary_launch",
+          "argv": [
+            "godot",
+            "--headless",
+            "--path",
+            "/output/game",
+            "--quit-after",
+            "5"
+          ],
+          "status": "passed",
+          "returncode": 0,
+          "stdout": "Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org\n\n",
+          "stderr": "",
+          "reason": null
+        },
+        {
+          "name": "scenario:near_rewind",
+          "argv": [
+            "godot",
+            "--headless",
+            "--path",
+            "/output/game",
+            "--fixed-fps",
+            "60",
+            "--quit-after",
+            "60",
+            "--",
+            "--scenario",
+            "near_rewind"
+          ],
+          "status": "passed",
+          "returncode": 0,
+          "stdout": "Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org\n\n",
+          "stderr": "",
+          "reason": null
+        },
+        {
+          "name": "scenario:near_victory",
+          "argv": [
+            "godot",
+            "--headless",
+            "--path",
+            "/output/game",
+            "--fixed-fps",
+            "60",
+            "--quit-after",
+            "60",
+            "--",
+            "--scenario",
+            "near_victory"
+          ],
+          "status": "passed",
+          "returncode": 0,
+          "stdout": "Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org\n\n",
+          "stderr": "",
+          "reason": null
+        }
+      ]
+    }
+  ],
+  "proposal_rejections": [
+    {
+      "model_turn": 1,
+      "errors": [
+        ": Value error, Only partial proposals must list remaining work"
+      ]
+    }
+  ],
+  "limitations": [
+    "Player owns generation of the input-trace files under demo_outputs/ and replay-based evidence; no traces are fabricated here.",
+    "Visual review of mock-art placeholder assets and UI layout via the screenshot helper is still pending and not claimed as accepted.",
+    "Host import, ordinary-launch and bounded scenario-launch checks have not yet returned logs; success is not claimed before they pass.",
+    "In-engine gameplay verification (loop rewind, ghost holding of switches/plates/doors/lasers, reset and completion metrics) still needs to be observed; not yet claimed as verified.",
+    "Basic engine checks do not verify gameplay, visual quality, replay behavior, or official Benchmark acceptance.",
+    "Integrated Art Producer images are mock placeholders; final artwork and visual acceptance remain pending."
+  ]
+}

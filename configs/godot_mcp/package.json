@@ -1,0 +1,6 @@
+{
+  "name": "gamecraft-godot-mcp-backend",
+  "private": true,
+  "version": "1.0.0",
+  "dependencies": {"godot-mcp-runtime": "3.8.1"}
+}

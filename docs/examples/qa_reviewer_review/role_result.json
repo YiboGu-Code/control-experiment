@@ -1,0 +1,1008 @@
+{
+  "schema_version": "1.0",
+  "request_id": "qa-initial",
+  "role": "qa_reviewer",
+  "state_revision": 4,
+  "status": "completed",
+  "summary": "Reviewed 116 acceptance criteria. Host withheld 18 unsupported criterion decisions and 3 invalid issue updates. See the retained model proposal and effective coverage for details.",
+  "artifact_refs": [
+    {
+      "artifact_id": "qa-report",
+      "version": 1,
+      "kind": "report",
+      "path": "artifacts/qa_reviewer/1cab0e29631dfa56ca256193/qa_report.json",
+      "created_by": "qa_reviewer",
+      "media_type": "application/json",
+      "sha256": "82d5ecf9155ec7b8075d401b615cefdb34fe843c2f6b10ab12558396a16c8048"
+    },
+    {
+      "artifact_id": "qa-coverage",
+      "version": 1,
+      "kind": "report",
+      "path": "artifacts/qa_reviewer/1cab0e29631dfa56ca256193/coverage.json",
+      "created_by": "qa_reviewer",
+      "media_type": "application/json",
+      "sha256": "ab327f9b0f9285d6313b2a8d4e366b5fc2d09b4270259afaf81d7d5313982b2a"
+    },
+    {
+      "artifact_id": "qa-issues",
+      "version": 1,
+      "kind": "report",
+      "path": "artifacts/qa_reviewer/1cab0e29631dfa56ca256193/issues.json",
+      "created_by": "qa_reviewer",
+      "media_type": "application/json",
+      "sha256": "18d259ade6c3cead5bf7d91e0821d00c7fd0b99ec98b274d153f4a2922f1f645"
+    },
+    {
+      "artifact_id": "qa-readiness",
+      "version": 1,
+      "kind": "report",
+      "path": "artifacts/qa_reviewer/1cab0e29631dfa56ca256193/readiness.json",
+      "created_by": "qa_reviewer",
+      "media_type": "application/json",
+      "sha256": "9c742992b9742ef25d1708546e6cace4e102eac6a56890b748c4575c63811ca8"
+    },
+    {
+      "artifact_id": "qa-evidence-catalog",
+      "version": 1,
+      "kind": "report",
+      "path": "artifacts/qa_reviewer/1cab0e29631dfa56ca256193/evidence_catalog.json",
+      "created_by": "qa_reviewer",
+      "media_type": "application/json",
+      "sha256": "bd55fee70e51f433ed2be22d3213240fcdd135ed52283ce6a919e672fdf96788"
+    },
+    {
+      "artifact_id": "qa-handoff",
+      "version": 1,
+      "kind": "report",
+      "path": "artifacts/qa_reviewer/1cab0e29631dfa56ca256193/qa_handoff.md",
+      "created_by": "qa_reviewer",
+      "media_type": "text/markdown",
+      "sha256": "60e4e21696f3aa8454fe56abe888b4564c883150a5bf895ea004a6c1ff7a481f"
+    }
+  ],
+  "proposed_updates": {
+    "requirements": [
+      {
+        "requirement_id": "R001",
+        "description": "Time Loop is a per-level 30-second time-loop platformer: every level has a 30-second active loop duration before rewind.",
+        "source_excerpt": "Each level is a 30-second loop.",
+        "acceptance_criteria": [
+          "Entering any level initializes a visible countdown at 30 seconds.",
+          "The active loop expires after exactly 30 seconds of gameplay time at the configured simulation rate.",
+          "All 24 levels use the same 30-second loop duration."
+        ],
+        "dependency_ids": [],
+        "status": "implemented_unverified",
+        "verification": null
+      },
+      {
+        "requirement_id": "R002",
+        "description": "When the loop timer expires, the player is rewound and a ghost of the previous loop replays simultaneously.",
+        "source_excerpt": "player starts again — but a ghost of the previous loop replays simultaneously",
+        "acceptance_criteria": [
+          "At timer expiry the current player is restored to the level spawn point.",
+          "A ghost instance is created at the spawn point and begins replaying the previous loop from t=0.",
+          "Ghost movement and actions correspond to the recorded player state at the same loop time."
+        ],
+        "dependency_ids": [
+          "R001"
+        ],
+        "status": "implemented_unverified",
+        "verification": null
+      },
+      {
+        "requirement_id": "R003",
+        "description": "Ghosts can hold switches, distract enemies, and stand on pressure plates while the current player pursues other objectives.",
+        "source_excerpt": "The ghost can hold switches, distract enemies, or\nstand on pressure plates while the current player tackles other objectives.",
+        "acceptance_criteria": [
+          "Ghost occupancy of a switch or pressure plate counts as held while the ghost remains on it.",
+          "Enemies within the defined distraction range enter a distracted state while a ghost is near.",
+          "These ghost interactions can occur concurrently with independent player actions elsewhere in the level."
+        ],
+        "dependency_ids": [
+          "R002"
+        ],
+        "status": "implemented_unverified",
+        "verification": null
+      },
+      {
+        "requirement_id": "R004",
+        "description": "Loops layer so prior-loop ghosts can cooperate with the current player and with each other to solve a level.",
+        "source_excerpt": "Multiple loops layer: loop 1's ghost holds a door open, loop 2's ghost stands\non a platform to create a bridge, and in loop 3 the player finally reaches the\nexit using both ghosts' contributions.",
+        "acceptance_criteria": [
+          "At least one authored level requires simultaneous contributions from two prior ghosts before the current player can reach the exit.",
+          "Removing either required ghost contribution makes the exit unreachable.",
+          "Ghost contributions persist across subsequent loops until reset or the maximum loop limit is reached."
+        ],
+        "dependency_ids": [
+          "R002",
+          "R003"
+        ],
+        "status": "implemented_unverified",
+        "verification": null
+      },
+      {
+        "requirement_id": "R005",
+        "description": "The puzzle design is temporal coordination: the player plans what each loop-self must do and when so all versions cooperate across time.",
+        "source_excerpt": "The puzzle is temporal coordination —\nplanning what each loop-self needs to do and when, so that all versions\ncooperate across time.",
+        "acceptance_criteria": [
+          "At least one level cannot be solved in a single loop.",
+          "The authored solution requires scheduling distinct actions in different loop iterations at specified times.",
+          "Earlier-loop ghost actions are necessary for later-loop success."
+        ],
+        "dependency_ids": [
+          "R004"
+        ],
+        "status": "implemented_unverified",
+        "verification": null
+      },
+      {
+        "requirement_id": "R006",
+        "description": "The game contains twenty-four levels across four chapters, escalating from single-ghost puzzles to four-loop orchestrations.",
+        "source_excerpt": "Twenty-four levels across four chapters escalate from\nsingle-ghost puzzles to four-loop orchestrations.",
+        "acceptance_criteria": [
+          "Exactly 24 playable levels are defined in level data.",
+          "The levels are grouped into four chapters with six levels per chapter.",
+          "Chapter 1 levels require at most one ghost; the final chapter includes levels requiring four active loops."
+        ],
+        "dependency_ids": [
+          "R005"
+        ],
+        "status": "verified_fail",
+        "verification": {
+          "game_revision_id": "game-0001",
+          "evidence_ids": [
+            "build-0001"
+          ],
+          "rationale": "Criterion 2: Chapter 1 uses max_ghosts=1 but no level data distinguishes progressive escalation and no level requires four active loops; max_ghosts returns 1/2/3/3 with identical geometry, so the escalation to four-loop orchestrations is not implemented.",
+          "reviewed_at": "2026-10-19T12:51:21.410284Z"
+        }
+      },
+      {
+        "requirement_id": "R007",
+        "description": "The title screen visually shows overlapping clock hands and ghost silhouettes.",
+        "source_excerpt": "A title screen shows overlapping clock hands and ghost silhouettes.",
+        "acceptance_criteria": [
+          "The ordinary launch title screen displays at least two overlapping clock-hand graphics.",
+          "Ghost silhouettes are visible on the title screen.",
+          "The title screen is the first ordinary-entry screen before menus."
+        ],
+        "dependency_ids": [],
+        "status": "implemented_unverified",
+        "verification": null
+      },
+      {
+        "requirement_id": "R008",
+        "description": "A chapter menu reveals four chapters, each containing six levels.",
+        "source_excerpt": "A chapter\nmenu reveals four chapters of six levels each.",
+        "acceptance_criteria": [
+          "The chapter menu presents four chapter entries.",
+          "Each chapter entry exposes six level entries, for 24 total level entries.",
+          "Each level entry displays a locked or unlocked state consistent with progression."
+        ],
+        "dependency_ids": [
+          "R006"
+        ],
+        "status": "implemented_unverified",
+        "verification": null
+      },
+      {
+        "requirement_id": "R009",
+        "description": "Selecting and entering a level starts its 30-second countdown.",
+        "source_excerpt": "Entering a level starts a 30-second countdown.",
+        "acceptance_criteria": [
+          "On level entry the countdown begins at 30.0 seconds.",
+          "The countdown is visible during play.",
+          "The countdown starts only after the level scene is ready and player control begins."
+        ],
+        "dependency_ids": [
+          "R001",
+          "R008"
+        ],
+        "status": "implemented_unverified",
+        "verification": null
+      },
+      {
+        "requirement_id": "R010",
+        "description": "The player can run, jump, and interact with switches and level objects.",
+        "source_excerpt": "The player runs, jumps, and\ninteracts with switches and objects.",
+        "acceptance_criteria": [
+          "Horizontal movement responds to left and right input.",
+          "Jump input produces a jump when the player is grounded.",
+          "Interact input triggers eligible switches and interactive objects within range."
+        ],
+        "dependency_ids": [
+          "R009"
+        ],
+        "status": "verified_fail",
+        "verification": {
+          "game_revision_id": "game-0001",
+          "evidence_ids": [
+            "build-0001"
+          ],
+          "rationale": "Criterion 2: Level.handle_interact() is an empty function ('pass') and no interact-radius check exists, so the E action cannot trigger any switch or interactive object; this is an implementation defect against the current build.",
+          "reviewed_at": "2026-10-19T12:51:21.410284Z"
+        }
+      },
+      {
+        "requirement_id": "R011",
+        "description": "At zero timer the screen flashes and rewinds; the player restarts at spawn while a translucent ghost replays the previous loop exactly.",
+        "source_excerpt": "When the timer hits zero, the screen\nflashes and rewinds — the player restarts at the spawn point, but a translucent\nghost replays exactly what they did in the previous loop.",
+        "acceptance_criteria": [
+          "A visible screen-flash effect occurs when the timer reaches zero.",
+          "The level rewinds the current player to the spawn point.",
+          "A ghost with alpha less than 1 is shown replaying the recorded previous loop.",
+          "The ghost reproduces the previous loop's player state sequence rather than a newly generated approximation."
+        ],
+        "dependency_ids": [
+          "R002",
+          "R009"
+        ],
+        "status": "implemented_unverified",
+        "verification": null
+      },
+      {
+        "requirement_id": "R012",
+        "description": "Ghosts physically interact with the world by pressing buttons, holding doors, and blocking lasers.",
+        "source_excerpt": "The ghost physically\ninteracts with the world: it presses buttons, holds doors, and blocks lasers.",
+        "acceptance_criteria": [
+          "A ghost overlapping a button or switch activates or holds it according to its type.",
+          "A ghost standing at a door or door-hold point keeps the door open for as long as the replay remains there.",
+          "A laser ray hitting a ghost is blocked at the ghost position instead of continuing to its normal target."
+        ],
+        "dependency_ids": [
+          "R003",
+          "R011"
+        ],
+        "status": "implemented_unverified",
+        "verification": null
+      },
+      {
+        "requirement_id": "R013",
+        "description": "The player can layer up to four loops, producing at most four active ghost instances.",
+        "source_excerpt": "The player can layer up to four loops.",
+        "acceptance_criteria": [
+          "The loop manager permits no more than four active ghost instances.",
+          "The timeline and HUD represent each active ghost up to the four-loop maximum.",
+          "Attempting another loop after four active ghosts follows the defined maximum-loop reset behavior rather than creating a fifth ghost."
+        ],
+        "dependency_ids": [
+          "R004"
+        ],
+        "status": "implemented_unverified",
+        "verification": null
+      },
+      {
+        "requirement_id": "R014",
+        "description": "A top timeline bar shows all active ghosts and their current positions in the 30-second loop window.",
+        "source_excerpt": "A timeline bar at the top shows all\nactive ghosts and their current positions in the 30-second window.",
+        "acceptance_criteria": [
+          "The play HUD includes a timeline bar spanning 0 to 30 seconds.",
+          "Each active ghost has a distinct marker on the timeline.",
+          "Each ghost marker updates to reflect that ghost's current playback time within the loop."
+        ],
+        "dependency_ids": [
+          "R013"
+        ],
+        "status": "implemented_unverified",
+        "verification": null
+      },
+      {
+        "requirement_id": "R015",
+        "description": "Touching the exit crystal completes the level only when all required switches are held by ghosts or the current player.",
+        "source_excerpt": "Reaching the\nexit crystal with all required switches held (by ghosts or player) completes\nthe level.",
+        "acceptance_criteria": [
+          "Each level defines the required switches needed for exit completion.",
+          "The exit crystal rejects completion while any required switch is unheld.",
+          "The exit crystal completes the level when all required switches are held by any combination of ghosts and the current player."
+        ],
+        "dependency_ids": [
+          "R003",
+          "R012"
+        ],
+        "status": "implemented_unverified",
+        "verification": null
+      },
+      {
+        "requirement_id": "R016",
+        "description": "A reset button clears all ghosts so the player can start the level fresh.",
+        "source_excerpt": "A reset button clears all ghosts to start fresh.",
+        "acceptance_criteria": [
+          "The play HUD provides a visible reset button.",
+          "Activating reset removes all active ghosts.",
+          "Activating reset restarts the current level at its spawn point with a fresh 30-second timer and no retained loop replay."
+        ],
+        "dependency_ids": [
+          "R013"
+        ],
+        "status": "implemented_unverified",
+        "verification": null
+      },
+      {
+        "requirement_id": "R017",
+        "description": "The level-complete display reports loops used and the time of exit within the final loop.",
+        "source_excerpt": "Level-complete\nshows loops used and time of exit within the final loop.",
+        "acceptance_criteria": [
+          "The level-complete overlay shows an integer count of loops used.",
+          "The overlay shows the exit time within the final loop.",
+          "The displayed values match the completed session's loop count and final-loop exit timestamp."
+        ],
+        "dependency_ids": [
+          "R015"
+        ],
+        "status": "implemented_unverified",
+        "verification": null
+      },
+      {
+        "requirement_id": "R018",
+        "description": "The deliverable is a complete, shippable micro-game built in Godot 4 at /workspace/game, not a prototype.",
+        "source_excerpt": "Build **Time Loop**, a 30-second time loop platformer where past-self replays\nhelp solve puzzles in Godot 4 at `/workspace/game/`. This is not a prototype.\nIt is a **complete, shippable micro-game** that could sit on an itch.io page or\nSteam as a polished vertical slice.",
+        "acceptance_criteria": [
+          "A Godot 4 project exists at /workspace/game.",
+          "The ordinary game path includes title, chapter menu, all 24 levels, loop rewinds, ghosts, timeline, reset, exit completion, and completion metrics.",
+          "Core gameplay does not depend on placeholder-only debug controls or an unfinished test scene."
+        ],
+        "dependency_ids": [],
+        "status": "verified_fail",
+        "verification": {
+          "game_revision_id": "game-0001",
+          "evidence_ids": [
+            "build-0001"
+          ],
+          "rationale": "Criterion 2: Core gameplay is incomplete rather than shipped: handle_interact() is empty and procedural level data is a degenerate near-identical template with no temporal puzzles, so it does not meet the 'complete, shippable micro-game, not a prototype' bar.",
+          "reviewed_at": "2026-10-19T12:51:21.410284Z"
+        }
+      },
+      {
+        "requirement_id": "R019",
+        "description": "2D assets must be sourced from the mounted read-only Kenney CC0 library or OpenGameArt entries, respecting each OpenGameArt subdirectory license.",
+        "source_excerpt": "2D assets are mounted read-only at:\n\n- `/workspace/assets/library/` — Kenney CC0 packs (sprites, tiles, UI, fonts).\n- `/workspace/assets/library-oga/` — OpenGameArt entries; respect each\n  subdir's `LICENSE.txt`.",
+        "acceptance_criteria": [
+          "All imported visual assets come from the mounted asset libraries or from permissible engine primitives.",
+          "Kenney-sourced files are used as CC0 assets.",
+          "Any OpenGameArt-derived file is accompanied by or used in accordance with its subdirectory LICENSE.txt obligations.",
+          "No unlicensed external asset is introduced."
+        ],
+        "dependency_ids": [
+          "R018"
+        ],
+        "status": "verified_fail",
+        "verification": {
+          "game_revision_id": "game-0001",
+          "evidence_ids": [
+            "build-0001"
+          ],
+          "rationale": "Criterion 0: project-inventory lists only the asset paths, and the art manifest declares all 12 assets mock-image.v1 placeholders with both mounted libraries reported unavailable; imports are not sourced from the Kenney/OGA libraries.; Criterion 1: No file in the project is Kenney-sourced; all art files match the mock placeholder set, so no CC0 Kenney assets are used.",
+          "reviewed_at": "2026-10-19T12:51:21.410284Z"
+        }
+      },
+      {
+        "requirement_id": "R020",
+        "description": "The implementer must browse the mounted libraries, choose suitable packs, and copy needed files into the project's assets folder.",
+        "source_excerpt": "Browse the library and choose packs.\nCopy what you need into your project's `assets/` folder.",
+        "acceptance_criteria": [
+          "Selected asset files are copied under /workspace/game/assets/.",
+          "Game scenes reference copied assets through project-relative res:// paths.",
+          "No gameplay asset is loaded from a read-only mount at runtime."
+        ],
+        "dependency_ids": [
+          "R019"
+        ],
+        "status": "not_implemented",
+        "verification": null
+      },
+      {
+        "requirement_id": "R021",
+        "description": "The Godot project layout must include project.godot, Main.tscn, demo_outputs, scripts, scenes, and assets under /workspace/game.",
+        "source_excerpt": "/workspace/game/\n  project.godot\n  Main.tscn\n  demo_outputs/    <- your input traces (1-10 files)\n  scripts/  scenes/  assets/",
+        "acceptance_criteria": [
+          "/workspace/game/project.godot exists.",
+          "/workspace/game/Main.tscn exists as the entry scene.",
+          "/workspace/game/demo_outputs/, scripts/, scenes/, and assets/ exist.",
+          "The project opens and runs from this layout without missing-path errors for required scenes or assets."
+        ],
+        "dependency_ids": [
+          "R018"
+        ],
+        "status": "verified_fail",
+        "verification": {
+          "game_revision_id": "game-0001",
+          "evidence_ids": [
+            "build-0001"
+          ],
+          "rationale": "Criterion 2: scripts/, scenes/, and assets/ exist, but the project inventory contains no demo_outputs/ directory, so the required layout is incomplete.",
+          "reviewed_at": "2026-10-19T12:51:21.410284Z"
+        }
+      },
+      {
+        "requirement_id": "R022",
+        "description": "The built project must launch cleanly with the specified headless command.",
+        "source_excerpt": "godot --headless --path /workspace/game --quit-after 5",
+        "acceptance_criteria": [
+          "Running the exact command exits without script parse errors or missing-resource errors.",
+          "The command completes within the five-second quit window.",
+          "The project creates no failure dialog or blocking startup error in headless mode."
+        ],
+        "dependency_ids": [
+          "R021"
+        ],
+        "status": "implemented_unverified",
+        "verification": null
+      },
+      {
+        "requirement_id": "R023",
+        "description": "Engine flags such as --headless and --quit-after N must precede the -- separator; user scenario arguments must come after --.",
+        "source_excerpt": "**Engine flags like `--headless` and `--quit-after N` must come BEFORE `--`** —\nanything after `--` is forwarded to the project as user args and silently\nignored by the engine. Correct shape:\n`godot --headless --quit-after 5 --path . -- --scenario near_victory`.",
+        "acceptance_criteria": [
+          "Launch commands place --headless, --quit-after, and --path before --.",
+          "Scenario identifiers are placed after --.",
+          "Game code reads scenario identifiers from OS.get_cmdline_user_args rather than engine flags."
+        ],
+        "dependency_ids": [
+          "R022"
+        ],
+        "status": "implemented_unverified",
+        "verification": null
+      },
+      {
+        "requirement_id": "R024",
+        "description": "A screenshot helper at /workspace/tools/screenshot.sh is available and must be used to inspect UI and result screens.",
+        "source_excerpt": "A screenshot helper is available at `/workspace/tools/screenshot.sh`. Use it to actually see what your UI / battlefield /\nresult screens look like.",
+        "acceptance_criteria": [
+          "Validation can invoke the helper with --path /workspace/game and --out to produce a screenshot.",
+          "The helper supports --frames and optional --scenario arguments.",
+          "Title, active-play, multi-ghost, and completion screens are inspected through rendered screenshots."
+        ],
+        "dependency_ids": [
+          "R018"
+        ],
+        "status": "not_implemented",
+        "verification": null
+      },
+      {
+        "requirement_id": "R025",
+        "description": "The project ships between 1 and 10 input-trace files under demo_outputs, one per demo, each named with a .json extension.",
+        "source_excerpt": "Ship **1-10 input-trace files** under `/workspace/game/demo_outputs/`, one per\ndemo, each named `*.json`.",
+        "acceptance_criteria": [
+          "/workspace/game/demo_outputs/ contains at least 1 and at most 10 trace files.",
+          "Every trace file has the .json suffix.",
+          "Each demo has exactly one trace file and filenames are unique."
+        ],
+        "dependency_ids": [
+          "R021"
+        ],
+        "status": "verified_fail",
+        "verification": {
+          "game_revision_id": "game-0001",
+          "evidence_ids": [
+            "build-0001"
+          ],
+          "rationale": "Criterion 0: The deliverable project inventory contains no demo_outputs/ directory or trace files; player traces live in the player artifact area, not the packaged game.; Criterion 1: No .json trace files exist under the packaged demo_outputs/ per the project inventory.; Criterion 2: There are no packaged trace files, so the one-trace-per-demo uniqueness condition cannot hold in the delivery package.",
+          "reviewed_at": "2026-10-19T12:51:21.410846Z"
+        }
+      },
+      {
+        "requirement_id": "R026",
+        "description": "The evaluator launches a fresh game per trace, replays synthetic mouse and keyboard input at 1280x720, records the screen, evaluates only the first 10 filenames, and samples recordings longer than 20 seconds.",
+        "source_excerpt": "The evaluator launches a fresh game per trace,\nreplays your trace as synthetic mouse and keyboard input at 1280x720, and\nrecords the screen. Only the first 10 traces by filename are evaluated;\nrecordings longer than 20 s are sampled from a random 20 s window.",
+        "acceptance_criteria": [
+          "Every trace is authored for the 1280x720 viewport.",
+          "Each trace can run from a fresh game launch without depending on prior process state.",
+          "No more than 10 trace files are shipped so that filename ordering does not exclude desired demos.",
+          "No demo depends on content outside a random 20-second sample if its recording exceeds 20 seconds."
+        ],
+        "dependency_ids": [
+          "R025"
+        ],
+        "status": "verified_fail",
+        "verification": {
+          "game_revision_id": "game-0001",
+          "evidence_ids": [
+            "build-0001"
+          ],
+          "rationale": "Criterion 2: No traces are shipped in the package, so the delivery set is empty and the 'no more than 10 traces' condition is not demonstrated.",
+          "reviewed_at": "2026-10-19T12:51:21.410846Z"
+        }
+      },
+      {
+        "requirement_id": "R027",
+        "description": "Normal play starts at the title screen and demonstrates the core gameplay loop.",
+        "source_excerpt": "Normal play should start from the title screen and demonstrate the task's\ncore gameplay loop.",
+        "acceptance_criteria": [
+          "A trace with no scenario begins on the title screen.",
+          "Accepting normal input from the title can reach the chapter menu and enter a level.",
+          "The demonstrated normal flow includes movement, timer expiry, ghost replay, and an exit attempt."
+        ],
+        "dependency_ids": [
+          "R007",
+          "R009"
+        ],
+        "status": "not_implemented",
+        "verification": null
+      },
+      {
+        "requirement_id": "R028",
+        "description": "Demo playback must be deterministic.",
+        "source_excerpt": "Demo playback must be deterministic.",
+        "acceptance_criteria": [
+          "Replaying the same trace from a fresh launch produces the same outcome.",
+          "Randomized elements are seeded or fixed for trace playback.",
+          "No timing-dependent setup varies between identical trace runs."
+        ],
+        "dependency_ids": [
+          "R026"
+        ],
+        "status": "implemented_unverified",
+        "verification": null
+      },
+      {
+        "requirement_id": "R029",
+        "description": "Demos that need a specific state must use named scenarios that the game loads when launched with a scenario argument.",
+        "source_excerpt": "For demos that need a specific state\n(a specific level, combat state, upgrade screen, result state, or late-game\nsetup), define named scenarios your game loads when launched with:",
+        "acceptance_criteria": [
+          "The project defines a finite set of named scenarios for level, loop, completion, and reset states.",
+          "Each scenario is selectable through the documented --scenario launch form.",
+          "Trace files may reference these scenario identifiers."
+        ],
+        "dependency_ids": [
+          "R028",
+          "R023"
+        ],
+        "status": "implemented_unverified",
+        "verification": null
+      },
+      {
+        "requirement_id": "R030",
+        "description": "When a scenario argument is present, the game skips menus, sets up the named state deterministically, seeds any RNG, and immediately accepts input.",
+        "source_excerpt": "When `--scenario <id>` is present the game must skip menus, set up the named\nstate deterministically (seed any RNG), and begin accepting input immediately.",
+        "acceptance_criteria": [
+          "Scenario launch opens directly into the named gameplay or result state without title or chapter-menu steps.",
+          "Level selection, active loop count, ghost positions, and required switches match the scenario definition at frame zero.",
+          "All RNG used by the scenario is seeded deterministically.",
+          "Player input is accepted immediately after scenario setup."
+        ],
+        "dependency_ids": [
+          "R029"
+        ],
+        "status": "implemented_unverified",
+        "verification": null
+      },
+      {
+        "requirement_id": "R031",
+        "description": "A trace's scenario field is optional; omitting it means normal launch from the title screen.",
+        "source_excerpt": "`scenario` — optional; omit for a normal game launch from the title screen.",
+        "acceptance_criteria": [
+          "A trace without a scenario field launches the ordinary title flow.",
+          "A trace with a scenario field loads that named scenario.",
+          "Scenario omission does not produce a parse error."
+        ],
+        "dependency_ids": [
+          "R029",
+          "R027"
+        ],
+        "status": "not_implemented",
+        "verification": null
+      },
+      {
+        "requirement_id": "R032",
+        "description": "The duration_frames field defines recorded frames at 30 fps with a maximum of 600 frames (20 seconds).",
+        "source_excerpt": "`duration_frames` — total frames to record at 30 fps; cap at **600 (20 s)**.",
+        "acceptance_criteria": [
+          "Every trace includes an integer duration_frames value.",
+          "No trace exceeds 600 frames.",
+          "Trace event frames are interpreted at 30 frames per second."
+        ],
+        "dependency_ids": [
+          "R025"
+        ],
+        "status": "not_implemented",
+        "verification": null
+      },
+      {
+        "requirement_id": "R033",
+        "description": "Trace events are time-ordered synthetic inputs with coordinates in the 1280x720 viewport and use the supported event types.",
+        "source_excerpt": "`events` — time-ordered inputs. Coordinates are pixels in the 1280x720\n  viewport. Supported types:",
+        "acceptance_criteria": [
+          "The events array is ordered by frame number.",
+          "Mouse coordinates lie within the 1280x720 viewport.",
+          "Only supported event types are used."
+        ],
+        "dependency_ids": [
+          "R032"
+        ],
+        "status": "not_implemented",
+        "verification": null
+      },
+      {
+        "requirement_id": "R034",
+        "description": "Keyboard trace events use one of the supported keycodes.",
+        "source_excerpt": "`A`-`Z`, `0`-`9`, `ESCAPE`, `ENTER`, `SPACE`, `TAB`, `BACKSPACE`,\n    `DELETE`, `SHIFT`, `CTRL`, `ALT`, `UP`, `DOWN`, `LEFT`, `RIGHT`.",
+        "acceptance_criteria": [
+          "Every key event uses a listed keycode.",
+          "Keycodes outside the listed set are not emitted.",
+          "Held and released keys use matching supported keycodes."
+        ],
+        "dependency_ids": [
+          "R033"
+        ],
+        "status": "not_implemented",
+        "verification": null
+      },
+      {
+        "requirement_id": "R035",
+        "description": "Mouse drag traces use mouse_down at the start, one or more mouse_move events, and mouse_up at the end; a mouse_click is a down-up pair at the same point.",
+        "source_excerpt": "use these for drag interactions: emit `mouse_down` at the start point,\n    one or more `mouse_move` events along the way, and `mouse_up` at the end.\n    A `mouse_click` is a `mouse_down` + `mouse_up` at the same point in tight\n    succession.",
+        "acceptance_criteria": [
+          "A drag trace emits mouse_down before its mouse_move events and mouse_up after them.",
+          "Every mouse_move event lies between a matching down and up event.",
+          "A mouse_click event is replayable as down and up at the same coordinates."
+        ],
+        "dependency_ids": [
+          "R033"
+        ],
+        "status": "not_implemented",
+        "verification": null
+      },
+      {
+        "requirement_id": "R036",
+        "description": "A wait event has a frame and type only and acts as an anchor frame with no input.",
+        "source_excerpt": "`wait`: `{frame, type}` — anchor frame, no input.",
+        "acceptance_criteria": [
+          "Wait events contain no input payload beyond frame and type.",
+          "Wait events do not change game state.",
+          "Wait events can anchor timing between other events."
+        ],
+        "dependency_ids": [
+          "R033"
+        ],
+        "status": "not_implemented",
+        "verification": null
+      },
+      {
+        "requirement_id": "R037",
+        "description": "Replay must be deterministic: the same trace on a fresh launch must produce the same outcome every time.",
+        "source_excerpt": "Replay must be deterministic: same trace, fresh launch, same outcome every time.",
+        "acceptance_criteria": [
+          "Two identical fresh-launch replays of one trace produce the same final state and outcome.",
+          "No fresh-launch replay depends on mutable state from a prior replay.",
+          "Timing, ghost playback, and level completion are reproducible for the same trace."
+        ],
+        "dependency_ids": [
+          "R028",
+          "R030"
+        ],
+        "status": "not_implemented",
+        "verification": null
+      }
+    ],
+    "design": null,
+    "assets": [],
+    "game_revision": null,
+    "evidence": [],
+    "issues": [
+      {
+        "issue_id": "QA-002",
+        "issue_type": "runtime",
+        "severity": "major",
+        "description": "Player can leave the ground platform and fall unbounded with no out-of-bounds death or respawn, leaving the player unrecoverable and preventing completion attempts: near_rewind reaches y~34033 at frame 599 with velocity 8980 and near_victory reaches y~29004 at frame 450, both outside the 720-pixel view.",
+        "suggested_role": "developer",
+        "requirement_ids": [
+          "R010",
+          "R015",
+          "R018"
+        ],
+        "evidence_ids": [
+          "player-0001-play-04",
+          "player-0001-play-07"
+        ],
+        "reproduction_steps": [
+          "Run scenario near_rewind; step off the ground platform; observe Player position y growing past 540 without any respawn within 600 frames.",
+          "Run scenario near_victory; jump at frame 140 and move right; observe Player y beyond the platform with no recovery."
+        ],
+        "status": "open",
+        "resolution": null
+      },
+      {
+        "issue_id": "QA-003",
+        "issue_type": "runtime",
+        "severity": "major",
+        "description": "Interact input is inert: Level.handle_interact() is empty and no interaction radius exists, so the E action cannot trigger switches or objects. Switches only react to body-overlap queries, never to the player's interact action as specified.",
+        "suggested_role": "developer",
+        "requirement_ids": [
+          "R010",
+          "R012"
+        ],
+        "evidence_ids": [
+          "build-0001"
+        ],
+        "reproduction_steps": [
+          "Inspect scripts/Level.gd handle_interact(): the body is 'pass'.",
+          "Launch a level, stand near a switch, send E; observe no switch state change."
+        ],
+        "status": "open",
+        "resolution": null
+      },
+      {
+        "issue_id": "QA-004",
+        "issue_type": "evidence_gap",
+        "severity": "major",
+        "description": "Ghost physical interactions are unverified by any mapped playthrough: no run places a ghost on a switch/pressure plate, holds a door, blocks a laser, or distracts an enemy while the player acts elsewhere. A mapped scenario transcript covering each interaction with observed held/door-open/enemy-distracted/beam-length state is required, and a run to four active ghosts with per-ghost timeline markers.",
+        "suggested_role": "player",
+        "requirement_ids": [
+          "R003",
+          "R012",
+          "R013",
+          "R014"
+        ],
+        "evidence_ids": [],
+        "reproduction_steps": [
+          "Provide a scenario and trace where a ghost occupies a switch and a plate while the player is distant; record ghost positions plus switches_held, door open, enemy distracted and laser beam length.",
+          "Drive a loop to four active ghosts and capture four distinct per-ghost timeline markers at different positions."
+        ],
+        "status": "open",
+        "resolution": null
+      },
+      {
+        "issue_id": "QA-005",
+        "issue_type": "evidence_gap",
+        "severity": "major",
+        "description": "The level-complete overlay path was never observed: no mapped playthrough drove the player to the exit crystal with all required switches held, so loops-used and final-loop exit time display remain unverified, and rejection-with-unheld-switch was never exercised.",
+        "suggested_role": "player",
+        "requirement_ids": [
+          "R015",
+          "R017"
+        ],
+        "evidence_ids": [],
+        "reproduction_steps": [
+          "Using scenario near_victory, provide a trace that touches the exit while s1 is unheld (expect rejected flash) and then when s1 is held; capture CompleteOverlay visible with LoopsLabel and TimeLabel values."
+        ],
+        "status": "open",
+        "resolution": null
+      },
+      {
+        "issue_id": "QA-006",
+        "issue_type": "evidence_gap",
+        "severity": "major",
+        "description": "Reset behavior is unverified: no mapped playthrough activates reset and confirms all ghosts are removed and the level restarts at spawn with a fresh 30-second timer and no retained replay. The reset_flow scenario exists but was never run.",
+        "suggested_role": "player",
+        "requirement_ids": [
+          "R016"
+        ],
+        "evidence_ids": [],
+        "reproduction_steps": [
+          "Launch scenario reset_flow, click ResetButton (screen_rect 1080,8,184,40), and capture a frame where ghosts list is empty, tick=0, TimerLabel=30.00."
+        ],
+        "status": "open",
+        "resolution": null
+      },
+      {
+        "issue_id": "QA-008",
+        "issue_type": "runtime",
+        "severity": "major",
+        "description": "Title trace replay is non-deterministic: title_nav_probe failed both fresh replays with state and pixel mismatch at frame 0, traced to TitleScreen.gd driving hand rotation from Time.get_ticks_msec(), a wall-clock source. Deterministic demo replay requires a fixed simulated clock for title animation.",
+        "suggested_role": "developer",
+        "requirement_ids": [
+          "R028",
+          "R037"
+        ],
+        "evidence_ids": [
+          "player-0001-replay-00",
+          "player-0001-replay-01"
+        ],
+        "reproduction_steps": [
+          "Run title_nav trace twice from fresh launches; observe comparison:title_nav_probe-replay-1/2 status failed with first_state_difference=0 and first_pixel_difference=0.",
+          "Change TitleScreen animation to advance from a fixed simulated delta so title state is reproducible."
+        ],
+        "status": "open",
+        "resolution": null
+      },
+      {
+        "issue_id": "QA-009",
+        "issue_type": "evidence_gap",
+        "severity": "major",
+        "description": "Full 30-second loop duration from a fresh clock (expiry at exactly 30s) and ordinary level entry starting the countdown are unexercised; the 600-frame cap prevents a full loop from an ordinary start and all rewind evidence used preloaded scenarios. A clock-exposing run and a normal (no scenario) level-entry trace are needed.",
+        "suggested_role": "player",
+        "requirement_ids": [
+          "R001",
+          "R009"
+        ],
+        "evidence_ids": [],
+        "reproduction_steps": [
+          "Provide a scenario starting at tick=0 with TimerLabel 30.00 and capture the frame where tick crosses TICKS_PER_LOOP and TimerLabel reads 00.00 (or expose loop tick and verify expiry tick==900).",
+          "Provide a normal (no scenario) trace that clicks the Level 1 button rect [678,130,300,36] and captures level entry with TimerLabel 30.00."
+        ],
+        "status": "open",
+        "resolution": null
+      },
+      {
+        "issue_id": "QA-011",
+        "issue_type": "evidence_gap",
+        "severity": "minor",
+        "description": "The screenshot helper usage requirement is unverified: no mapped evidence records invoking /workspace/tools/screenshot.sh with --path/--out/--frames/--scenario, and rendered title, active-play, multi-ghost and completion screens have not been pixel-inspected by this reviewer.",
+        "suggested_role": "player",
+        "requirement_ids": [
+          "R024"
+        ],
+        "evidence_ids": [],
+        "reproduction_steps": [
+          "Run /workspace/tools/screenshot.sh --path /workspace/game -- --out <file> --frames N and with --scenario <id>, and supply the rendered captures for title, active play, multi-ghost and completion screens."
+        ],
+        "status": "open",
+        "resolution": null
+      },
+      {
+        "issue_id": "QA-012",
+        "issue_type": "evidence_gap",
+        "severity": "minor",
+        "description": "A drag trace has never been exercised: no mouse_down/mouse_move/mouse_up drag segment exists in any supplied trace, so drag ordering and bracketed-move semantics could not be validated even though the game does not currently need drags.",
+        "suggested_role": "player",
+        "requirement_ids": [
+          "R035"
+        ],
+        "evidence_ids": [],
+        "reproduction_steps": [
+          "Provide a trace with mouse_down at a start point, at least one mouse_move, and mouse_up after the moves, and confirm replay respects the bracketed ordering."
+        ],
+        "status": "open",
+        "resolution": null
+      },
+      {
+        "issue_id": "QA-host-evidence-gaps",
+        "issue_type": "evidence_gap",
+        "severity": "major",
+        "description": "Acceptance remains unverified. Collect or correctly map current evidence for the listed criteria; no missing test is claimed as a gameplay defect.",
+        "suggested_role": "player",
+        "requirement_ids": [
+          "R002",
+          "R004",
+          "R005",
+          "R006",
+          "R007",
+          "R010",
+          "R011",
+          "R018",
+          "R019",
+          "R026",
+          "R027",
+          "R028",
+          "R029",
+          "R030",
+          "R031",
+          "R032",
+          "R033",
+          "R034",
+          "R036",
+          "R037"
+        ],
+        "evidence_ids": [
+          "build-0001",
+          "player-0001-play-01"
+        ],
+        "reproduction_steps": [
+          "Review R002 criterion 2: Ghost positions advance with playback_frame, but no mapped evidence samples a ghost's recorded state against the contemporaneous recorded player stream to confirm frame-correspondence at the same loop time.",
+          "Review R004 criterion 0: No authored level data requires simultaneous contributions from two prior ghosts before the current player reaches the exit, and no mapped playthrough demonstrates such cooperation; this is an implementation/content defect needing a mapped scenario, not a contradiction of the instruction.",
+          "Review R004 criterion 1: Removing a ghost contribution is not shown to make the exit unreachable; the authored template uses independent switch/plate holds all reachable by the current player, so there is no observed removable ghost dependency.",
+          "Review R004 criterion 2: No mapped playthrough keeps multiple ghost contributions alive across successive loops to confirm persistence until reset or the loop ceiling.",
+          "Review R005 criterion 0: No mapped playthrough shows any level that cannot be solved in a single loop; the authored template is a collection of independent holds, but no run confirms single-loop solvability or non-solvability.",
+          "Review R005 criterion 1: No observed solution schedules distinct actions in different loop iterations at specified times; the shared template provides no cross-time dependency in the inspected data or snapshots.",
+          "Review R005 criterion 2: Earlier-loop ghost actions are not observed to be necessary for later-loop success in any mapped playthrough; only static level data is available and it does not encode this dependency.",
+          "Review R006 criterion 1: Host withheld the model's 'pass' decision: Criterion evidence does not cover its requirement: R006. Obtain valid current evidence before acceptance; the original rationale is retained in the model proposal.",
+          "Review R007 criterion 0: Title snapshot shows three HandA/HandB/HandC Sprite2D nodes at [640,340] (overlapping by position), but confirming rendering of overlapping clock-hand graphics requires pixel inspection, which this text-only model has not performed.",
+          "Review R007 criterion 1: Ghost silhouettes on the title exist only via the mock backdrop texture; no node-level silhouette is present and pixel inspection is unavailable, and the mock art cannot establish final visual compliance.",
+          "Review R007 criterion 2: Host withheld the model's 'pass' decision: Acceptance basis lacks a corresponding inspected source: R007. Obtain valid current evidence before acceptance; the original rationale is retained in the model proposal.",
+          "Review R010 criterion 0: Host withheld the model's 'pass' decision: Criterion evidence does not cover its requirement: R010. Obtain valid current evidence before acceptance; the original rationale is retained in the model proposal.",
+          "Review R010 criterion 1: No mapped observation captures Player velocity.y becoming negative (an upward jump) while grounded; the player instead fell off the platform, so grounded jump behavior is untested.",
+          "Review R011 criterion 2: Ghost.gd sets modulate alpha 0.55, but confirming a translucent ghost is actually shown requires rendered pixel inspection, which this text-only model has not performed.",
+          "Review R011 criterion 3: No mapped evidence proves the ghost reproduces the prior loop's exact state sequence rather than an approximation; matching replays cover the whole session but not an isolated ghost-vs-recording state comparison.",
+          "Review R018 criterion 1: The ordinary path never demonstrated the full chain (title, level entry, timer expiry, ghost replay, exit completion, metrics): the title trace missed the Level 1 button and completion was never reached.",
+          "Review R019 criterion 2: No OpenGameArt-derived file is present, so there are no LICENSE.txt obligations to check, but also no evidence of correct OGA usage or attribution.",
+          "Review R026 criterion 0: The project viewport is 1280x720 and player traces use in-range coordinates, but they are not packaged delivery traces and only three were run, so fresh-launch 1280x720 evaluation is only partially exercised.",
+          "Review R026 criterion 1: Most scenario replays matched, but title_nav diverged in both fresh replays (state and pixel mismatch), showing at least one trace is not reproducible from a fresh launch.",
+          "Review R026 criterion 3: Player traces are exactly 600 frames (20s) and thus not sampled, but no packaged demo exists to assess random 20-second sampling robustness.",
+          "Review R027 criterion 2: The ordinary trace never entered a level (later clicks missed the Level 1 rect), so it did not demonstrate movement, timer expiry, ghost replay, and an exit attempt in normal play.",
+          "Review R028 criterion 0: near_rewind and near_victory replays matched, but title_nav failed both fresh replays at frame 0; determinism of the same trace is not established because a wall-clock title animation breaks exact replay.",
+          "Review R028 criterion 1: Level.gd does not seed any RNG for ordinary play; the only seed(1337) is in Main._boot_scenario, so randomized elements in ordinary play are not shown to be seeded.",
+          "Review R028 criterion 2: TitleScreen.gd drives hand rotation from Time.get_ticks_msec(), a timing-dependent value that causes the observed title replay divergence, so identical trace runs vary.",
+          "Review R029 criterion 1: Host withheld the model's 'pass' decision: Criterion evidence does not cover its requirement: R029. Obtain valid current evidence before acceptance; the original rationale is retained in the model proposal.",
+          "Review R030 criterion 1: near_victory frame 0 shows switches_held {s1:true} and one ghost matching intent, but near_rewind seeds three ghosts on a level whose max_ghosts is 1 and preloads tick=720 rather than a frame-zero state, so exact scenario-definition match at frame zero is not demonstrated.",
+          "Review R031 criterion 1: Host withheld the model's 'pass' decision: Criterion evidence does not cover its requirement: R031. Obtain valid current evidence before acceptance; the original rationale is retained in the model proposal.",
+          "Review R032 criterion 0: Host withheld the model's 'pass' decision: Acceptance basis lacks a corresponding inspected source: R032. Obtain valid current evidence before acceptance; the original rationale is retained in the model proposal.",
+          "Review R032 criterion 1: Host withheld the model's 'pass' decision: Acceptance basis lacks a corresponding inspected source: R032. Obtain valid current evidence before acceptance; the original rationale is retained in the model proposal.",
+          "Review R032 criterion 2: No mapped evidence confirms the evaluator interprets trace event frames at exactly 30 fps; the player harness ran at engine frame rate and cannot establish the 30 fps interpretation.",
+          "Review R033 criterion 0: Host withheld the model's 'pass' decision: Acceptance basis lacks a corresponding inspected source: R033. Obtain valid current evidence before acceptance; the original rationale is retained in the model proposal.",
+          "Review R033 criterion 1: Host withheld the model's 'pass' decision: Acceptance basis lacks a corresponding inspected source: R033. Obtain valid current evidence before acceptance; the original rationale is retained in the model proposal.",
+          "Review R033 criterion 2: Host withheld the model's 'pass' decision: Acceptance basis lacks a corresponding inspected source: R033. Obtain valid current evidence before acceptance; the original rationale is retained in the model proposal.",
+          "Review R034 criterion 0: Host withheld the model's 'pass' decision: Acceptance basis lacks a corresponding inspected source: R034. Obtain valid current evidence before acceptance; the original rationale is retained in the model proposal.",
+          "Review R034 criterion 1: Host withheld the model's 'pass' decision: Acceptance basis lacks a corresponding inspected source: R034. Obtain valid current evidence before acceptance; the original rationale is retained in the model proposal.",
+          "Review R034 criterion 2: Host withheld the model's 'pass' decision: Acceptance basis lacks a corresponding inspected source: R034. Obtain valid current evidence before acceptance; the original rationale is retained in the model proposal.",
+          "Review R036 criterion 0: Host withheld the model's 'pass' decision: Acceptance basis lacks a corresponding inspected source: R036. Obtain valid current evidence before acceptance; the original rationale is retained in the model proposal.",
+          "Review R036 criterion 1: No mapped evidence proves a wait event leaves game state unchanged; wait frames were only anchors and state changes at those frames were not isolated to wait behavior.",
+          "Review R036 criterion 2: Host withheld the model's 'pass' decision: Acceptance basis lacks a corresponding inspected source: R036. Obtain valid current evidence before acceptance; the original rationale is retained in the model proposal.",
+          "Review R037 criterion 0: near_rewind and near_victory replays matched, but title_nav diverged in both replays, so two identical fresh replays of one trace do not always produce the same outcome.",
+          "Review R037 criterion 2: Level completion was never observed in any trace, so timing, ghost playback, and level-completion reproducibility for a completing trace is untested."
+        ],
+        "status": "open",
+        "resolution": null
+      },
+      {
+        "issue_id": "QA-host-failed-acceptance",
+        "issue_type": "requirement_gap",
+        "severity": "major",
+        "description": "Address the failed acceptance criteria using their current cited evidence, then collect fresh verification.",
+        "suggested_role": "developer",
+        "requirement_ids": [
+          "R006",
+          "R019",
+          "R021",
+          "R025",
+          "R026"
+        ],
+        "evidence_ids": [
+          "build-0001"
+        ],
+        "reproduction_steps": [
+          "Review R006 criterion 2: Chapter 1 uses max_ghosts=1 but no level data distinguishes progressive escalation and no level requires four active loops; max_ghosts returns 1/2/3/3 with identical geometry, so the escalation to four-loop orchestrations is not implemented.",
+          "Review R019 criterion 0: project-inventory lists only the asset paths, and the art manifest declares all 12 assets mock-image.v1 placeholders with both mounted libraries reported unavailable; imports are not sourced from the Kenney/OGA libraries.",
+          "Review R019 criterion 1: No file in the project is Kenney-sourced; all art files match the mock placeholder set, so no CC0 Kenney assets are used.",
+          "Review R021 criterion 2: scripts/, scenes/, and assets/ exist, but the project inventory contains no demo_outputs/ directory, so the required layout is incomplete.",
+          "Review R025 criterion 0: The deliverable project inventory contains no demo_outputs/ directory or trace files; player traces live in the player artifact area, not the packaged game.",
+          "Review R025 criterion 1: No .json trace files exist under the packaged demo_outputs/ per the project inventory.",
+          "Review R025 criterion 2: There are no packaged trace files, so the one-trace-per-demo uniqueness condition cannot hold in the delivery package.",
+          "Review R026 criterion 2: No traces are shipped in the package, so the delivery set is empty and the 'no more than 10 traces' condition is not demonstrated."
+        ],
+        "status": "open",
+        "resolution": null
+      },
+      {
+        "issue_id": "QA-host-rejected-issues",
+        "issue_type": "evidence_gap",
+        "severity": "major",
+        "description": "Some proposed model issue updates lack valid grounding. Existing issues remain unchanged unless a valid update was accepted.",
+        "suggested_role": "qa_reviewer",
+        "requirement_ids": [],
+        "evidence_ids": [],
+        "reproduction_steps": [
+          "Reassess model issue QA-001 using inspected current sources: Issue instruction excerpt is not verbatim",
+          "Reassess model issue QA-007 using inspected current sources: Issue instruction excerpt is not verbatim",
+          "Reassess model issue QA-010 using inspected current sources: Issue instruction excerpt is not verbatim"
+        ],
+        "status": "open",
+        "resolution": null
+      }
+    ],
+    "readiness": {
+      "game_revision_id": "game-0001",
+      "ready": false,
+      "rationale": "Not ready. The build passes and a few requirements are evidenced (Godot 4 project layout except demo_outputs, clean headless launch, title first screen, four chapters of six level buttons, scenario skip-to-level and seeded entry, timer visible at 30.00, flash/rewind/respawn observed, several trace-format rules), but the game is not a shippable micro-game: the player falls out of the world (QA-002), interact is inert (QA-003), level content is a degenerate template with no temporal puzzles (QA-001), completion and reset were never observed (QA-005, QA-006), ghost interactions are unexercised (QA-004), the title trace is non-deterministic (QA-008), zero delivery traces are packaged (QA-007), and all art is mock placeholder (QA-010). Open blocker/major issues remain, and the host gates packaged_traces_replayed and final_art are false. Host abstained on 18 criterion decisions and withheld 3 issue updates. Host gate failures: packaged_traces_replayed, final_art, all_requirements_verified, no_blocking_issues, no_open_design_or_evidence_gaps.",
+      "evidence_ids": [
+        "build-0001",
+        "player-0001-play-01",
+        "player-0001-play-04",
+        "player-0001-play-07",
+        "player-0001-replay-03"
+      ],
+      "blocking_issue_ids": [
+        "QA-002",
+        "QA-003",
+        "QA-004",
+        "QA-005",
+        "QA-006",
+        "QA-008",
+        "QA-009",
+        "QA-host-evidence-gaps",
+        "QA-host-failed-acceptance",
+        "QA-host-rejected-issues"
+      ]
+    }
+  },
+  "evidence_refs": [
+    "build-0001",
+    "player-0001-play-01",
+    "player-0001-play-04",
+    "player-0001-play-07",
+    "player-0001-replay-03"
+  ],
+  "blockers": [],
+  "error": null
+}

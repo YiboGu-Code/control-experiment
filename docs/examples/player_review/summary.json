@@ -1,0 +1,37 @@
+{
+  "mode": "live-text/real-rendered-godot/recorded-mock-art",
+  "status": "completed",
+  "role_status": "partial",
+  "model": "deepseek-flash",
+  "model_calls": 4,
+  "captured_traces": 3,
+  "replay_matches": 4,
+  "replay_mismatches": 2,
+  "replay_incomplete": 0,
+  "usage": {
+    "model_calls": 4,
+    "input_tokens": 184425,
+    "cached_input_tokens": 38912,
+    "output_tokens": 6937,
+    "image_calls": 0,
+    "tool_calls": 433,
+    "tool_seconds": 340.4640000000072,
+    "wall_seconds": 354.8429999999935,
+    "token_usage_complete": true
+  },
+  "checks": {
+    "original_instruction_unchanged": true,
+    "real_model_completed": true,
+    "observations_committed": true,
+    "real_trace_and_screenshots": true,
+    "two_fresh_replays_per_capture": true,
+    "all_sessions_executed": true,
+    "model_concluded_from_observations": true,
+    "published_game_unchanged": true,
+    "no_qa_or_issue_mutation": true,
+    "mock_art_unchanged": true,
+    "usage_matches_provider": true,
+    "english_model_output": true
+  },
+  "error": null
+}

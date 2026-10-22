@@ -1,0 +1,25 @@
+{
+  "schema_version": "1.0",
+  "request_id": "art-initial",
+  "run_id": "art-producer-live",
+  "task_id": "platformer-time-loop",
+  "role": "art_producer",
+  "work_item_ids": [],
+  "objective": "Create the initial Time Loop art package and Developer handoff using available library assets or generated assets",
+  "completion_criteria": [
+    "Cover the required player/ghost, level, interaction, hazard and UI visual needs within twelve reusable assets",
+    "Preserve source licenses, precise dimensions, frame layout, target paths and affected scenes",
+    "Mark mock generation as placeholders with final visual acceptance pending"
+  ],
+  "state_revision": 1,
+  "artifact_refs": [],
+  "limits": {
+    "max_model_calls": 4,
+    "max_input_tokens": 800000,
+    "max_output_tokens": 131072,
+    "max_image_calls": 12,
+    "max_tool_calls": 160,
+    "max_tool_seconds": 2520.0,
+    "max_wall_seconds": 2580.0
+  }
+}

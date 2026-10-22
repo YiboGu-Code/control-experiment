@@ -1,0 +1,5 @@
+{
+  "source": "runs/fixed-loop-real-images-003/model_calls/art_producer/004/response.txt",
+  "sha256": "67e7ba7711bad956b686c368c56f32823df93e4470fbc99e81469648ff6e8cbc",
+  "note": "Actual model reply from run 003. Tests add explicitly synthetic corrections; no new live call is implied."
+}

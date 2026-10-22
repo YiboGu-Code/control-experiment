@@ -1,0 +1,202 @@
+[
+  {
+    "run": "designer-live-001",
+    "model": "qwen3.8-max",
+    "stream": false,
+    "reasoning_effort": null,
+    "max_output_tokens": 8192,
+    "timeout_seconds": 240.0,
+    "wall_seconds": 2.781,
+    "status": "failed",
+    "error": {
+      "code": "provider_failure",
+      "message": "Could not connect to the configured model gateway; no automatic retry was made",
+      "retryable": false
+    },
+    "finish_reason": null,
+    "provider_usage": null,
+    "token_usage_complete": false,
+    "started_at": "2026-10-19T07:06:58.510360+00:00",
+    "finished_at": "2026-10-19T07:07:01.217950+00:00",
+    "stream_capture_bytes": null
+  },
+  {
+    "run": "designer-live-002",
+    "model": "qwen3.8-max",
+    "stream": false,
+    "reasoning_effort": null,
+    "max_output_tokens": 8192,
+    "timeout_seconds": 240.0,
+    "wall_seconds": 240.078,
+    "status": "failed",
+    "error": {
+      "code": "timeout",
+      "message": "Invocation deadline exceeded",
+      "retryable": false
+    },
+    "finish_reason": null,
+    "provider_usage": null,
+    "token_usage_complete": false,
+    "started_at": "2026-10-19T07:07:20.983140+00:00",
+    "finished_at": "2026-10-19T07:11:20.990175+00:00",
+    "stream_capture_bytes": null
+  },
+  {
+    "run": "designer-live-003",
+    "model": "qwen3.8-max",
+    "stream": false,
+    "reasoning_effort": null,
+    "max_output_tokens": 8192,
+    "timeout_seconds": 600.0,
+    "wall_seconds": 676.562,
+    "status": "failed",
+    "error": {
+      "code": "timeout",
+      "message": "Invocation deadline exceeded",
+      "retryable": false
+    },
+    "finish_reason": null,
+    "provider_usage": null,
+    "token_usage_complete": false,
+    "started_at": "2026-10-19T07:14:05.174983+00:00",
+    "finished_at": "2026-10-19T07:25:21.667440+00:00",
+    "stream_capture_bytes": null
+  },
+  {
+    "run": "designer-live-004",
+    "model": "qwen3.8-flash",
+    "stream": false,
+    "reasoning_effort": null,
+    "max_output_tokens": 8192,
+    "timeout_seconds": 600.0,
+    "wall_seconds": 447.688,
+    "status": "failed",
+    "error": {
+      "code": "provider_failure",
+      "message": "Could not connect to the configured model gateway; no automatic retry was made",
+      "retryable": false
+    },
+    "finish_reason": null,
+    "provider_usage": null,
+    "token_usage_complete": false,
+    "started_at": "2026-10-19T07:34:55.665423+00:00",
+    "finished_at": "2026-10-19T07:42:23.280975+00:00",
+    "stream_capture_bytes": null
+  },
+  {
+    "run": "designer-live-005",
+    "model": "qwen3.8-max",
+    "stream": true,
+    "reasoning_effort": null,
+    "max_output_tokens": 8192,
+    "timeout_seconds": 600.0,
+    "wall_seconds": 600.093,
+    "status": "failed",
+    "error": {
+      "code": "timeout",
+      "message": "Invocation deadline exceeded",
+      "retryable": false
+    },
+    "finish_reason": null,
+    "provider_usage": null,
+    "token_usage_complete": false,
+    "started_at": "2026-10-19T07:44:00.616725+00:00",
+    "finished_at": "2026-10-19T07:54:00.635761+00:00",
+    "stream_capture_bytes": 915278
+  },
+  {
+    "run": "designer-live-006",
+    "model": "deepseek-flash",
+    "stream": false,
+    "reasoning_effort": null,
+    "max_output_tokens": 8192,
+    "timeout_seconds": 600.0,
+    "wall_seconds": 36.266,
+    "status": "failed",
+    "error": {
+      "code": "invalid_submission",
+      "message": "Designer response must match the JSON proposal schema",
+      "retryable": false
+    },
+    "finish_reason": "length",
+    "provider_usage": {
+      "completion_tokens": 8192,
+      "prompt_tokens": 3685,
+      "total_tokens": 11877,
+      "completion_tokens_details": {
+        "reasoning_tokens": 8192
+      },
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 3685
+    },
+    "token_usage_complete": true,
+    "started_at": "2026-10-19T08:16:41.408566+00:00",
+    "finished_at": "2026-10-19T08:17:17.594729+00:00",
+    "stream_capture_bytes": null
+  },
+  {
+    "run": "designer-live-007",
+    "model": "deepseek-flash",
+    "stream": false,
+    "reasoning_effort": null,
+    "max_output_tokens": 32768,
+    "timeout_seconds": 600.0,
+    "wall_seconds": 143.765,
+    "status": "failed",
+    "error": {
+      "code": "invalid_submission",
+      "message": "Designer response must match the JSON proposal schema",
+      "retryable": false
+    },
+    "finish_reason": "length",
+    "provider_usage": {
+      "completion_tokens": 32768,
+      "prompt_tokens": 3685,
+      "total_tokens": 36453,
+      "completion_tokens_details": {
+        "reasoning_tokens": 26942
+      },
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 3685
+    },
+    "token_usage_complete": true,
+    "started_at": "2026-10-19T08:18:42.243951+00:00",
+    "finished_at": "2026-10-19T08:21:05.918441+00:00",
+    "stream_capture_bytes": null
+  },
+  {
+    "run": "designer-live-008",
+    "model": "deepseek-flash",
+    "stream": false,
+    "reasoning_effort": "low",
+    "max_output_tokens": 32768,
+    "timeout_seconds": 600.0,
+    "wall_seconds": 92.11,
+    "status": "completed",
+    "error": null,
+    "finish_reason": "stop",
+    "provider_usage": {
+      "completion_tokens": 21909,
+      "prompt_tokens": 3685,
+      "total_tokens": 25594,
+      "completion_tokens_details": {
+        "reasoning_tokens": 14749
+      },
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 3685
+    },
+    "token_usage_complete": true,
+    "started_at": "2026-10-19T08:23:20.245810+00:00",
+    "finished_at": "2026-10-19T08:24:52.159489+00:00",
+    "stream_capture_bytes": null
+  }
+]

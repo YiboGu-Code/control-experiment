@@ -1,0 +1,25 @@
+[verifier] project   = /workspace/game
+[verifier] rubric    = /tests/rubric.json
+[verifier] output    = /logs/verifier
+[verifier] judge     = OpenAIJudge(model='kimi-k2.6')
+[verifier] godot_bin = /usr/local/bin/godot
+
+[verifier] reward        = 0.419
+[verifier] build_ok      = True
+[verifier] num_demos     = 3
+[verifier] num_errors    = 0
+[verifier] requirements (id  agg  per_demo):
+[verifier]   M1    0.50  [01_title_flow=0.50, 02_draft_battle=0.50, 03_late_game=0.50]
+[verifier]   M2    0.50  [01_title_flow=0.00, 02_draft_battle=0.50, 03_late_game=0.50]
+[verifier]   M3    0.50  [01_title_flow=0.00, 02_draft_battle=0.50, 03_late_game=0.50]
+[verifier]   D1    0.50  [01_title_flow=0.00, 02_draft_battle=0.50, 03_late_game=0.50]
+[verifier]   D2    0.50  [01_title_flow=0.00, 02_draft_battle=0.50, 03_late_game=0.50]
+[verifier]   D3    0.50  [01_title_flow=0.50, 02_draft_battle=0.50, 03_late_game=0.50]
+[verifier]   D4    0.50  [01_title_flow=0.00, 02_draft_battle=0.50, 03_late_game=0.50]
+[verifier]   V1    0.50  [01_title_flow=0.50, 02_draft_battle=0.50, 03_late_game=0.50]
+[verifier]   V2    0.33  [01_title_flow=0.00, 02_draft_battle=0.50, 03_late_game=0.50]
+[verifier]   V3    0.50  [01_title_flow=0.00, 02_draft_battle=0.50, 03_late_game=0.50]
+[verifier]   A1    0.50  [01_title_flow=0.50, 02_draft_battle=0.00, 03_late_game=0.00]
+[verifier]   A2    0.50  [01_title_flow=0.50, 02_draft_battle=0.50, 03_late_game=0.50]
+[verifier]   A3    0.17  [01_title_flow=0.00, 02_draft_battle=0.50, 03_late_game=0.00]
+[verifier]   A4    0.00  [01_title_flow=0.00, 02_draft_battle=0.00, 03_late_game=0.00]

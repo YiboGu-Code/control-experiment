@@ -1,0 +1,17 @@
+{
+  "description": "Unmodified real Art Producer failures from platformer-time-loop. Regression tests replay these offline; corrected replies and library pixels are explicitly synthetic test data.",
+  "responses": [
+    {
+      "fixture": "invalid_grid.txt",
+      "source": "runs/fixed-loop-real-images-001/model_calls/art_producer/002/response.txt",
+      "sha256": "fa58da6deadf4942e55d90f3c95b18ef57e95623c869234a9feb6c5fcbde7186",
+      "finish_reason": "stop"
+    },
+    {
+      "fixture": "truncated_frames.txt",
+      "source": "runs/fixed-loop-real-images-001/model_calls/art_producer/004/response.txt",
+      "sha256": "f5c5ebdc04ecc2120d8b52845375c2b24fbb2c85b3043b009ef99f611c10259c",
+      "finish_reason": "length"
+    }
+  ]
+}

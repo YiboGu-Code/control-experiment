@@ -1,0 +1,161 @@
+{
+  "session_id": "probe",
+  "mode": "probe",
+  "argv": [
+    "python3",
+    "/opt/gamecraft/player_driver.py",
+    "--project",
+    "/workspace/artifacts/developer/8ce726a9ecad90a140719624/game",
+    "--request",
+    "/output/requests/probe.json",
+    "--output",
+    "/output/sessions/probe"
+  ],
+  "status": "passed",
+  "reason": "Real frame-indexed input capture completed; gameplay objectives and QA acceptance are separate",
+  "process": {
+    "returncode": 0,
+    "stdout": "{\"status\": \"passed\", \"steps\": 2, \"authored_files_unchanged\": true}\n",
+    "stderr": ""
+  },
+  "driver": {
+    "driver_version": "godot-player.v1",
+    "status": "passed",
+    "project_sha256": "eb929b96a5bdd894db35ea59191e8f109a38221372d62b6d5d28a8ab4f244d22",
+    "fresh_process": true,
+    "fresh_user_data": true,
+    "network": "none",
+    "steps": [
+      {
+        "name": "import",
+        "argv": [
+          "godot",
+          "--headless",
+          "--path",
+          "/tmp/player-mtxx8_3z/game",
+          "--import"
+        ],
+        "returncode": 0,
+        "stdout": "Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org\n\n[   0% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | Started Project initialization (5 steps)\u001b[39m\u001b[0m\n[   0% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | Scanning file structure...\u001b[39m\u001b[0m\n[  16% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | Loading global class names...\u001b[39m\u001b[0m\n[  33% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | Verifying GDExtensions...\u001b[39m\u001b[0m\n[  50% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | Creating autoload scripts...\u001b[39m\u001b[0m\n[  66% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | Initializing plugins...\u001b[39m\u001b[0m\n[  83% ] \u001b[90m\u001b[1mfirst_scan_filesystem\u001b[22m | Starting file scan...\u001b[39m\u001b[0m\n\u001b[92m[ DONE ]\u001b[39m \u001b[1mfirst_scan_filesystem\u001b[22m\n\u001b[0m\n[   0% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | Started Registering global classes... (9 steps)\u001b[39m\u001b[0m\n[   0% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | \u001b[39m\u001b[0m\n[  10% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | \u001b[39m\u001b[0m\n[  20% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | \u001b[39m\u001b[0m\n[  30% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | \u001b[39m\u001b[0m\n[  40% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | \u001b[39m\u001b[0m\n[  50% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | \u001b[39m\u001b[0m\n[  60% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | \u001b[39m\u001b[0m\n[  70% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | \u001b[39m\u001b[0m\n[  80% ] \u001b[90m\u001b[1mupdate_scripts_classes\u001b[22m | \u001b[39m\u001b[0m\n\u001b[92m[ DONE ]\u001b[39m \u001b[1mupdate_scripts_classes\u001b[22m\n\u001b[0m\n[   0% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | Started Scanning actions... (12 steps)\u001b[39m\u001b[0m\n[   0% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | door_gate.png\u001b[39m\u001b[0m\n[   7% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | exit_crystal.png\u001b[39m\u001b[0m\n[  15% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | laser_hazard.png\u001b[39m\u001b[0m\n[  23% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | pressure_plate.png\u001b[39m\u001b[0m\n[  30% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | switch_button.png\u001b[39m\u001b[0m\n[  38% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | enemy_patroller.png\u001b[39m\u001b[0m\n[  46% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | ghost_sheet.png\u001b[39m\u001b[0m\n[  53% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | player_sheet.png\u001b[39m\u001b[0m\n[  61% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | tileset_platform.png\u001b[39m\u001b[0m\n[  69% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | hud_panel.png\u001b[39m\u001b[0m\n[  76% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | title_backdrop.png\u001b[39m\u001b[0m\n[  84% ] \u001b[90m\u001b[1m_update_scan_actions\u001b[22m | ui_controls.png\u001b[39m\u001b[0m\n\u001b[92m[ DONE ]\u001b[39m \u001b[1m_update_scan_actions\u001b[22m\n\u001b[0m\n[   0% ] \u001b[90m\u001b[1mreimport\u001b[22m | Started (Re)Importing Assets (12 steps)\u001b[39m\u001b[0m\n[   0% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[   7% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  15% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  23% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  30% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  38% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  46% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  53% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  61% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  69% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  76% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[  84% ] \u001b[90m\u001b[1mreimport\u001b[22m | Preparing files to reimport...\u001b[39m\u001b[0m\n[   0% ] \u001b[90m\u001b[1mreimport\u001b[22m | Executing pre-reimport operations...\u001b[39m\u001b[0m\n[   0% ] \u001b[90m\u001b[1mreimport\u001b[22m | door_gate.png\u001b[39m\u001b[0m\n[   7% ] \u001b[90m\u001b[1mreimport\u001b[22m | exit_crystal.png\u001b[39m\u001b[0m\n[  15% ] \u001b[90m\u001b[1mreimport\u001b[22m | laser_hazard.png\u001b[39m\u001b[0m\n[  23% ] \u001b[90m\u001b[1mreimport\u001b[22m | pressure_plate.png\u001b[39m\u001b[0m\n[  30% ] \u001b[90m\u001b[1mreimport\u001b[22m | switch_button.png\u001b[39m\u001b[0m\n[  38% ] \u001b[90m\u001b[1mreimport\u001b[22m | enemy_patroller.png\u001b[39m\u001b[0m\n[  46% ] \u001b[90m\u001b[1mreimport\u001b[22m | ghost_sheet.png\u001b[39m\u001b[0m\n[  53% ] \u001b[90m\u001b[1mreimport\u001b[22m | player_sheet.png\u001b[39m\u001b[0m\n[  61% ] \u001b[90m\u001b[1mreimport\u001b[22m | tileset_platform.png\u001b[39m\u001b[0m\n[  69% ] \u001b[90m\u001b[1mreimport\u001b[22m | hud_panel.png\u001b[39m\u001b[0m\n[  76% ] \u001b[90m\u001b[1mreimport\u001b[22m | title_backdrop.png\u001b[39m\u001b[0m\n[  84% ] \u001b[90m\u001b[1mreimport\u001b[22m | ui_controls.png\u001b[39m\u001b[0m\n[  92% ] \u001b[90m\u001b[1mreimport\u001b[22m | Finalizing Asset Import...\u001b[39m\u001b[0m\n\u001b[92m[ DONE ]\u001b[39m \u001b[1mreimport\u001b[22m\n\u001b[0m\n[   0% ] \u001b[90m\u001b[1mreimport\u001b[22m | Started (Re)Importing Assets (12 steps)\u001b[39m\u001b[0m\n[   0% ] \u001b[90m\u001b[1mreimport\u001b[22m | Executing post-reimport operations...\u001b[39m\u001b[0m\n\u001b[92m[ DONE ]\u001b[39m \u001b[1mreimport\u001b[22m\n\u001b[0m\n[   0% ] \u001b[90m\u001b[1mloading_editor_layout\u001b[22m | Started Loading editor (5 steps)\u001b[39m\u001b[0m\n[   0% ] \u001b[90m\u001b[1mloading_editor_layout\u001b[22m | Loading editor layout...\u001b[39m\u001b[0m\n\u001b[92m[ DONE ]\u001b[39m \u001b[1mloading_editor_layout\u001b[22m\n\u001b[0m\n",
+        "stderr": "",
+        "passed": true
+      },
+      {
+        "name": "play",
+        "argv": [
+          "xvfb-run",
+          "-a",
+          "-s",
+          "-screen 0 1280x720x24 -nolisten tcp",
+          "godot",
+          "--path",
+          "/tmp/player-mtxx8_3z/game",
+          "--rendering-method",
+          "gl_compatibility",
+          "--audio-driver",
+          "Dummy",
+          "--fixed-fps",
+          "30",
+          "--disable-vsync",
+          "--resolution",
+          "1280x720",
+          "--script",
+          "/opt/gamecraft/player_harness.gd",
+          "--",
+          "--player-job",
+          "/tmp/player-mtxx8_3z/job.json"
+        ],
+        "returncode": 0,
+        "stdout": "Godot Engine v4.5.1.stable.official.f62fdbde1 - https://godotengine.org\nOpenGL API 4.5 (Core Profile) Mesa 22.3.6 - Compatibility - Using Device: Mesa/X.org - llvmpipe (LLVM 15.0.6, 256 bits)\n\n",
+        "stderr": "WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.\n     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)\n",
+        "passed": true
+      }
+    ],
+    "authored_files_unchanged": true,
+    "modified_source_paths": [],
+    "original_project_unchanged": true
+  },
+  "runtime_files": [
+    {
+      "artifact_id": "player-probe-driver-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/probe/driver.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "c5d68ffdd7bfd641752c1af5f4356d432b7e4a2a2f87796b7436b927fdc64c57"
+    },
+    {
+      "artifact_id": "player-probe-events-jsonl",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/probe/events.jsonl",
+      "created_by": "player",
+      "media_type": "application/x-ndjson",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "artifact_id": "player-probe-executed_trace-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/probe/executed_trace.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "49dc202e1305106f26b378c139d7b867c67bbf06b9c5ce1f5670001e35bac4b1"
+    },
+    {
+      "artifact_id": "player-probe-frame_0000-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/probe/frame_0000.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "f02021bf60ed92eb8c5dc08a11a4238f1f378b2ed229f72d1edfe26aa5701124"
+    },
+    {
+      "artifact_id": "player-probe-frame_0000-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/probe/frame_0000.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "d1c1924cbbf7511dd791b731a892cec75af223cc7520e7e1567c1b161f70f060"
+    },
+    {
+      "artifact_id": "player-probe-frame_0005-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/probe/frame_0005.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "362e3c8c1d9daf5bb624f477eace0d828ef9c122afd555ed2ec3f1099066f817"
+    },
+    {
+      "artifact_id": "player-probe-frame_0005-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/probe/frame_0005.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "7883f91cf305e5cc06a51fac18ee38a973443c8576d02e0fd4c44adb917862d0"
+    },
+    {
+      "artifact_id": "player-probe-frames-jsonl",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/probe/frames.jsonl",
+      "created_by": "player",
+      "media_type": "application/x-ndjson",
+      "sha256": "cef70a1e6a8d670e894386be9b39057683dc170c27f99c8b4e3aa2bf8c7bd07a"
+    },
+    {
+      "artifact_id": "player-probe-receipt-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/probe/receipt.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "dc74e6b90697e59a26f66f7e28f63a63f291c2fd5e476a39b46f17cb435732b4"
+    }
+  ]
+}

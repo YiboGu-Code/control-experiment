@@ -1,0 +1,24 @@
+{
+  "schema_version": "1.0",
+  "request_id": "designer-initial",
+  "run_id": "designer-simulation",
+  "task_id": "platformer-time-loop",
+  "role": "designer",
+  "work_item_ids": [],
+  "objective": "Create the initial English specification for Time Loop from the complete public instruction.",
+  "completion_criteria": [
+    "Ground explicit requirements in exact source excerpts and observable acceptance criteria",
+    "Cover all eight sections, preserve the public delivery protocol, and separate assumptions"
+  ],
+  "state_revision": 0,
+  "artifact_refs": [],
+  "limits": {
+    "max_model_calls": 4,
+    "max_input_tokens": 100000,
+    "max_output_tokens": 16000,
+    "max_image_calls": null,
+    "max_tool_calls": 100,
+    "max_tool_seconds": 240.0,
+    "max_wall_seconds": 300.0
+  }
+}

@@ -1,0 +1,163 @@
+{
+  "schema_version": "1.0",
+  "request_id": "player-initial",
+  "role": "player",
+  "state_revision": 3,
+  "status": "partial",
+  "summary": "Captured 0 real input traces and checked 0 fresh replays; see original diagnostics and model findings.",
+  "artifact_refs": [
+    {
+      "artifact_id": "player-job-probe",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/requests/probe.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "2359ac5b4afa19ab189912658babfc12ca1301514a8f5f188a187411eae9eb8e"
+    },
+    {
+      "artifact_id": "player-probe-driver-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/probe/driver.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "c5d68ffdd7bfd641752c1af5f4356d432b7e4a2a2f87796b7436b927fdc64c57"
+    },
+    {
+      "artifact_id": "player-probe-events-jsonl",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/probe/events.jsonl",
+      "created_by": "player",
+      "media_type": "application/x-ndjson",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "artifact_id": "player-probe-executed_trace-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/probe/executed_trace.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "49dc202e1305106f26b378c139d7b867c67bbf06b9c5ce1f5670001e35bac4b1"
+    },
+    {
+      "artifact_id": "player-probe-frame_0000-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/probe/frame_0000.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "f02021bf60ed92eb8c5dc08a11a4238f1f378b2ed229f72d1edfe26aa5701124"
+    },
+    {
+      "artifact_id": "player-probe-frame_0000-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/probe/frame_0000.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "d1c1924cbbf7511dd791b731a892cec75af223cc7520e7e1567c1b161f70f060"
+    },
+    {
+      "artifact_id": "player-probe-frame_0005-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/probe/frame_0005.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "362e3c8c1d9daf5bb624f477eace0d828ef9c122afd555ed2ec3f1099066f817"
+    },
+    {
+      "artifact_id": "player-probe-frame_0005-png",
+      "version": 1,
+      "kind": "screenshot",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/probe/frame_0005.png",
+      "created_by": "player",
+      "media_type": "image/png",
+      "sha256": "7883f91cf305e5cc06a51fac18ee38a973443c8576d02e0fd4c44adb917862d0"
+    },
+    {
+      "artifact_id": "player-probe-frames-jsonl",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/probe/frames.jsonl",
+      "created_by": "player",
+      "media_type": "application/x-ndjson",
+      "sha256": "cef70a1e6a8d670e894386be9b39057683dc170c27f99c8b4e3aa2bf8c7bd07a"
+    },
+    {
+      "artifact_id": "player-probe-receipt-json",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/sessions/probe/receipt.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "dc74e6b90697e59a26f66f7e28f63a63f291c2fd5e476a39b46f17cb435732b4"
+    },
+    {
+      "artifact_id": "player-session-probe",
+      "version": 1,
+      "kind": "log",
+      "path": "artifacts/player/5fc2120edf4680b305663565/logs/probe.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "4a34c526e5810d0df11cfbed1be9bc065a1e2552bd29bb95f6b3e3d353a55c8b"
+    },
+    {
+      "artifact_id": "player-report",
+      "version": 1,
+      "kind": "report",
+      "path": "artifacts/player/5fc2120edf4680b305663565/player_report.json",
+      "created_by": "player",
+      "media_type": "application/json",
+      "sha256": "792f1222380373575b977701d807d3522a7960d269924b7b069fe759b3b87024"
+    },
+    {
+      "artifact_id": "player-handoff",
+      "version": 1,
+      "kind": "report",
+      "path": "artifacts/player/5fc2120edf4680b305663565/player_handoff.md",
+      "created_by": "player",
+      "media_type": "text/markdown",
+      "sha256": "8a2fcfd8acc3e208aeffee8f8280653ee1f16dbdf8440a5c72e2e11d10cdbb26"
+    }
+  ],
+  "proposed_updates": {
+    "requirements": [],
+    "design": null,
+    "assets": [],
+    "game_revision": null,
+    "evidence": [
+      {
+        "evidence_id": "player-0001-observations",
+        "kind": "observation",
+        "game_revision_id": "game-0001",
+        "requirement_ids": [],
+        "artifact_refs": [
+          {
+            "artifact_id": "player-report",
+            "version": 1,
+            "kind": "report",
+            "path": "artifacts/player/5fc2120edf4680b305663565/player_report.json",
+            "created_by": "player",
+            "media_type": "application/json",
+            "sha256": "792f1222380373575b977701d807d3522a7960d269924b7b069fe759b3b87024"
+          }
+        ],
+        "observation": "Recorded runtime diagnostics and explicitly attributed model interpretations; no requirement or readiness verdict was made.",
+        "outcome": "passed",
+        "scenario": null,
+        "recorded_at": "2026-10-19T11:54:40.660708Z"
+      }
+    ],
+    "issues": [],
+    "readiness": null
+  },
+  "evidence_refs": [
+    "player-0001-observations"
+  ],
+  "blockers": [],
+  "error": null
+}

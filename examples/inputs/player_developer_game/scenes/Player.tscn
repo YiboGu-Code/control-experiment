@@ -1,0 +1,24 @@
+[gd_scene load_steps=3 format=3 uid="uid://btimeloopplayer"]
+
+[ext_resource type="Script" path="res://scripts/Player.gd" id="1_player"]
+[ext_resource type="Texture2D" path="res://assets/sprites/player_sheet.png" id="2_player_sheet"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_player"]
+size = Vector2(20, 32)
+
+[node name="Player" type="CharacterBody2D"]
+script = ExtResource("1_player")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 16)
+shape = SubResource("RectangleShape2D_player")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, 0)
+
+[node name="Visual" type="Sprite2D" parent="AnimatedSprite2D"]
+texture = ExtResource("2_player_sheet")
+texture_filter = 1
+hframes = 4
+frame = 0
+scale = Vector2(2, 2)

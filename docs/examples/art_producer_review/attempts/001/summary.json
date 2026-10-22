@@ -1,0 +1,36 @@
+{
+  "mode": "live-text/mock-image",
+  "status": "failed",
+  "role_status": "failed",
+  "model": "deepseek-flash",
+  "asset_count": 0,
+  "mock_asset_count": 0,
+  "usage": {
+    "model_calls": 1,
+    "input_tokens": 19593,
+    "cached_input_tokens": 0,
+    "output_tokens": 10471,
+    "image_calls": 0,
+    "tool_calls": 4,
+    "tool_seconds": 48.85899999999674,
+    "wall_seconds": 48.98399999999674,
+    "token_usage_complete": true
+  },
+  "checks": {
+    "original_instruction_unchanged": true,
+    "real_planner_completed": true,
+    "assets_committed": false,
+    "requirements_and_design_unchanged": true,
+    "no_game_or_qa_claims": true,
+    "mock_images_labelled": false,
+    "status_matches_placeholders": false,
+    "image_usage_matches_mock_calls": true,
+    "text_usage_matches_provider": true,
+    "english_authored_output_no_cjk": true
+  },
+  "error": {
+    "code": "invalid_submission",
+    "message": "Art Producer returned an invalid JSON proposal",
+    "retryable": false
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "benchmark": "GameCraft-Bench",
+  "snapshot": "FreedomIntelligence-gamecraft-bench-a433475",
+  "task_id": "platformer-time-loop",
+  "instruction_path": "benchmark_resources/FreedomIntelligence-gamecraft-bench-a433475/tasks/platformer-time-loop/instruction.md",
+  "instruction_sha256": "dcb85ce30a25d88a5e0a12b6a0f91a8783e896d6816cdcb88d6b8432e5c10969"
+}
