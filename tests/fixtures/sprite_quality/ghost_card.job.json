@@ -1,0 +1,12 @@
+{
+  "protocol": "art-image.v1",
+  "prompt": "Readable 2D micro-game style for 1280x720: OGA cavern tile surfaces with nearest scaling and a clear top edge; dark HUD panels with high-contrast amber, cyan, and white fill; simple humanoid teal player with translucent cyan ghost; small UI markers with dark outlines; runtime text remains separate from baked images.\n\nTranslucent cyan ghost silhouette for a 2D platformer, simple rounded sheet body matching player proportions, subtle white edge glow, soft alpha gradient, transparent background. Single 64x64 sprite centered with generous padding, no text, no watermark, no solid black outline.",
+  "width": 64,
+  "height": 64,
+  "transparent_background": true,
+  "columns": 1,
+  "rows": 1,
+  "frame_names": [
+    "ghost_idle"
+  ]
+}

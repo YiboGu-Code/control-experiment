@@ -107,12 +107,23 @@ class DashScopeImageProvider(OpenAICompatibleImageProvider):
         super().__init__(config, capture_directory=capture_directory, download_client=download_client)
 
     def _payload(self, job):
+        from .image_prompts import is_actor
         parameters = {"n": 1, "size": self.config.size, "watermark": self.config.watermark,
                       "result_format": "message", "stream": False}
         if self.config.prompt_extend is not None:
             parameters["prompt_extend"] = self.config.prompt_extend
         if self.config.seed is not None:
             parameters["seed"] = self.config.seed
+        if is_actor(job):
+            # Actor isolation is a host invariant, even when scenery jobs opt in
+            # to provider prompt embellishment or watermarks.
+            parameters["watermark"] = False
+            if self.config.model.startswith(("qwen-image-3.0", "qwen-image-2.1")) or self.config.prompt_extend is not None:
+                parameters["prompt_extend"] = False
+        # Wan 2.7 explicitly does not support this option, even false. Never send
+        # an unsupported parameter to a working native endpoint.
+        if self.config.model in ("wan2.7-image", "wan2.7-image-pro"):
+            parameters.pop("prompt_extend", None)
         return {"model": self.config.model,
                 "input": {"messages": [{"role": "user", "content": [{"text": self._image_prompt(job)}]}]},
                 "parameters": parameters}

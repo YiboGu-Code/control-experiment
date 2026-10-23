@@ -25,10 +25,12 @@ CRITERIA = {
 
 def budget_stop(state):
     usage, limits = state.ledger.usage, state.ledger.budget
+    if limits.max_wall_seconds is not None and (utc_now() - state.ledger.started_at).total_seconds() >= limits.max_wall_seconds:
+        detail = (" Token usage from an interrupted provider call remains incomplete; reserved tokens are not confirmed usage."
+                  if not usage.token_usage_complete else "")
+        return "timeout", "The shared run wall-clock deadline was reached." + detail
     if not usage.token_usage_complete:
         return "failed", "Token usage is incomplete; reconcile the recorded provider failure before another run."
-    if limits.max_wall_seconds is not None and (utc_now() - state.ledger.started_at).total_seconds() >= limits.max_wall_seconds:
-        return "timeout", "The shared run wall-clock deadline was reached."
     for name in ("model_calls", "input_tokens", "output_tokens", "tool_calls", "tool_seconds"):
         limit = getattr(limits, "max_" + name)
         if limit is not None and getattr(usage, name) >= limit:

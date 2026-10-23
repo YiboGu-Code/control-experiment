@@ -167,7 +167,10 @@ def test_runner_records_mcp_and_helper_budgets_without_changing_default():
     new, _, budgets = runner["role_setup"](gateways, godot_mcp=True)
     assert old[Role.DEVELOPER].prompt_version == "developer.v3"
     assert new[Role.DEVELOPER].prompt_version == "developer.v4"
-    assert budgets[Role.DEVELOPER].max_model_calls == 11
+    assert new[Role.DEVELOPER].optimize_execution
+    assert budgets[Role.DEVELOPER].max_model_calls == 14  # 8 implementation + 3 context + 3 visual calls.
+    legacy, _, legacy_limits = runner["role_setup"](gateways, godot_mcp=True, values={"CODE_DEVELOPER_OPTIMIZE_EXECUTION": "false"})
+    assert not legacy[Role.DEVELOPER].optimize_execution and legacy_limits[Role.DEVELOPER].max_model_calls == 11
 
 
 @pytest.mark.parametrize("allowance,expected,calls", [(9, "failed", 0), (10, "partial", 1)])
@@ -305,3 +308,58 @@ def test_finish_supersedes_interim_partial_after_current_review(tmp_path, remain
     assert "Review the current MCP preview" not in document.limitations
     assert all(item in document.limitations for item in remaining)
     assert executor.state.readiness is None  # Developer completion is not QA acceptance.
+
+
+@pytest.mark.parametrize("controller", ["fixed_loop", "adaptive_scheduler"])
+def test_finish_cannot_erase_current_visual_errors(tmp_path, controller):
+    from test_developer import DEMO
+    class ErrorVisual(VisualFixture):
+        async def generate(self, prompt, *, images, **kwargs):
+            self.prompts.append(json.loads(prompt))
+            return TextReply(json.dumps({"summary": "Offline reproduction of the unresolved actor defect",
+                "findings": [{"severity": "error", "observation": "Actor contains grass tiles and magenta background",
+                              "suggested_fix": "Inspect source art before guessing another atlas crop"}],
+                "limitations": ["Fixture based on permissions-002, not live acceptance"]}), 1000, 400)
+    executor, text = make_run(tmp_path, proposal(), FINISH, seed=False, controller=controller)
+    _, _, _, design_state, design, _, _ = DEMO["load_recorded_inputs"]()
+    asyncio.run(DEMO["HELPERS"]["seed_recorded_designer"](executor, design_state, design))
+    executor = Executor.open(executor.workspace, services=Services(text=text, sandbox=ScriptedSandbox(),
+        godot_mcp=MCPFixture(), vision=ErrorVisual()))
+    result = invoke(executor, DeveloperConfig(prompt_version="developer.v4", max_model_turns=3))
+    assert result.status == "partial", result.error
+    document = report(executor)
+    assert document.self_review_completed  # Reviewed, not visually approved.
+    assert any("Unresolved visual error" in item for item in document.limitations)
+    assert "Host retained unresolved errors" in document.self_review_summary
+    assert executor.state.readiness is None
+
+
+def test_visual_helper_receives_referenced_current_assets_with_budgeted_images(tmp_path):
+    executor, text = make_run(tmp_path)
+    ref = next(r for r in executor.state.artifacts if r.artifact_id == "art-manifest")
+    manifest = json.loads(executor.workspace.read_public(ref.path).read_bytes())
+    assets = [a for a in manifest["assets"] if a["record"]["artifact_ref"]["media_type"] == "image/png"]
+    paths = [a["request"]["target_path"] for a in assets]
+    text.replies = [proposal(script="extends Node2D\n# " + " ".join(paths)), FINISH]
+    class AssetVisual(VisualFixture):
+        async def generate(self, prompt, *, images, **kwargs):
+            data = json.loads(prompt)
+            self.prompts.append(data)
+            assert len(images) == 3  # One actual preview plus a configured maximum of two assets.
+            assert images[0].data == image_bytes()
+            for image, description in zip(images[1:], data["source_assets"]):
+                asset = next(a for a in assets if a["record"]["asset_id"] == description["asset_id"])
+                assert image.data == executor.workspace.read_public(asset["record"]["artifact_ref"]["path"]).read_bytes()
+                assert image.source_id == description["image_source_id"]
+                assert not description["layout_visually_verified"]
+            return TextReply(json.dumps({"summary": "Offline asset routing check", "findings": [],
+                                        "limitations": ["No live visual judgment"]}), 1000, 400)
+    visual = AssetVisual()
+    executor = Executor.open(executor.workspace, services=Services(text=text, sandbox=ScriptedSandbox(),
+        godot_mcp=MCPFixture(), vision=visual))
+    result = invoke(executor, DeveloperConfig(prompt_version="developer.v4", max_visual_asset_images=2))
+    assert result.status == "partial", result.error  # Preserved upstream mock-art gate.
+    assert len(visual.prompts) == 1
+    assert executor.state.ledger.usage.model_calls == 3
+    assert visual.prompts[0]["instruction"] == executor.state.task.instruction
+    assert not executor.state.readiness

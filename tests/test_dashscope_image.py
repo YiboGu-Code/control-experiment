@@ -127,8 +127,14 @@ def test_actual_dashscope_sdk_serializes_native_body_and_isolates_globals(tmp_pa
     body = requests[0]["json"]
     assert body["model"] == model and body["parameters"]["n"] == 1
     assert body["parameters"]["size"] == "1024*1024" and body["parameters"]["stream"] is False
-    assert body["input"]["messages"][0]["content"][0]["text"].startswith(job().prompt)
-    for name in ("prompt", "response_format", "background", "quality", "output_format", "prompt_extend"):
+    assert body["parameters"]["watermark"] is False
+    if model.startswith("wan2.7"):
+        assert "prompt_extend" not in body["parameters"]
+    else:
+        assert body["parameters"]["prompt_extend"] is False
+    image_prompt = body["input"]["messages"][0]["content"][0]["text"]
+    assert job().prompt in image_prompt and image_prompt.startswith("ASSET CAPABILITY:")
+    for name in ("prompt", "response_format", "background", "quality", "output_format"):
         assert name not in body["parameters"] and name not in body
     assert requests[0]["headers"]["Authorization"] == "Bearer SECRET-NATIVE-KEY"
     assert sessions[0].closed and sessions[0].timeout.total == 20
@@ -148,7 +154,7 @@ def test_native_optional_parameters_and_sdk_deadline(tmp_path):
     async def call(**kwargs):
         calls.append(kwargs)
         return sdk_response()
-    service = provider(tmp_path, call, settings=config(prompt_extend=False, seed=42, size="2K", timeout_seconds=9.0))
+    service = provider(tmp_path, call, settings=config(prompt_extend=False, seed=42, size="2K", timeout_seconds=9.0).revised(model="qwen-image-3.0-pro"))
     generate(service)
     assert calls[0]["request_timeout"] == 9 and calls[0]["prompt_extend"] is False
     assert calls[0]["seed"] == 42 and calls[0]["size"] == "2K"

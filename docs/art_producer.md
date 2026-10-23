@@ -1,5 +1,9 @@
 # Art Producer 开发说明
 
+正式 Loop / Scheduler 入口已启用 [素材规范化与切图](asset_normalization.md)。光栅素材需要显式 layout，原图保留作来源证据，宿主发布逐帧 PNG 和联系表；旧独立示例默认配置仍可读取历史清单。
+
+[人物精灵质量规则](sprite_quality.md) 会对生成图和素材库人物帧执行共同检查；疑似地面、文字、面板或复杂背景会被隔离，清单保留具体原因且无可用帧，Art 返回 partial。下一次调用应替换或修正源素材，不能以 no_op 忽略问题。生图提示词根据人物、环境、UI 按需选择，尚未把所有角色重构为动态 skills。
+
 Art Producer 已接入公共执行器，为固定 Loop 与 Scheduler 使用同一套角色、提示词、权限和预算逻辑。实现位于 `src/adaptive_game_generation/roles/art_producer/`。
 
 003 后续修复：Fixed Loop 配置 `max_model_turns=6`、`max_search_turns=3`，保留提交和字段纠错额度。搜索上限同时进入模型 schema 和宿主校验；不会偷偷补字段，也不增加图片接口重试。独立角色默认仍为 4 次、未单独限制搜索。新回归使用 003 的实际缺字段回复，详见 [003 诊断](fixed_loop_real_images_003_diagnosis.md)。

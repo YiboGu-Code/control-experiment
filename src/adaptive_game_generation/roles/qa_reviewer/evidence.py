@@ -197,9 +197,11 @@ class EvidenceReader:
                     packaged.append(raw)
         self.add("project-inventory", "inventory", inventory, game.project_ref, build_ids)
         mock_art = any(a.is_mock for a in developer.integrated_assets)
+        unresolved_art = any(p.status != "materialized" for p in developer.asset_packages)
         if developer.art_manifest_ref:
             manifest = ArtManifest.model_validate_json(await self.read(developer.art_manifest_ref))
             mock_art = mock_art or any(a.is_mock for a in manifest.assets)
+            unresolved_art = unresolved_art or any(a.normalization and a.normalization.status != "materialized" for a in manifest.assets)
             self.add("art-manifest", "art_manifest", {"summary": manifest.summary, "limitations": manifest.limitations,
                 "assets": [a.model_dump(mode="json", exclude={"request", "image_job"}) for a in manifest.assets]}, developer.art_manifest_ref, build_ids)
         player_ref, player = await self.report("player-report", PlayerReport, optional=True)
@@ -242,7 +244,7 @@ class EvidenceReader:
                 all(c.status == "passed" for c in self.comparisons if c.capture_session_id == s.session_id)
                 for s in matching)
         self.gates = {"current_build_passed": build_verified and game.build_status == "passed",
-            "current_play_evidence": bool(self.captures), "packaged_traces_replayed": bool(packaged_ok), "final_art": not mock_art}
+            "current_play_evidence": bool(self.captures), "packaged_traces_replayed": bool(packaged_ok), "final_art": not mock_art and not unresolved_art}
         self.integrity.update(verified_artifacts=len(self.cache), verified_bytes=self.bytes_read,
             project_sha256=game.project_ref.sha256, screenshots_visually_inspected=False)
         if self.config.max_visual_images:

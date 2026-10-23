@@ -1,0 +1,15 @@
+{
+  "protocol": "art-image.v1",
+  "prompt": "Coherent readable 2D style for 1280x720. Dark teal-blue UI panels with subtle clock motifs; platforms in grass/dirt/stone/wood; exit crystal violet glow; switch/plate activation amber; lasers red; enemies gray/cyan; ghosts translucent cyan. Use runtime modulate for player ghosts: same player texture with Color approximately (0.35, 0.75, 0.95, 0.45) or the separate ghost sprite. Keep text out of baked images so Designer/Developer can place readable labels and HUD counters with Godot default or future library font. All submitted images are AI-generated placeholders, not library-proven assets.\n\nOriginal 2D platformer character, simple humanoid silhouette, teal scarf, side view facing right, clean flat colors, transparent background, four equal 32x32 frames row: idle, running, jumping, falling; no text.",
+  "width": 128,
+  "height": 32,
+  "transparent_background": true,
+  "columns": 4,
+  "rows": 1,
+  "frame_names": [
+    "player_idle",
+    "player_run",
+    "player_jump",
+    "player_fall"
+  ]
+}

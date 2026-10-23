@@ -77,6 +77,7 @@ def export_run(executor, output: Path, *, mode="fixed-loop"):
     title = "Adaptive Scheduler" if state.ledger.controller == "adaptive_scheduler" else "Fixed Loop"
     lines = [f"# {title} run review", "",
         f"Stop reason: **{summary['termination_reason']}**. Delivery ready: **{summary['delivery_ready']}**.", "",
+        summary["termination_summary"], "",
         "This run starts from the original public instruction and fresh pipeline state. Only invoked roles produce outputs. "
         + image_description + "A bounded run or a completed role is not official Benchmark acceptance.", "",
         "- [Original instruction](instruction.md)", "- [Frozen experiment configuration](experiment.json)",
@@ -111,6 +112,13 @@ def export_run(executor, output: Path, *, mode="fixed-loop"):
             "code or asset is added during export. Failed or unfinished latest revisions are retained honestly.",
             "", "Open `delivery/game/project.godot` in Godot 4.5.1. Import resources before running from the command line.",
             "Use the latest Developer handoff for controls and named scenarios.", ""]
+    if not state.ledger.usage.token_usage_complete:
+        lines += ["## Interrupted usage", "",
+            "Token totals include unresolved reservations from interrupted calls. They are not confirmed provider usage. "
+            "The original deadline or failure above remains the stop cause; retain provider captures for reconciliation.", ""]
+    if any(f.result.role == Role.DEVELOPER and f.result.status == "failed" for f in finished):
+        lines += ["A failed Developer invocation does not publish its staged changes. The delivery contains only the latest "
+                  "committed revision; staged repair files are diagnostic drafts, not a validated delivery.", ""]
     lines += ["## Interpretation", "",
         "Review the current QA report, not only role statuses. Mock art blocks final-art acceptance. "
         "Replay results cover recorded inputs, the fixed engine image and observed state/pixels, not all gameplay or other platforms.",

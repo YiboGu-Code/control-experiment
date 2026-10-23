@@ -116,15 +116,15 @@ def test_base64_request_is_one_image_with_grid_and_exact_processed_png(tmp_path)
     assert INSTRUCTION.read_text(encoding="utf-8") in body["prompt"]
     assert "2 columns and 1 rows" in body["prompt"] and "#FF00FF" in body["prompt"]
     with Image.open(io.BytesIO(result)) as image:
-        assert image.size == (32, 16) and image.format == "PNG"
-        assert image.getpixel((0, 0))[3] == 0 and image.getpixel((8, 8))[3] == 255
+        assert image.size == (128, 64) and image.format == "PNG"
+        assert image.getpixel((0, 0))[3] == 0 and image.getpixel((32, 32))[3] == 255
     capture = tmp_path / "image_calls/001"
     assert (capture / "source.png").read_bytes() == source
     assert (capture / "output.png").read_bytes() == result
     metadata = json.loads((capture / "metadata.json").read_bytes())
     assert metadata["status"] == "completed" and not metadata["provider"]["is_mock"]
     assert metadata["sha256"] == hashlib.sha256(result).hexdigest()
-    assert [step["operation"] for step in metadata["normalization"]["operations"]] == ["chroma_key", "resize"]
+    assert [step["operation"] for step in metadata["normalization"]["operations"]] == ["chroma_key", "frame_native", "frame_native"]
     assert all("SECRET-IMAGE-KEY" not in p.read_text(encoding="utf-8") for p in capture.glob("*.json"))
 
 
@@ -137,7 +137,56 @@ def test_native_alpha_and_optional_wire_parameters(tmp_path):
     generate(service)
     assert payloads[0]["background"] == "transparent" and payloads[0]["output_format"] == "png"
     assert payloads[0]["response_format"] == "b64_json" and payloads[0]["quality"] == "high"
-    assert [s["operation"] for s in service.calls[0]["normalization"]["operations"]] == ["resize"]
+    assert [s["operation"] for s in service.calls[0]["normalization"]["operations"]] == ["preserve_alpha", "frame_native", "frame_native"]
+
+
+@pytest.mark.parametrize("background", [(255, 0, 255, 254), (219, 75, 224, 254)])
+def test_nearly_opaque_alpha_does_not_bypass_chroma_removal(tmp_path, background):
+    # Run permissions-002 had alpha 253..255 and corners near (219,75,224).
+    original = Image.new("RGBA", (128, 64), background)
+    ImageDraw.Draw(original).rectangle((16, 16, 47, 47), fill=(10, 100, 200, 128))
+    stream = io.BytesIO()
+    original.save(stream, format="PNG")
+    service = provider(tmp_path, lambda r: image_response(stream.getvalue()))
+    result = Image.open(io.BytesIO(generate(service)))
+    assert result.getpixel((0, 0))[3] == 0
+    assert result.getpixel((32, 32)) == (10, 100, 200, 128)
+    operation = service.calls[0]["normalization"]["operations"][0]
+    assert operation["operation"] == "chroma_key"
+    if background[:3] != (255, 0, 255):
+        assert "#DB4BE0" in operation["keys"]
+    assert (tmp_path / "image_calls/001/source.png").read_bytes() == stream.getvalue()
+
+
+@pytest.mark.parametrize("native", [True, False])
+def test_near_opaque_non_key_image_is_not_usable_transparency(tmp_path, native):
+    stream = io.BytesIO()
+    Image.new("RGBA", (128, 64), (10, 100, 200, 254)).save(stream, format="PNG")
+    service = provider(tmp_path, lambda r: image_response(stream.getvalue()),
+                       settings=config(transparency="native" if native else "chroma_key"))
+    with pytest.raises(ProviderFailure, match="no usable transparency"):
+        generate(service)
+
+
+def test_native_transparency_preserves_magenta_subjects(tmp_path):
+    original = Image.new("RGBA", (128, 64), (0, 0, 0, 0))
+    ImageDraw.Draw(original).rectangle((16, 16, 47, 47), fill=(255, 0, 255, 128))
+    stream = io.BytesIO()
+    original.save(stream, format="PNG")
+    service = provider(tmp_path, lambda r: image_response(stream.getvalue()), settings=config(transparency="native"))
+    image = Image.open(io.BytesIO(generate(service)))
+    assert image.getpixel((32, 32)) == (255, 0, 255, 128)
+
+
+def test_border_sampling_preserves_one_dirty_pixel_for_quality_review(tmp_path):
+    original = Image.new("RGBA", (128, 64), (219, 75, 224, 254))
+    original.putpixel((0, 0), (10, 100, 200, 254))
+    stream = io.BytesIO()
+    original.save(stream, format="PNG")
+    service = provider(tmp_path, lambda r: image_response(stream.getvalue()))
+    result = Image.open(io.BytesIO(generate(service)))
+    assert result.size == original.size and result.getpixel((0, 0)) == original.getpixel((0, 0))
+    assert service.calls[0]["normalization"]["findings"]  # Empty actor cells are quarantined, never downsampled away.
 
 
 def test_image_url_download_redirect_has_no_gateway_auth_and_is_redacted(tmp_path):

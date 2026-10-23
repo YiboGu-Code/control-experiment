@@ -9,6 +9,7 @@ from pydantic import Field, StringConstraints, field_validator, model_validator
 
 from ...models import ArtifactRef, Blocker
 from ...models.base import Identifier, Model, PositiveCount, Seconds, Text, require_unique
+from ...models.asset_pipeline import NormalizedAsset
 from ...runtime.workspace import logical_path
 from ...runtime.godot_mcp import GodotInspectionRequest
 
@@ -42,6 +43,14 @@ class DeveloperConfig(Model):
     max_mcp_inspections: Annotated[int, Field(strict=True, ge=1, le=5)] = 3
     mcp_timeout_seconds: Seconds = Field(default=180.0, gt=0)
     visual_review_tokens: PositiveCount = 8192
+    max_visual_asset_images: Annotated[int, Field(strict=True, ge=0, le=7)] = 4
+    require_normalized_assets: bool = False
+    optimize_execution: bool = False
+    # These bounds limit automatic context selection, not the model's context
+    # window or its output allowance. Explicit reads can request full resources.
+    auto_source_bytes: PositiveCount = 48 * 1024
+    max_context_reads: Annotated[int, Field(strict=True, ge=1, le=6)] = 3
+    max_context_response_bytes: PositiveCount = 512 * 1024
 
 
 class FileWrite(Model):
@@ -59,10 +68,54 @@ class ScenarioSpec(Model):
     description: Text
 
 
+class TextReplacement(Model):
+    old_text: Annotated[str, StringConstraints(min_length=1)]
+    new_text: str
+
+
+class FileEdit(Model):
+    path: Text
+    expected_sha256: Annotated[str, StringConstraints(pattern=r"^[a-f0-9]{64}$")]
+    replacements: Annotated[tuple[TextReplacement, ...], Field(min_length=1, max_length=64)]
+
+    @field_validator("path")
+    @classmethod
+    def safe_source(cls, value):
+        return project_path(value)
+
+
+class ContextRead(Model):
+    resource_id: Text
+    start_line: Annotated[int, Field(strict=True, ge=1)] | None = None
+    end_line: Annotated[int, Field(strict=True, ge=1)] | None = None
+
+    @model_validator(mode="after")
+    def valid_range(self):
+        if (self.start_line is None) != (self.end_line is None):
+            raise ValueError("Specify both line bounds or neither for a full resource")
+        if self.start_line is not None and self.end_line < self.start_line:
+            raise ValueError("Invalid context line range")
+        return self
+
+
+class DeveloperContext(Model):
+    status: Literal["context"]
+    summary: Text
+    reads: Annotated[tuple[ContextRead, ...], Field(max_length=8)] = ()
+    request_deep_reasoning: bool = False
+
+    @model_validator(mode="after")
+    def useful(self):
+        if not self.reads and not self.request_deep_reasoning:
+            raise ValueError("Request context or escalation to deep reasoning")
+        return self
+
+
 class DeveloperProposal(Model):
     status: Literal["completed", "partial", "no_op", "blocked"]
     summary: Text
     files: tuple[FileWrite, ...] = ()
+    edits: tuple[FileEdit, ...] = ()
     delete_paths: tuple[Text, ...] = ()
     affected_requirement_ids: tuple[Identifier, ...] = ()
     implemented_requirement_ids: tuple[Identifier, ...] = ()
@@ -76,9 +129,9 @@ class DeveloperProposal(Model):
     def consistent(self):
         for path in self.delete_paths:
             project_path(path)
-        require_unique((f.path.casefold() for f in self.files), "written paths")
+        require_unique((f.path.casefold() for f in (*self.files, *self.edits)), "written/edited paths")
         require_unique((p.casefold() for p in self.delete_paths), "deleted paths")
-        if {f.path.casefold() for f in self.files} & {p.casefold() for p in self.delete_paths}:
+        if {f.path.casefold() for f in (*self.files, *self.edits)} & {p.casefold() for p in self.delete_paths}:
             raise ValueError("Cannot write and delete the same source path")
         for ids in (self.affected_requirement_ids, self.implemented_requirement_ids):
             require_unique(ids, "requirement references")
@@ -86,11 +139,11 @@ class DeveloperProposal(Model):
             raise ValueError("Implemented claims must be included in affected requirements")
         require_unique((s.scenario_id for s in self.scenarios), "scenario IDs")
         if self.status in ("completed", "partial"):
-            if not (self.files or self.delete_paths) or not self.affected_requirement_ids or not self.controls or self.blockers:
+            if not (self.files or self.edits or self.delete_paths) or not self.affected_requirement_ids or not self.controls or self.blockers:
                 raise ValueError("Implementation needs a patch, affected requirements and controls, without blockers")
             if (self.status == "partial") != bool(self.remaining_work):
                 raise ValueError("Only partial proposals must list remaining work")
-        elif self.files or self.delete_paths or self.affected_requirement_ids or self.implemented_requirement_ids or self.scenarios or self.controls or self.remaining_work:
+        elif self.files or self.edits or self.delete_paths or self.affected_requirement_ids or self.implemented_requirement_ids or self.scenarios or self.controls or self.remaining_work:
             raise ValueError("Blocked and no_op proposals cannot contain implementation changes")
         elif (self.status == "blocked") != bool(self.blockers):
             raise ValueError("Only blocked proposals require blockers")
@@ -173,6 +226,7 @@ class DeveloperReport(Model):
     affected_requirement_ids: tuple[Identifier, ...]
     model_implementation_claims: tuple[Identifier, ...]
     integrated_assets: tuple[IntegratedAsset, ...]
+    asset_packages: tuple[NormalizedAsset, ...] = ()
     scenarios: tuple[ScenarioSpec, ...]
     controls: tuple[Text, ...]
     build_attempts: tuple[BuildAttempt, ...]
@@ -182,3 +236,4 @@ class DeveloperReport(Model):
     mcp_inspections: tuple[DeveloperInspectionRecord, ...] = ()
     self_review_completed: bool = False
     self_review_summary: str | None = None
+    optimization_calls: tuple[dict, ...] = ()

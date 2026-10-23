@@ -11,6 +11,9 @@ from pydantic import ValidationError
 from ...models import ArtifactRef, AssetRecord, Blocker, ProposedUpdates, RoleResult
 from ...runtime import InvalidSubmission, PermissionDenied, RoleContext
 from ...runtime.media import raster_info
+from ...models.asset_pipeline import AssetLayout
+from ...runtime.asset_normalization import generated_layout, regions_for
+from ...runtime.workspace import logical_path
 from .contracts import ArtManifest, ArtProducerConfig, ArtTurn, ImageJob, ProducedAsset, ProposalRejection
 from .prompt import build_prompt
 
@@ -41,6 +44,30 @@ class ArtProducer:
         version = 1 + max((ref.version for ref in context.state.artifacts if ref.artifact_id == artifact_id), default=0)
         return ArtifactRef(artifact_id=artifact_id, version=version, kind=kind, path=path,
             created_by="art_producer", media_type=media_type, sha256=hashlib.sha256(data).hexdigest())
+
+    def _layout(self, asset, candidate=None):
+        layout = asset.layout
+        if asset.width and self.config.normalize_assets and layout is None:
+            raise InvalidSubmission("Raster assets require an explicit layout: whole sprite/background/ui, grid, regions, catalog, or unresolved atlas")
+        if layout is None:
+            return None
+        metadata = candidate.atlas_metadata if candidate else None
+        if layout.mode == "whole" and metadata and metadata.status == "available" and len(metadata.regions) > 1:
+            raise InvalidSubmission("Library metadata identifies an atlas; select catalog frames instead of a whole texture")
+        if layout.mode == "catalog":
+            if metadata is None or metadata.status != "available":
+                raise InvalidSubmission("Catalog layout requires available metadata from the selected library search result")
+            lookup = {r.name: r for r in metadata.regions}
+            if any(name not in lookup for name in asset.frame_names):
+                raise InvalidSubmission("Select exact frame_names returned in atlas_metadata.regions")
+            layout = AssetLayout(kind=layout.kind, mode="regions", regions=tuple(lookup[n] for n in asset.frame_names))
+        try:
+            frames = regions_for(layout, asset.width, asset.height, asset.columns, asset.rows, asset.frame_names)
+            for frame in frames:
+                logical_path(f"assets/normalized/{asset.asset_id}/{frame.name}.png")
+        except (ValueError, PermissionDenied) as exc:
+            raise InvalidSubmission(str(exc)) from exc
+        return layout
 
     async def _inputs(self, context):
         state, request, tools = context.state, context.request, context.tools
@@ -113,8 +140,9 @@ class ArtProducer:
                     raise InvalidSubmission(f"{location}: Plan must preserve library asset dimensions: width={candidate.width}, height={candidate.height}")
                 if PurePosixPath(asset.target_path).suffix.lower() != PurePosixPath(candidate.path).suffix.lower():
                     raise InvalidSubmission("Plan must preserve the library file extension")
-                if asset.transparent_background and not candidate.has_alpha:
+                if asset.transparent_background and not candidate.has_alpha and not (self.config.normalize_assets and asset.layout and asset.layout.kind in ("sprite", "sprite_sheet")):
                     raise InvalidSubmission("Library asset does not have an alpha channel")
+            self._layout(asset, catalog.get((asset.source, asset.source_path)))
 
     def _validate_submission(self, context, plan, catalog, previous, sources):
         if plan.status == "completed":
@@ -122,6 +150,8 @@ class ArtProducer:
             return
         if plan.status == "no_op" and not context.state.assets:
             raise InvalidSubmission("Initial Art Producer invocation cannot return no_op")
+        if plan.status == "no_op" and previous and any(a.normalization and a.normalization.status != "materialized" for a in previous.assets):
+            raise InvalidSubmission("Unresolved or rejected assets still need corrected layouts or replacement sources; no_op cannot resolve them")
         known = {r.requirement_id for r in context.state.requirements} | {i.issue_id for i in context.state.issues}
         if any(set(b.dependency_ids) - known for b in plan.blockers):
             raise InvalidSubmission("Art blocker references unknown dependencies")
@@ -194,16 +224,26 @@ class ArtProducer:
         tools, refs, produced = context.tools, [], []
         for asset in plan.assets:
             license_ref, job, candidate = None, None, None
+            native_layout, display_regions = None, ()
             if asset.source == "generate":
                 service = sources["image_service"]
-                job = ImageJob(prompt=plan.style_guide + "\n\n" + asset.generation_prompt,
+                job = ImageJob(prompt=("ASSET TO DRAW (the sole subject of this image):\n" + asset.generation_prompt +
+                    "\n\nSTYLE CONTEXT (palette and rendering only, not additional subjects):\n" + plan.style_guide +
+                    "\n\nDraw only the requested asset. Do not turn style references to other game objects into scenery, "
+                    "UI panels, ground, text or backgrounds inside an isolated sprite. Follow the asset request above."),
                     width=asset.width, height=asset.height, transparent_background=asset.transparent_background,
-                    columns=asset.columns, rows=asset.rows, frame_names=asset.frame_names)
+                    columns=asset.columns, rows=asset.rows, frame_names=asset.frame_names, layout=asset.layout)
                 path = await tools.generate_image(job.model_dump_json(), asset.target_path)
                 data = await tools.read_bytes(path)
                 media = raster_info(data)
-                if media["media_type"] != "image/png" or (media["width"], media["height"]) != (asset.width, asset.height):
+                native = service.get("output_geometry", "requested") == "source_native"
+                if media["media_type"] != "image/png" or (not native and (media["width"], media["height"]) != (asset.width, asset.height)):
                     raise InvalidSubmission("Image service output does not match the requested PNG dimensions")
+                if native:
+                    try:
+                        native_layout, display_regions = generated_layout(job, media["width"], media["height"])
+                    except ValueError as exc:
+                        raise InvalidSubmission(str(exc)) from exc
                 if asset.transparent_background and not media["has_alpha"]:
                     raise InvalidSubmission("Image service omitted the requested alpha channel")
                 is_mock, license_text = service["is_mock"], service["license"]
@@ -223,11 +263,26 @@ class ArtProducer:
                 refs.append(license_ref)
             ref = self._ref(context, "art-asset-" + asset.asset_id, path, data, kind="asset", media_type=media["media_type"])
             refs.append(ref)
+            layout = native_layout or self._layout(asset, candidate)
+            normalization = None
+            if layout:
+                normalization = await tools.normalize_asset(ref, asset_id=asset.asset_id,
+                    source_target=asset.target_path, layout=layout, columns=asset.columns, rows=asset.rows,
+                    names=asset.frame_names, layout_source=candidate.atlas_metadata if candidate else None,
+                    display_regions=display_regions)
+                refs.extend(normalization.artifact_refs)
             notes = (f"Copy to {asset.target_path}. Filter: {asset.filter_mode}. Grid: {asset.columns} x {asset.rows}. "
                      f"Frames (row-major): {', '.join(asset.frame_names)}. " + asset.integration_notes +
                      " License handling: " + asset.license_handling +
                      (" MOCK PLACEHOLDER: replace before visual acceptance." if is_mock else "") +
                      " Visual review has not been performed.")
+            if normalization:
+                notes = ("Original image is source-only and must not be loaded by the game. Use normalized frames: " +
+                    ", ".join(f.target_path for f in normalization.frames) +
+                    f". Filter: {asset.filter_mode}. Preserve frame pivots and durations from the manifest. " +
+                    "Native frame dimensions can exceed logical display_size. Use a single uniform render scale; never resize or stretch texture files. " +
+                    asset.integration_notes + " License handling: " + asset.license_handling +
+                    (" MOCK PLACEHOLDER." if is_mock else "") + " Visual acceptance remains pending.")
             record = AssetRecord(asset_id=asset.asset_id, artifact_ref=ref, purpose=asset.purpose,
                 source=source, license=license_text, integration_notes=notes)
             produced.append(ProducedAsset(request=asset, record=record, is_mock=is_mock,
@@ -235,13 +290,16 @@ class ArtProducer:
                 source_sha256=candidate.sha256 if candidate else None,
                 source_license_path=candidate.license_path if candidate else None,
                 source_license_sha256=candidate.license_sha256 if candidate else None,
-                license_ref=license_ref, image_job=job))
+                license_ref=license_ref, image_job=job, normalization=normalization))
         merged = {a.record.asset_id: a for a in previous.assets} if previous else {}
         merged.update({a.record.asset_id: a for a in produced})
         limitations = ["Images were checked for file format and dimensions, not visually reviewed or integrated into a game."]
         placeholders = any(a.is_mock for a in merged.values())
         if placeholders:
             limitations.append("Mock-generated images are test placeholders and do not fulfill final artwork requirements.")
+        unresolved = [a.record.asset_id for a in merged.values() if a.normalization and a.normalization.status != "materialized"]
+        if unresolved:
+            limitations.append("Unresolved or quality-rejected sources are not display-ready: " + ", ".join(unresolved))
         manifest = ArtManifest(task_id=context.state.task.task_id, version=previous.version + 1 if previous else 1,
             config=self.config, proposal_rejections=tuple(rejections),
             design_ref=context.state.design.document_ref, style_guide=plan.style_guide,
@@ -254,8 +312,9 @@ class ArtProducer:
         markdown = self._render(manifest)
         path = await tools.write_text("art_handoff.md", markdown)
         refs.append(self._ref(context, "art-handoff", path, markdown.encode("utf-8"), media_type="text/markdown"))
-        return self._result(context, "partial" if placeholders else "completed",
-            plan.summary + (" Image generation was mocked; final artwork remains pending." if placeholders else ""),
+        return self._result(context, "partial" if placeholders or unresolved else "completed",
+            plan.summary + (" Image generation was mocked; final artwork remains pending." if placeholders else "") +
+            (" Replace or repair non-display-ready assets: " + ", ".join(unresolved) if unresolved else ""),
             artifact_refs=tuple(refs), proposed_updates=ProposedUpdates(assets=tuple(a.record for a in produced)))
 
     @staticmethod
@@ -265,11 +324,18 @@ class ArtProducer:
                  "## Changed scenes", "", *["- " + scene for scene in manifest.affected_scenes], "", "## Asset inventory", ""]
         for item in manifest.assets:
             draft, record = item.request, item.record
-            lines.extend([f"### {record.asset_id}", "", f"- Target: `{draft.target_path}`",
+            lines.extend([f"### {record.asset_id}", "", f"- {'Source-only' if item.normalization else 'Target'}: `{draft.target_path}`",
                 f"- Published artifact: `{record.artifact_ref.path}` (version {record.artifact_ref.version})",
                 f"- Source: `{record.source}`; mock: `{item.is_mock}`",
                 f"- Dimensions: {item.width} x {item.height}; alpha channel: {item.has_alpha}",
                 f"- Requirements: {', '.join(draft.requirement_ids)}",
                 f"- Affected scenes: {', '.join(draft.affected_scenes)}", "", record.integration_notes, "",
                 "License:", "", record.license, ""])
+            if item.normalization:
+                n = item.normalization
+                lines.extend([f"- Normalization: {n.status}; preview: `{n.preview_ref.path}`", ""])
+                if n.quality:
+                    lines.extend(f"- Quality [{f.code}] {f.frame}: {f.message}" for f in n.quality.findings)
+                lines.extend(f"- Frame `{f.region.name}`: `{f.target_path}`; rectangle=({f.region.x},{f.region.y},{f.region.width},{f.region.height}); display_size={f.display_size}; pivot=({f.region.pivot_x},{f.region.pivot_y}); duration={f.region.duration_ms}ms." for f in n.frames)
+                lines.extend(["", *["- " + limit for limit in n.limitations], ""])
         return "\n".join(lines)

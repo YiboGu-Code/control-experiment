@@ -1,10 +1,18 @@
 # Scheduler 开发与运行说明
 
+正式入口与 Fixed Loop 共用 [素材规范化与切图](asset_normalization.md)：Art 发布明确布局和逐帧 PNG，Developer 检查原图集误用，未解决布局保留为公开待办。新配置请使用新的运行目录；原有模型和生图调用方式不变。
+
+[人物精灵处理与质量检查](sprite_quality.md) 同样共享：保留原生像素、无损切图与独立显示尺寸、可靠紫红底去除、可疑源图隔离。rejected 和 unresolved 都保留为 Art 待办，Developer/QA 不将其视为已完成美术。
+
 本文对应 `role_design` 第五步。`AdaptiveScheduler` 在已有五个角色、共享状态和执行器上，每次选择一个可执行角色及其目标事项。它是控制器，不是第六个工作角色，不新增游戏制作或验收权限。实现位于 `src/adaptive_game_generation/controllers/scheduler.py`，英文模型协议位于同目录的 `scheduler_policy.py`。
 
 本阶段没有调用在线模型，也没有使用用户尚未补交的 Fixed Loop 运行结果。已有真实模型入口可供用户自行执行。离线测试中的模型回复和引擎观察明确为夹具，不能用于评价模型生成质量或比较两种范式的优劣。
 
 ## 与 Fixed Loop 共用的部分
+
+Developer 默认使用同一套[阶段思考、按需上下文与局部修改](developer_optimization.md)。主调用上限 v3 为 8、v4 为 11（均包含读取决策），v4 另有最多 3 次视觉调用；全部计入相同的公共账目。Scheduler 不能覆盖 Developer 阶段参数或绕过其校验，首次实现和复杂问题保留原思考配置。
+
+总运行期限同样由共享入口决定：默认 12 小时，可通过 `RUN_MAX_WALL_SECONDS` 或优先级更高的 `--max-wall-seconds` 设置。期限、素材透明处理、Developer 源素材视觉输入及未解决视觉错误的保留规则均与 Fixed Loop 相同。对比实验请显式冻结一致的预算；详见 [permissions-002 诊断](fixed_loop_permissions_002_diagnosis.md)。
 
 两条入口共用 `examples/fixed_loop_demo.py` 的运行装配；`examples/scheduler_demo.py` 仅选择自适应控制器，不复制另一套角色配置。以下条件相同：
 

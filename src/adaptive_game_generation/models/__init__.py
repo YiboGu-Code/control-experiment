@@ -1,6 +1,7 @@
 """Public contracts shared by worker roles, controllers and future executors."""
 
 from .artifacts import ArtifactKind, ArtifactRef
+from .asset_pipeline import AssetLayout, AssetQualityFinding, AssetQualityReport, AtlasMetadata, FrameRegion, NormalizedAsset, NormalizedFrame
 from .base import CheckStatus, ControllerKind, Role
 from .contracts import (
     Blocker, ErrorInfo, ProposedUpdates, ResultStatus, RoleRequest, RoleResult,
@@ -18,6 +19,8 @@ from .resources import ResourceLimits, ResourceUsage
 from .state import SharedState
 
 __all__ = [
+    "AssetLayout", "AtlasMetadata", "FrameRegion", "NormalizedAsset", "NormalizedFrame",
+    "AssetQualityFinding", "AssetQualityReport",
     "ArtifactKind", "ArtifactRef", "AssetRecord", "Blocker", "CheckStatus",
     "ControllerKind", "DesignSpec", "ErrorInfo", "EvidenceKind", "EvidenceRecord",
     "GameRevision", "IssueRecord", "IssueStatus", "IssueType", "LedgerEvent",

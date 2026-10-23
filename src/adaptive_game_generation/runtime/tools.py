@@ -75,6 +75,7 @@ class RoleTools:
         self._lock = asyncio.Lock()
         self._tasks: set[asyncio.Task] = set()
         self._mcp_count = 0
+        self._mock_image_digests = {}
 
     @property
     def output_prefix(self) -> str:
@@ -196,6 +197,69 @@ class RoleTools:
     async def write_text(self, relative: str, text: str) -> str:
         return await self.write_bytes(relative, text.encode("utf-8"))
 
+    async def normalize_asset(self, source_ref, *, asset_id, source_target, layout,
+                              columns=1, rows=1, names, layout_source=None, display_regions=()):
+        """Host-only crop capability. Reads and writes retain ordinary limits and audit entries."""
+        from ..models.asset_pipeline import AssetLayout, FrameName, FrameRegion, NormalizedAsset, NormalizedFrame
+        from pydantic import TypeAdapter
+        from .asset_normalization import normalize_pixels
+        from .errors import InvalidSubmission
+        try:
+            self._policy.allow_tool(self.actor, "asset_normalize")
+        except RuntimeViolation as exc:
+            self._audit("asset_normalize", "denied", exc.code)
+            raise
+        asset_id = TypeAdapter(FrameName).validate_python(asset_id)
+        layout = AssetLayout.model_validate(layout)
+        display_regions = tuple(FrameRegion.model_validate(r) for r in display_regions)
+        if display_regions and tuple(r.name for r in display_regions) != tuple(names):
+            raise InvalidSubmission("Display bounds must identify the declared frames in order")
+        display_sizes = {r.name: (r.width, r.height) for r in display_regions}
+        logical_path(source_target)
+        data = await self.read_bytes(source_ref.path)
+        if source_ref.sha256 != hashlib.sha256(data).hexdigest():
+            raise InvalidSubmission("Normalization source digest mismatch")
+
+        async def operation(_):
+            try:
+                # Mock identity comes only from the host service AND the actual
+                # current image call output, never a role-authored flag.
+                is_mock = self._mock_image_digests.get(source_ref.path) == source_ref.sha256
+                result = normalize_pixels(data, layout, columns, rows, names, check_quality=True, is_mock=is_mock)
+            except ValueError as exc:
+                raise InvalidSubmission(str(exc)) from exc
+            return result, ResourceUsage()
+
+        info, crops, preview = await self._operate("asset_normalize", operation)
+        # No nested metered operations under _operate's lock. Writes are individually bounded.
+        async def publish(relative, content):
+            path = await self.write_bytes(relative, content)
+            identity = hashlib.sha256((self.invocation_id + ":" + relative).encode()).hexdigest()[:24]
+            return ArtifactRef(artifact_id="normalized-" + identity, version=1, kind="asset",
+                path=path, created_by=self.actor, sha256=hashlib.sha256(content).hexdigest(), media_type="image/png")
+
+        frames = []
+        for crop in crops:
+            target = f"assets/normalized/{asset_id}/{crop['region'].name}.png"
+            ref = await publish(target, crop["data"])
+            frames.append(NormalizedFrame(region=crop["region"], artifact_ref=ref, target_path=target,
+                transparent_pixels=crop["transparent_pixels"], visible_pixels=crop["visible_pixels"],
+                display_size=display_sizes.get(crop["region"].name)))
+        preview_ref = await publish(f"asset_previews/{asset_id}.png", preview)
+        quality = info["quality"]
+        rejected = quality["status"] == "rejected"
+        limits = ["Structural sprite checks are conservative heuristics, not OCR, semantic segmentation or visual acceptance."]
+        if rejected:
+            limits.append("Quarantined asset: diagnostic preview only. Replace or correct the source; no derived textures may enter the game.")
+        elif not crops:
+            limits.append("Unresolved layout: no display-ready frames. Art Producer must supply actual frame regions.")
+        if any(not f.visible_pixels for f in frames):
+            limits.append("One or more frames are fully transparent; review their intended use before acceptance.")
+        return NormalizedAsset(asset_id=asset_id, source_ref=source_ref, source_target_path=source_target,
+            source_width=info["width"], source_height=info["height"], layout=layout, layout_source=layout_source,
+            source_only=True, status="rejected" if rejected else "materialized" if crops else "unresolved", frames=tuple(frames),
+            preview_ref=preview_ref, limitations=tuple(limits), quality=quality)
+
     async def copy(self, source: str, destination: str) -> str:
         async def operation(_):
             original = self._workspace.read_path(source)
@@ -274,8 +338,22 @@ class RoleTools:
             return self.output_path(destination), ResourceUsage()
         return await self._operate("library", operation)
 
+    def developer_profile_settings(self, profile):
+        if self.actor != Role.DEVELOPER or profile not in ("deep", "local_repair", "finalize"):
+            raise PermissionDenied("Only Developer may select a fixed reasoning profile")
+        provider = self._services.text
+        if hasattr(provider, "generate_profiled") and hasattr(provider, "profile_settings"):
+            return provider.profile_settings(profile)
+        return {"profile": profile, "configured": False, "changed": False,
+                "reason": "Provider has no phase adapter; inherit its original full settings"}
+
     async def generate_text(self, prompt: str, *, max_output_tokens: int,
-                            image_refs: tuple[ArtifactRef, ...] = (), use_vision: bool = False) -> str:
+                            image_refs: tuple[ArtifactRef, ...] = (), use_vision: bool = False,
+                            developer_profile: str | None = None) -> str:
+        if developer_profile is not None:
+            self.developer_profile_settings(developer_profile)
+            if use_vision or image_refs:
+                raise PermissionDenied("Developer reasoning profiles cannot change visual model calls")
         if use_vision:
             self._policy.allow_tool(self.actor, "vision")
         provider = self._services.vision if use_vision else self._services.text
@@ -302,7 +380,11 @@ class RoleTools:
         if max_output_tokens == 0:
             raise BudgetExceeded("Output token allowance must be positive")
         async def operation(timeout):
-            reply = await provider.generate(prompt, max_output_tokens=max_output_tokens, timeout=timeout, **kwargs)
+            if developer_profile and hasattr(provider, "generate_profiled"):
+                reply = await provider.generate_profiled(prompt, profile=developer_profile,
+                    max_output_tokens=max_output_tokens, timeout=timeout)
+            else:
+                reply = await provider.generate(prompt, max_output_tokens=max_output_tokens, timeout=timeout, **kwargs)
             usage = ResourceUsage(
                 model_calls=1, input_tokens=reply.input_tokens,
                 cached_input_tokens=reply.cached_input_tokens, output_tokens=reply.output_tokens,
@@ -390,6 +472,8 @@ class RoleTools:
             path = self._workspace.output_path(destination)
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_bytes(data)
+            if self._services.image_info and self._services.image_info.is_mock:
+                self._mock_image_digests[self.output_path(destination)] = hashlib.sha256(data).hexdigest()
             return self.output_path(destination), ResourceUsage(image_calls=1)
         return await self._operate("image", operation, cost=ResourceUsage(image_calls=1))
 

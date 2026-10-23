@@ -8,6 +8,7 @@ from pydantic import Field, StringConstraints, model_validator
 
 from ...models import ArtifactRef, AssetRecord, Blocker
 from ...models.base import Identifier, Model, PositiveCount, Text, require_unique
+from ...models.asset_pipeline import AssetLayout, NormalizedAsset
 from ...runtime.workspace import logical_path
 
 AssetId = Annotated[str, StringConstraints(pattern=r"^[a-z][a-z0-9_-]{0,63}$")]
@@ -24,6 +25,7 @@ class ArtProducerConfig(Model):
     max_prompt_bytes: PositiveCount = 512 * 1024
     max_response_bytes: PositiveCount = 256 * 1024
     allow_generation: bool = True
+    normalize_assets: bool = False
 
 
 class SearchRequest(Model):
@@ -51,12 +53,15 @@ class AssetDraft(Model):
     integration_notes: Text
     affected_scenes: Annotated[tuple[Text, ...], Field(min_length=1)]
     license_handling: Text
+    layout: AssetLayout | None = None
 
     @model_validator(mode="after")
     def consistent_request(self):
         logical_path(self.target_path)
         if not self.target_path.startswith("assets/"):
             raise ValueError("Developer target must be inside assets/")
+        if self.target_path.casefold().startswith("assets/normalized/"):
+            raise ValueError("assets/normalized/ is reserved for host-derived frames")
         if (self.width is None) != (self.height is None):
             raise ValueError("Both image dimensions must be specified together")
         if self.source == "generate":
@@ -66,14 +71,16 @@ class AssetDraft(Model):
                 raise ValueError("Generated output must be PNG")
         elif not self.source_path or self.generation_prompt is not None:
             raise ValueError("Library import requires a source path, without a generation prompt")
-        if self.width and (self.width % self.columns or self.height % self.rows):
+        if not self.layout and self.width and (self.width % self.columns or self.height % self.rows):
             raise ValueError(f"Sprite grid {self.columns} x {self.rows} must evenly divide image dimensions {self.width} x {self.height}")
-        if self.columns * self.rows > 64:
-            raise ValueError(f"Sprite grid has {self.columns * self.rows} cells; at most 64 are allowed. Import a larger atlas as one whole-sheet frame or select individual library images")
-        if len(self.frame_names) != self.columns * self.rows:
+        if not self.layout and self.columns * self.rows > 64:
+            raise ValueError(f"Sprite grid has {self.columns * self.rows} cells; at most 64 are allowed. Select explicit regions for the needed frames or use individual library images")
+        if not self.layout and len(self.frame_names) != self.columns * self.rows:
             raise ValueError(f"Frame names must describe every grid cell in row-major order: expected {self.columns * self.rows}, received {len(self.frame_names)}")
         if self.width is None and (self.rows != 1 or self.columns != 1 or self.transparent_background):
             raise ValueError("Non-raster assets cannot request a sprite grid or transparency")
+        if self.layout and self.width is None:
+            raise ValueError("Only raster assets have layouts")
         require_unique(self.requirement_ids, "asset requirements")
         require_unique(self.frame_names, "frame names")
         return self
@@ -114,6 +121,7 @@ class ImageJob(Model):
     columns: PositiveCount
     rows: PositiveCount
     frame_names: tuple[Text, ...]
+    layout: AssetLayout | None = None
 
 
 class ProducedAsset(Model):
@@ -129,6 +137,7 @@ class ProducedAsset(Model):
     license_ref: ArtifactRef | None = None
     image_job: ImageJob | None = None
     visual_review: Literal["not_performed"] = "not_performed"
+    normalization: NormalizedAsset | None = None
 
 
 class ProposalRejection(Model):

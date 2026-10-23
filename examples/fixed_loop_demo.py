@@ -120,9 +120,9 @@ def role_setup(gateways, image_timeout=0.0, *, godot_mcp=False, visual_tokens=81
     values = {} if values is None else values
     configs = {
         Role.DESIGNER: DesignerConfig(max_output_tokens=gateways[Role.DESIGNER].max_output_tokens),
-        Role.ART_PRODUCER: ArtProducerConfig(max_model_turns=6, max_search_turns=3,
+        Role.ART_PRODUCER: ArtProducerConfig(max_model_turns=6, max_search_turns=3, normalize_assets=True,
                                            max_output_tokens=gateways[Role.ART_PRODUCER].max_output_tokens),
-        Role.DEVELOPER: DeveloperConfig(prompt_version="developer.v3", max_model_turns=5,
+        Role.DEVELOPER: DeveloperConfig(prompt_version="developer.v3", max_model_turns=5, require_normalized_assets=True,
                                        max_output_tokens=gateways[Role.DEVELOPER].max_output_tokens),
         Role.PLAYER: PlayerConfig(prompt_version="player.v2", max_traces=5, max_model_turns=5,
                                  max_visual_images=8 if gateways[Role.PLAYER].vision else 0,
@@ -132,8 +132,15 @@ def role_setup(gateways, image_timeout=0.0, *, godot_mcp=False, visual_tokens=81
                                   max_output_tokens=gateways[Role.QA_REVIEWER].max_output_tokens),
     }
     if godot_mcp:
-        configs[Role.DEVELOPER] = DeveloperConfig(prompt_version="developer.v4", max_model_turns=8,
+        configs[Role.DEVELOPER] = DeveloperConfig(prompt_version="developer.v4", max_model_turns=8, require_normalized_assets=True,
             max_output_tokens=gateways[Role.DEVELOPER].max_output_tokens, visual_review_tokens=visual_tokens)
+    optimize = str(values.get("CODE_DEVELOPER_OPTIMIZE_EXECUTION", "true")).lower()
+    if optimize not in ("true", "false"):
+        raise ValueError("CODE_DEVELOPER_OPTIMIZE_EXECUTION must be true or false")
+    if optimize == "true":
+        current = configs[Role.DEVELOPER]
+        configs[Role.DEVELOPER] = current.revised(optimize_execution=True,
+            max_model_turns=min(12, current.max_model_turns + current.max_context_reads))
     configs = {role: role_prompt_settings(config, PREFIXES[role], values) for role, config in configs.items()}
     classes = {Role.DESIGNER: Designer, Role.ART_PRODUCER: ArtProducer, Role.DEVELOPER: Developer,
                Role.PLAYER: Player, Role.QA_REVIEWER: QAReviewer}
@@ -182,8 +189,17 @@ def observed_scheduler(adapter, provider, output):
     return invoke
 
 
+def run_wall_seconds(explicit, values):
+    """The same frozen deadline for both controllers; explicit CLI wins over env."""
+    import math
+    value = float(explicit if explicit is not None else values.get("RUN_MAX_WALL_SECONDS", "43200"))
+    if not math.isfinite(value) or value <= 0:
+        raise ValueError("RUN_MAX_WALL_SECONDS / --max-wall-seconds must be finite and positive")
+    return value
+
+
 async def run_live(output, *, task_dir=DEFAULT_TASK, env_file=ROOT / ".env", max_cycles=3,
-                   max_model_calls=32, max_wall_seconds=10800.0, preflight_only=False, mock_images=False, godot_mcp=False,
+                   max_model_calls=32, max_wall_seconds=None, preflight_only=False, mock_images=False, godot_mcp=False,
                    controller="fixed_loop", max_role_calls=15, max_decisions=30):
     from dotenv import dotenv_values
 
@@ -207,6 +223,7 @@ async def run_live(output, *, task_dir=DEFAULT_TASK, env_file=ROOT / ".env", max
         image_info = MockImageProvider.info if mock_images else image_config.info
         image_timeout = 0.0 if mock_images else image_config.timeout_seconds
         values = {**dotenv_values(env_file, interpolate=False), **os.environ}
+        max_wall_seconds = run_wall_seconds(max_wall_seconds, values)
         scheduler_gateway, scheduler_limits = None, None
         if adaptive:
             scheduler_gateway = GatewayConfig.from_env(env_file, prefix="SCHEDULER")
@@ -231,7 +248,7 @@ async def run_live(output, *, task_dir=DEFAULT_TASK, env_file=ROOT / ".env", max
             "Godot 4.5.1 runs in network-disabled containers. " +
             ("Image generation uses explicitly labeled mock placeholders." if mock_images else
              "Image generation uses the configured real image model through a host-managed, metered service. "
-             "The host normalizes images to PNG at the requested dimensions. Image quality still requires review."),
+             "The host preserves native image pixels in lossless PNG and records logical display sizes separately. Image quality still requires review."),
             "Player uses an external public input/replay harness. Vision-enabled Player and QA models receive selected "
             "integrity-checked capture screenshots as actual image inputs. " +
             ("Developer receives metered MCP diagnostics and visual-tool feedback; previews are not replay evidence."
@@ -358,7 +375,8 @@ def main(controller="fixed_loop"):
         parser.add_argument("--max-decisions", type=int, default=30)
     parser.add_argument("--max-role-calls", type=int, default=15)
     parser.add_argument("--max-model-calls", type=int, default=32)
-    parser.add_argument("--max-wall-seconds", type=float, default=10800.0)
+    parser.add_argument("--max-wall-seconds", type=float, default=None,
+                        help="Shared deadline: overrides RUN_MAX_WALL_SECONDS (default 43200 seconds / 12 hours)")
     parser.add_argument("--preflight-only", action="store_true")
     parser.add_argument("--godot-mcp", action="store_true",
                         help="Enable isolated Developer MCP inspection and metered visual feedback")

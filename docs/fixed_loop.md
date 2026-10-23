@@ -6,6 +6,10 @@
 
 ## 顺序与待办
 
+正式入口默认启用 [素材规范化与切图](asset_normalization.md)：Art 发布独立帧和预览，Developer 装配逐帧 PNG 并检查原图集误用，与 Scheduler 共用配置。旧检查点不迁移，请使用新的输出目录；复跑命令与真实素材离线结果见该文档。
+
+当前还共用 [人物精灵处理与质量检查](sprite_quality.md)：保留原生分辨率并无损切图、保存，游戏按比例显示，处理紫红底，隔离疑似地面、文字或面板素材；被拒绝的素材保留诊断预览，不进入游戏。
+
 每轮严格按照 `Designer → Art Producer → Developer → Player → QA Reviewer` 前进。模型不能选择下一角色、调整单次预算或绕过权限。
 
 | 角色 | 调用条件 | 跳过条件 |
@@ -37,7 +41,7 @@
 
 即使某条旧轨迹过去重放失败，也可以作为下一版修复后的试验输入；过去的通过或失败结论都不直接移植到新版本。装配后无法执行的命名场景、被修改的轨迹或再次分歧的重放都会留下失败证据。
 
-这些能力由 `developer.v2` 和 `player.v2` 实现，当前 Fixed Loop 的 `developer.v3` 继承轨迹装配，并增加源码检查和重复错误摘要。Developer 每次最多 5 次文本调用；Art 为 6 次、最多 3 次搜索，Player 为 5 次，QA 为 4 次并允许一次引用纠错。总调用预算与固定顺序仍由控制器统一约束。新能力既可供 Fixed Loop 使用，也供 Scheduler 使用。既有单角色示例默认保留 v1。角色配置在一次运行内冻结。打包、源文件校验、构建和重放都在角色调用内计费，没有预算耗尽后额外执行游戏的隐含步骤。
+这些能力由 `developer.v2` 和 `player.v2` 实现，当前 Fixed Loop 的 `developer.v3` 继承轨迹装配，并增加源码检查和重复错误摘要。Developer 正式入口默认启用[执行优化](developer_optimization.md)，每次最多 8 次文本调用（含为按需读取增加的 3 轮；关闭优化时为 5 次）；Art 为 6 次、最多 3 次搜索，Player 为 5 次，QA 为 4 次并允许一次引用纠错。总调用预算与固定顺序仍由控制器统一约束。新能力既可供 Fixed Loop 使用，也供 Scheduler 使用。既有单角色示例默认保留 v1。角色配置在一次运行内冻结。打包、源文件校验、构建和重放都在角色调用内计费，没有预算耗尽后额外执行游戏的隐含步骤。
 
 ## 结束与交付
 
@@ -72,6 +76,10 @@ python examples/fixed_loop_demo.py --godot-mcp --output runs/fixed-loop-mcp-thin
 增加 `--mock-images` 可保留图片 mock。建议先使用 `--godot-mcp --preflight-only` 和新输出目录验证镜像与模型配置；预检不调用远端模型。更多 Developer 调用额度用于检查和反馈，不保证三轮能通过验收。正式调度对比需同时冻结两组的 MCP 配置和预算。
 
 当前 `.env` 已采用更大的思考输出与输入额度：`<ROLE>_MAX_PROMPT_BYTES` 控制本地提示词字节上限，`FIXED_LOOP_ROLE_MAX_INPUT_TOKENS` 控制每次角色的累计输入预算，`FIXED_LOOP_MAX_INPUT_TOKENS` / `FIXED_LOOP_MAX_OUTPUT_TOKENS` 控制整次循环预算。角色输出额度由调用次数与 `MAX_OUTPUT_TOKENS` 自动汇总。完整数值、模型窗口与这些上限的区别，以及思考实验的对比方法见 [模型配置与切换记录](model_configuration.md)。所有最终生效的配置都会冻结到本次运行的 `experiment.json`。
+
+总运行期限默认改为 **43,200 秒（12 小时）**，Fixed Loop 与 Scheduler 共用。优先级为 `--max-wall-seconds` > 进程环境变量 `RUN_MAX_WALL_SECONDS` > `.env` 同名项 > 默认值；显式设置的较短期限仍严格生效。思考模式下单个角色的时间额度可能超过旧的 3 小时总上限，扩大 token 上限不会自动延长该总期限。`fixed-loop-permissions-002` 正是在第二轮 Developer 修复中触及旧上限，见 [本次诊断](fixed_loop_permissions_002_diagnosis.md)。
+
+如果总期限中断了流式调用，停止原因记录为 `timeout`，同时保留 `token_usage_complete=false`。此时 token 总数包含未核实的预留量，不能当作提供商确认用量；没有触及总期限的未知用量失败仍记录为 `failed` 并禁止继续派发。失败调用的暂存草稿不会混入交付版本。
 
 ## 在执行服务器运行
 
@@ -120,19 +128,21 @@ ART_IMAGE_API_KEY=your-image-key
 | --- | --- | --- |
 | `ART_IMAGE_TIMEOUT_SECONDS` | `600` | 每张图的整个请求与下载期限；仍受公共执行器剩余预算约束 |
 | `ART_IMAGE_SIZE` | `1024*1024` | 原生 `宽*高`；也接受 `宽x高` 并转换，或模型支持的 `1K`/`2K`/`4K` 档位；不支持 `auto` |
-| `ART_IMAGE_PROMPT_EXTEND` | 不发送 | 仅支持该参数的模型可设 `true`/`false`；当前 Wan 2.7 应保持不设置 |
-| `ART_IMAGE_WATERMARK` | `false` | 原生水印参数 |
+| `ART_IMAGE_PROMPT_EXTEND` | 按模型/素材类型 | Qwen Image 3.0/2.1 人物请求强制 `false`；Wan 2.7 不支持该参数，始终不发送。背景等素材可显式配置支持的参数 |
+| `ART_IMAGE_WATERMARK` | `false` | 原生水印参数；人物请求始终为 `false` |
 | `ART_IMAGE_SEED` | 不发送 | 可选 0–2147483647，保存于实验配置；不保证像素级重现 |
 | `ART_IMAGE_TRANSPARENCY` | `chroma_key` | 原生模式使用纯洋红背景与宿主去背景，不发送 OpenAI 的 `background`/`output_format` |
 | `ART_IMAGE_CHROMA_TOLERANCE` | `40` | 色键模式对 RGB `(255, 0, 255)` 每个通道的容差，允许 0–128 |
-| `ART_IMAGE_RESAMPLE` | `nearest` | 原图缩放至 Art Producer 请求的精确尺寸，可设 `lanczos` |
+| `ART_IMAGE_RESAMPLE` | `nearest` | 仅保留旧配置兼容性；v3 不重采样，不应用此参数 |
 | `ART_IMAGE_LICENSE` | 说明适用服务商条款、未经独立核验 | 可填写已确认的生成产物使用条款；不会自动声称 CC0 |
 
 每个素材只提交一次 SDK 生图请求，固定 `n=1`、`stream=false`，不自动换模型、重试或额外调用修图接口。请求结构为 `model + input.messages + parameters`，英文提示放在消息的 `content` 中。只接受一张结果图；后台 task ID、多张图片或文本替代图片均视为失败。超时或取消会结束当前 SDK 协程，不使用可能在后台继续执行请求的线程包装。
 
-原图可能是 PNG、JPEG 或 WebP，宿主保存原始字节后，转换并缩放为游戏需要的 PNG；不会把小尺寸精灵的 `32x32` 等规格直接当作模型必须支持的生成分辨率。整幅图按目标宽高缩放，可能影响比例，精灵表的帧布局与视觉质量仍需要检查。设置适合素材比例的生成尺寸可以减少变形。
+原图可能是 PNG、JPEG 或 WebP，宿主保存原始字节后，按声明布局映射源单元，保留原生像素与分辨率并用无损 PNG 保存，规划尺寸只决定单独记录的逻辑显示范围；不会将方形原图直接拉成长条，也不会把小尺寸精灵的 `32x32` 等规格当作模型必须支持的生成分辨率。人物规则会检查可疑背景和面板；精灵表的实际动作、网格是否画对及最终视觉质量仍需要检查。
 
-默认色键模式用于没有原生透明通道的模型：提示词要求背景为 `#FF00FF`、主体不使用该颜色，宿主在缩放前移除匹配色。模型没有遵循背景要求时会报错，原图仍保存在调用目录供检查；不会只添加全不透明的 alpha 通道就宣称透明处理完成。边缘质量、色键误删及实际帧布局不由格式检查保证。
+默认色键模式用于没有原生透明通道的模型：提示词要求背景为 `#FF00FF`、主体不使用该颜色，宿主在原生分辨率移除匹配色。模型没有遵循背景要求时会报错，原图仍保存在调用目录供检查；不会只添加全不透明的 alpha 通道就宣称透明处理完成。边缘质量、色键误删及实际帧布局不由格式检查保证。
+
+色键处理不会因为图片已有 alpha 通道而跳过：253–255 这种几乎不透明的范围不能证明背景已去除。除标准品红外，多数边界像素近乎不透明、呈一致品红时，会在同一容差内额外去除边界采样色，并把实际色样写入 `metadata.json`。不可靠的边界采样、透明边界或其他颜色不会触发此补充规则；原生透明模式不做色键处理。修复仅处理背景，不会把带地台、卡片或文字的错误素材自动变成合格角色。
 
 此前的 OpenAI Images 适配器仍可显式选择：`ART_IMAGE_PROVIDER=openai`。只有这种模式才接受 `ART_IMAGE_RESPONSE_FORMAT`、`ART_IMAGE_QUALITY`、`ART_IMAGE_TRANSPARENCY=native`，并调用 `/images/generations`。DashScope 模式若残留这些配置会在预检时报错，需注释或移除相应项；不会忽略后继续发送错误参数。文本角色不受这个图片开关影响。
 
@@ -159,7 +169,7 @@ python examples/fixed_loop_demo.py --output runs/fixed-loop-preflight-server-001
 运行默认的真实 Benchmark `platformer-time-loop/instruction.md`：
 
 ```sh
-python examples/fixed_loop_demo.py --output runs/fixed-loop-server-001 --max-cycles 3 --max-model-calls 32 --max-wall-seconds 10800
+python examples/fixed_loop_demo.py --godot-mcp --output runs/fixed-loop-server-001 --max-cycles 3 --max-model-calls 64 --max-wall-seconds 43200
 ```
 
 也可明确指定任务及 `.env`：
@@ -185,6 +195,8 @@ python examples/fixed_loop_demo.py --output runs/fixed-loop-mock-images-001 --mo
 CLI 不覆盖旧目录，也不自动恢复付费运行。重复运行请换新目录。控制器内部支持依据权威账本核对已完成槽位，执行器支持恢复中断调用；手动通过 Python API 重开执行器时仍必须保留原配置、服务及模型捕获路径。异常恢复不会重放已计费调用，未知 token 消耗会阻止继续。正式的跨进程 CLI 恢复管理留待单独实现。
 
 ## 结果目录与审阅
+
+Developer 新增的阶段参数、按需读取与局部修改记录见 [优化后的完整输入输出](developer_optimization.md#完整输入输出与离线复现)。正式调用仍完整保存在 `model_calls/developer/`；产物内另存每轮实际输入输出和阶段判断。两种控制器的优化参数、思考配置与总预算必须一致。
 
 ```text
 runs/fixed-loop-server-001/

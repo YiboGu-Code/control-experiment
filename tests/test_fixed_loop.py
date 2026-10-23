@@ -88,6 +88,32 @@ def report(executor, identity, cls):
     return cls.model_validate_json(executor.workspace.read_public(ref.path).read_bytes())
 
 
+@pytest.mark.parametrize("controller", ["fixed_loop", "adaptive_scheduler"])
+@pytest.mark.parametrize("expired", [True, False])
+def test_deadline_is_primary_stop_cause_without_losing_unknown_token_usage(tmp_path, monkeypatch, controller, expired):
+    from datetime import timedelta
+    from adaptive_game_generation.controllers import common
+    from adaptive_game_generation.models import RoleCallStarted, ResourceUsage, ErrorInfo
+    executor, _, _, _ = make_run(tmp_path, controller=controller)
+    state = executor.state
+    request = executor.request("designer", "Inspect the original instruction", ("Ground requirements in the instruction",))
+    ledger = state.ledger.revised(budget=state.ledger.budget.revised(max_wall_seconds=10800))
+    ledger = executor._event(ledger, RoleCallStarted(request=request))
+    ledger = executor._event(ledger, RoleCallFinished(result=RoleResult(request_id=request.request_id,
+        role="designer", state_revision=0, status="failed", summary="Interrupted provider stream",
+        error=ErrorInfo(code="timeout", message="Invocation deadline exceeded")),
+        usage=ResourceUsage(model_calls=1, output_tokens=131072, token_usage_complete=False)))
+    state = state.revised(ledger=ledger)
+    monkeypatch.setattr(common, "utc_now", lambda: ledger.started_at + timedelta(seconds=10800 if expired else 600))
+    reason, summary = common.budget_stop(state)
+    assert reason == ("timeout" if expired else "failed")
+    assert not state.ledger.usage.token_usage_complete
+    if expired:
+        assert "reserved tokens are not confirmed usage" in summary
+    else:
+        assert "reconcile" in summary
+
+
 def slots(executor):
     return json.loads((executor.workspace.private / "controller/checkpoint.json").read_bytes())["slots"]
 

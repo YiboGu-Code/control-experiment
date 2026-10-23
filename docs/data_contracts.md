@@ -1,5 +1,7 @@
 # 共享数据结构开发说明
 
+素材交接另有 `models/asset_pipeline.py` 中的 `AssetLayout`、`FrameRegion`、`AtlasMetadata`、`NormalizedAsset` 和 `NormalizedFrame`，均从 models 包导出。它们描述原图与逐帧产物的关系，见 [素材规范化协议](asset_normalization.md)；不把几何裁切成功当作视觉或需求验收。
+
 本文对应 `role_design.md` 开发顺序中的第 1 步：共享状态、产物引用、角色输入输出与运行日志。实现位于 `src/adaptive_game_generation/models/`。
 
 ## 1. 实现范围

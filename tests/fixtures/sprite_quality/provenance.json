@@ -1,0 +1,14 @@
+[
+  {
+    "name": "player_scene",
+    "source": "runs/fixed-loop-permissions-002/image_calls/002/source.png",
+    "sha256": "4b6148af1c84229422d01d81aacc49bb15f064fab8286180b08776e8defd65eb",
+    "license": "Recorded AI-generated asset; subject to original configured provider terms. No independent license verification."
+  },
+  {
+    "name": "ghost_card",
+    "source": "runs/fixed-loop-permissions-002/image_calls/018/source.png",
+    "sha256": "059952c6323681f6a394effed9b540d631f16854bfb5377ecbc692fa39bc8503",
+    "license": "Recorded AI-generated asset; subject to original configured provider terms. No independent license verification."
+  }
+]

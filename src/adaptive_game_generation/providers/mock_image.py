@@ -21,9 +21,15 @@ class MockImageProvider:
         digest = hashlib.sha256(prompt.encode()).digest()
         image = Image.new("RGBA", (job.width, job.height), (0, 0, 0, 0) if job.transparent_background else (*digest[:3], 255))
         draw = ImageDraw.Draw(image)
-        cell_w, cell_h = job.width // job.columns, job.height // job.rows
-        for index in range(job.columns * job.rows):
-            x, y = (index % job.columns) * cell_w, (index // job.columns) * cell_h
+        if job.layout:
+            from ..runtime.asset_normalization import regions_for
+            cells = [(r.x, r.y, r.width, r.height) for r in regions_for(
+                job.layout, job.width, job.height, job.columns, job.rows, job.frame_names)]
+        else:
+            cell_w, cell_h = job.width // job.columns, job.height // job.rows
+            cells = [((i % job.columns) * cell_w, (i // job.columns) * cell_h, cell_w, cell_h)
+                     for i in range(job.columns * job.rows)]
+        for x, y, cell_w, cell_h in cells:
             draw.rectangle((x, y, x + cell_w - 1, y + cell_h - 1), outline=(255, 0, 255, 255))
             if cell_w >= 32 and cell_h >= 16:
                 draw.text((x + 2, y + 2), "MOCK", fill=(255, 255, 255, 255))

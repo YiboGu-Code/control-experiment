@@ -1,5 +1,7 @@
 # 公共执行器、权限、预算与环境隔离
 
+新增公共 `asset_normalize` 能力仅授权 Art Producer，沿用公开工作区、摘要校验、工具预算和产物限额。Developer 消费派生帧，不获得该能力。使用及审计方式见 [素材规范化与切图](asset_normalization.md)。
+
 本文对应 `role_design.md` 的第 2 步。实现位于 `src/adaptive_game_generation/runtime/`，基于已有数据契约，为固定 Loop 和 Scheduler 提供同一执行入口。
 
 第 4 步扩展：`RuntimeConfig.role_limits_by_role` 与 `Executor(..., services_by_role=...)` 支持宿主按角色注入不同模型和固定预算；未配置的角色沿用旧的默认服务/预算。请求仍必须匹配宿主分配的限制，Scheduler 的资源边界单独保留。控制器和 `finish()` 复用 `completion_ready()`；账本增加 `iteration_limit` 和 `stalled` 两种明确的停止原因。完整运行及配置冻结见 [Fixed Loop](fixed_loop.md)。
@@ -61,7 +63,7 @@ run_directory/
 | 角色 | 可发布的产物 | 可提出的状态更新 | 额外工具 |
 | --- | --- | --- | --- |
 | Designer | 设计文档、报告 | 需求规格、设计 | 无 |
-| Art Producer | 素材、文档、报告 | 素材清单 | 图像生成、只读素材库检索与导入 |
+| Art Producer | 素材、文档、报告 | 素材清单 | 图像生成、只读素材库检索与导入、受控规范化切图 |
 | Developer | 游戏项目、日志、报告 | 需求实现状态、新游戏版本、构建证据 | 隔离进程执行、当次暂存文件删除 |
 | Player | 操作轨迹、截图、视频、日志、报告 | 试玩与重放证据 | 隔离进程执行 |
 | QA Reviewer | 报告 | 需求验证状态、问题单、交付建议 | 无 |

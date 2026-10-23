@@ -65,7 +65,7 @@ def runner_settings(tmp_path, monkeypatch, *, with_image=True):
         settings["ART_IMAGE_TIMEOUT_SECONDS"] = "701"
     for name in list(os.environ):
         if name.startswith(("MODEL_GATEWAY_", "DASHSCOPE_", "ART_IMAGE_", "ART_KENNEY_", "ART_OGA_", "ART_LIBRARY_",
-                            "FIXED_LOOP_", "DEVELOPER_VISUAL_")) or any(
+                            "FIXED_LOOP_", "RUN_MAX_WALL_SECONDS", "DEVELOPER_VISUAL_")) or any(
                 name.startswith(prefix + "_") for prefix in runner["PREFIXES"].values()):
             monkeypatch.delenv(name)
     env.write_text("\n".join(f"{key}={value}" for key, value in settings.items()) + "\n")
@@ -88,8 +88,9 @@ def test_preflight_uses_env_image_model_without_network(tmp_path, monkeypatch):
     assert saved["image_configuration"]["adapter"] == "dashscope-multimodal-images.v1"
     assert saved["image_configuration"]["timeout_seconds"] == 701
     assert saved["roles"]["developer"]["prompt_version"] == "developer.v3"
-    assert saved["roles"]["developer"]["max_model_turns"] == 5
-    assert saved["role_limits"]["developer"]["max_model_calls"] == 5
+    assert saved["roles"]["developer"]["optimize_execution"] is True
+    assert saved["roles"]["developer"]["max_model_turns"] == 8
+    assert saved["role_limits"]["developer"]["max_model_calls"] == 8
     assert "RUNNER-SECRET" not in (output / "experiment.json").read_text(encoding="utf-8")
     assert "runner.cn-beijing" not in (output / "experiment.json").read_text(encoding="utf-8")
     assert not (output / "image_calls").exists()
@@ -104,6 +105,27 @@ def test_missing_image_model_fails_before_any_text_call_and_mock_requires_explic
                                          mock_images=True, preflight_only=True))
     assert result["image_mode"] == "mock"
     assert json.loads((tmp_path / "explicit-mock/experiment.json").read_bytes())["images"]["is_mock"]
+
+
+@pytest.mark.parametrize("explicit,process,expected", [(None, None, 21600), (None, "28800", 28800), (900, "28800", 900)])
+def test_shared_wall_budget_precedence_is_frozen_without_online_calls(tmp_path, monkeypatch, explicit, process, expected):
+    runner, env = runner_settings(tmp_path, monkeypatch)
+    assert runner["run_wall_seconds"](None, {}) == 43200
+    with env.open("a") as stream:
+        stream.write("RUN_MAX_WALL_SECONDS=21600\n")
+    if process:
+        monkeypatch.setenv("RUN_MAX_WALL_SECONDS", process)
+    output = tmp_path / "deadline"
+    asyncio.run(runner["run_live"](output, env_file=env, preflight_only=True, max_wall_seconds=explicit))
+    budget = json.loads((output / "experiment.json").read_bytes())["total_budget"]
+    assert budget["max_wall_seconds"] == budget["max_tool_seconds"] == expected
+
+
+@pytest.mark.parametrize("value", [0, -1, float("inf"), float("nan"), "invalid"])
+def test_invalid_run_wall_deadline_is_rejected(value):
+    runner = runpy.run_path(str(ROOT / "examples/fixed_loop_demo.py"))
+    with pytest.raises(ValueError):
+        runner["run_wall_seconds"](None, {"RUN_MAX_WALL_SECONDS": value})
 
 
 @pytest.mark.parametrize("godot_mcp", [False, True])

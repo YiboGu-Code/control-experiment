@@ -1,12 +1,16 @@
 # Developer 开发说明
 
+正式入口使用 [素材规范化与切图契约](asset_normalization.md)：从 integrated_assets 装配已切好的 PNG，不再加载 Art 原图；源码和交付检查拦截图集误用，MCP 可查看联系表，未解决布局保留为美术依赖。
+
 Developer 位于 `src/adaptive_game_generation/roles/developer/`，沿用共享状态、公共执行器、权限、预算、版本化产物和审计机制。固定 Loop 与 Scheduler 调用同一个角色实现。
 
-现已提供可选 `developer.v4`：`--godot-mcp` 开启真实 MCP 场景检查、隔离预览、看图工具反馈和后续补丁修复。默认最多 8 次主模型决策、3 次检查/看图调用；全部计入原有预算。预览截图只用于开发诊断，Player 仍独立采集和重放，QA 仍按正式证据验收。安装、完整输入输出、运行命令与本地测试见 [Godot MCP 开发与运行说明](godot_mcp.md)。
+正式入口现默认启用 [阶段思考、按需上下文与局部修改](developer_optimization.md)：首次实现和复杂修复继承原深度思考；明确的局部语法修复和结束决策使用独立强度；支持带摘要与原文校验的 `edits` 和公开资料读取。以下旧版调用数以该文档的新配置为准。
+
+现已提供可选 `developer.v4`：`--godot-mcp` 开启真实 MCP 场景检查、隔离预览、看图工具反馈和后续补丁修复。正式入口开启优化后，最多 11 次主模型决策（包含为读取增加的 3 轮）、3 次检查/看图调用；全部计入原有总预算。关闭优化恢复 8 次主决策。预览截图只用于开发诊断，Player 仍独立采集和重放，QA 仍按正式证据验收。安装、完整输入输出、运行命令与本地测试见 [Godot MCP 开发与运行说明](godot_mcp.md)。
 
 003 后续修复：全工程构建证据关联当前全部需求，修改范围仍单独记录，构建不会升级为玩法验收。轨迹装配固定优先兼顾普通入口和命名场景；协议要求为长于单条 trace 的机制实现确定性边界场景，连接真正的转换/实体交互逻辑，并在素材布局改变后调整裁切与缩放。两个真实引擎诊断确认了旧游戏“回卷不生成幽灵”和 `Sprite2D.animation` 错误；原始游戏保持不变，见 [003 诊断](fixed_loop_real_images_003_diagnosis.md)。
 
-第 4 步新增 `developer.v2`，由公共宿主逻辑装配已采集的 Player 轨迹，模型仍不能编写或覆盖 `demo_outputs/`；装配后的新版本必须重新构建、试玩和重放。当前 Fixed Loop 默认使用继承这些能力的 `developer.v3`，并配置每次最多 5 次文本调用。既有单角色示例继续使用 v1，详见 [固定 Loop 说明](fixed_loop.md)。
+第 4 步新增 `developer.v2`，由公共宿主逻辑装配已采集的 Player 轨迹，模型仍不能编写或覆盖 `demo_outputs/`；装配后的新版本必须重新构建、试玩和重放。当前 Fixed Loop 默认使用继承这些能力的 `developer.v3`，原始配置每次最多 5 次文本调用，开启执行优化后为 8 次。既有单角色示例继续使用 v1，详见 [固定 Loop 说明](fixed_loop.md)。
 
 本次示例继续使用 Benchmark 原始 `platformer-time-loop/instruction.md`，导入已保存的真实 Designer 与 Art Producer 规划，保留 Art 的 12 张 mock 图片。Developer 使用 `.env` 的真实文本模型，构建检查使用真实隔离 Godot，不用假日志代替。完整记录见 [Developer 审阅入口](examples/developer_review/review.md)。
 
@@ -15,9 +19,9 @@ Developer 位于 `src/adaptive_game_generation/roles/developer/`，沿用共享�
 | 输入 | 处理 |
 | --- | --- |
 | 原始任务 | 完整保留英文 instruction，仍为最终需求依据 |
-| Designer 规格 | 校验注册引用与文件哈希，完整提供给模型 |
+| Designer 规格 | 校验注册引用与文件哈希；首次实现全文提供，优化后的修复阶段可按资源索引请求全文 |
 | Art 清单及素材 | 校验当前共享资产、来源引用与字节哈希，按清单目标路径接入 |
-| 当前工程 | 读取公开、受限类型的完整源文件；按历史项目哈希校验并创建独立新版本 |
+| 当前工程 | 宿主读取公开、受限类型的完整源文件，按历史项目哈希校验并创建独立新版本；优化后的模型输入按需载入 |
 | 问题与证据 | 提供被选中或分配给 Developer 的问题、相关证据记录和指定文字附件 |
 | 内部检查日志 | 有限轮次内反馈实际导入、启动错误，驱动模型修复 |
 
@@ -31,11 +35,11 @@ Developer 负责游戏工程、逻辑、场景、交互、UI、关卡内容和�
 
 - 应用模型补丁之前，对完整候选工程做有限的静态检查：`.tscn/.tres` 顶层混入方法调用、未加引号的字符串资源 ID、`project.godot` 中以 JSON 字典冒充输入事件对象。错误通过 `proposal_feedback` 返回，带文件和行号；补丁不落盘，不消耗引擎调用，纠错仍消耗共享模型额度。
 - 这些检查只覆盖明确的错误模式，不替代 Godot 解析器。扫描跳过字符串、注释和嵌套属性值。关于场景切换后使用 `get_tree()` 的发现只是建议，因为常驻 autoload 与将被销毁的场景节点具有不同生命周期。
-- 每次提示增加 `repair_brief`：最近失败的错误、此前相同错误出现的尝试数、对应源文件片段及静态发现。也读取上一轮已注册 Developer 报告，使跨固定轮次的修复能看到重复错误。完整工程和原始日志仍提供给模型。
+- 每次提示增加 `repair_brief`：最近失败的错误、此前相同错误出现的尝试数、对应源文件片段及静态发现。也读取上一轮已注册 Developer 报告，使跨固定轮次的修复能看到重复错误。优化开启后完整工程和原始日志通过资源索引按需读取；关闭优化时仍全部发送。
 - 引擎输出中的“父节点路径消失”警告也判定失败；普通无关警告不因此一概失败。保留原先对退出码为 0 的脚本错误的检查。
 - 英文提示补充声明式资源格式、场景切换生命周期、实际 `InputEventKey` 对象、可见角色素材和实际关卡内容要求。不能靠降低验收条件、屏蔽错误或声称修好了来通过。
 
-Fixed Loop 默认每次 5 次 Developer 模型调用，原先为 3 次；源码生成、协议修正和构建修复共用这一额度，仍受全局 `--max-model-calls`、token 和时间预算约束。`.env` 的 Developer 输出上限继续传入角色，本次失败回复均正常结束，没有输出截断，因此未修改其 token 配置。v1/v2 不启用新增静态检查及重复错误摘要；一次运行内版本与配置冻结，未来 Scheduler 对比需使用相同配置。
+v3 最初将每次 Developer 模型调用从 3 次提高到 5 次；当前正式入口开启执行优化后为 8 次，源码生成、资料读取、协议修正和构建修复共用这一额度，仍受全局 `--max-model-calls`、token 和时间预算约束。`.env` 的 Developer 输出上限继续传入角色，本次失败回复均正常结束，没有输出截断，因此未修改其 token 配置。v1/v2 不启用新增静态检查及重复错误摘要；一次运行内版本与配置冻结，未来 Scheduler 对比需使用相同配置。
 
 源码与日志夹具见 `tests/fixtures/developer_real_images_002/`。`tests/test_developer_diagnostics.py` 测试原始错误、纠错、预算和兼容行为；`tests/test_developer_godot_regressions.py` 可选择执行真实本地 Docker/Godot 对照，无文本模型或生图调用：
 
@@ -49,7 +53,7 @@ python -m pytest tests/test_developer_godot_regressions.py -q
 
 ## 增量实现与版本
 
-模型返回 `DeveloperProposal`，其中 `files` 为新增或修改文件的完整 UTF-8 内容，`delete_paths` 为删除的已有源文件；未提及文件保留。还必须提供变更摘要、影响需求、实现声明、操作说明、完整的命名场景列表和剩余工作。
+模型返回 `DeveloperProposal`，其中 `files` 为新增或修改文件的完整 UTF-8 内容，`edits` 为校验原文件摘要后执行的唯一原文替换，`delete_paths` 为删除的已有源文件；未提及文件保留。还必须提供变更摘要、影响需求、实现声明、操作说明、完整的命名场景列表和剩余工作。优化开启时还支持 `status=context`，详见上述优化协议。
 
 工程必须保留根目录 `project.godot` 与 `Main.tscn`，并设置 `run/main_scene="res://Main.tscn"`。允许 GDScript、Godot 文本场景/资源、shader、JSON、配置与文档；禁止路径越界、大小写冲突、文件/目录重叠、原生可执行文件、插件、隐藏路径以及模型改写 `assets/`、`licenses/`、`demo_outputs/`。
 

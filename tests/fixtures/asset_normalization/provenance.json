@@ -1,0 +1,233 @@
+[
+  {
+    "file": "generated_player.png",
+    "recorded_manifest": "runs/fixed-loop-permissions-002/workspace/public/artifacts/art_producer/f3846261acec79fb86d29ad7/asset_manifest.json",
+    "recorded_asset": {
+      "request": {
+        "asset_id": "player_spritesheet",
+        "source": "generate",
+        "source_path": null,
+        "generation_prompt": "Original 2D platformer character sprite sheet, side view facing right, simple humanoid silhouette with teal scarf and warm accent colors, clean flat readable shapes. Four equal 32x32 cells in one row: idle, running, jumping, falling. Transparent background with fully isolated cells and no adjacent-cell pixels, no magenta bleed, no glow touching cell edges, no text, no watermark.",
+        "purpose": "Revised generated player sprite sheet intended to reduce atlas bleed and provide cleaner idle, run, jump, and fall readability.",
+        "requirement_ids": [
+          "R001",
+          "R005",
+          "R011",
+          "R012",
+          "R022"
+        ],
+        "target_path": "assets/sprites/player.png",
+        "width": 128,
+        "height": 32,
+        "transparent_background": true,
+        "columns": 4,
+        "rows": 1,
+        "frame_names": [
+          "player_idle",
+          "player_run",
+          "player_jump",
+          "player_fall"
+        ],
+        "filter_mode": "nearest",
+        "integration_notes": "Generated 128x32 sheet as one row of four 32x32 cells. Use nearest filtering and region-select cells at x = frame_index * 32. The generation prompt requests isolated cells and transparent gaps to reduce bleed, but this text-only call did not visually verify result pixels. If reused for ghosts, apply translucent cyan modulate such as Color(0.35, 0.75, 0.95, 0.45) or a separate alpha adjustment; Developer should recapture and let Player/QA judge readability.",
+        "affected_scenes": [
+          "Gameplay",
+          "Ghost"
+        ],
+        "license_handling": "AI-generated through the configured host image service; subject to that provider's terms. No independent license verification was performed. Treat as project-local generated asset, not Kenney or OpenGameArt provenance."
+      },
+      "record": {
+        "asset_id": "player_spritesheet",
+        "artifact_ref": {
+          "artifact_id": "art-asset-player_spritesheet",
+          "version": 2,
+          "kind": "asset",
+          "path": "artifacts/art_producer/f3846261acec79fb86d29ad7/assets/sprites/player.png",
+          "created_by": "art_producer",
+          "media_type": "image/png",
+          "sha256": "1f1242c26d6f232e94ba0c67e02732a835eda18a8056dd482865f4b06c3d99c8"
+        },
+        "purpose": "Revised generated player sprite sheet intended to reduce atlas bleed and provide cleaner idle, run, jump, and fall readability.",
+        "source": "generated:live-image-cf9c4c02e07ccfe52806c42d",
+        "license": "AI-generated artwork; subject to the configured image provider's terms. No independent license verification.",
+        "integration_notes": "Copy to assets/sprites/player.png. Filter: nearest. Grid: 4 x 1. Frames (row-major): player_idle, player_run, player_jump, player_fall. Generated 128x32 sheet as one row of four 32x32 cells. Use nearest filtering and region-select cells at x = frame_index * 32. The generation prompt requests isolated cells and transparent gaps to reduce bleed, but this text-only call did not visually verify result pixels. If reused for ghosts, apply translucent cyan modulate such as Color(0.35, 0.75, 0.95, 0.45) or a separate alpha adjustment; Developer should recapture and let Player/QA judge readability. License handling: AI-generated through the configured host image service; subject to that provider's terms. No independent license verification was performed. Treat as project-local generated asset, not Kenney or OpenGameArt provenance. Visual review has not been performed."
+      },
+      "is_mock": false,
+      "width": 128,
+      "height": 32,
+      "has_alpha": true,
+      "source_sha256": null,
+      "source_license_path": null,
+      "source_license_sha256": null,
+      "license_ref": null,
+      "image_job": {
+        "protocol": "art-image.v1",
+        "prompt": "Readable 2D micro-game style for 1280x720: OGA cavern tile surfaces with nearest scaling and a clear top edge; dark HUD panels with high-contrast amber, cyan, and white fill; simple humanoid teal player with translucent cyan ghost; small UI markers with dark outlines; runtime text remains separate from baked images.\n\nOriginal 2D platformer character sprite sheet, side view facing right, simple humanoid silhouette with teal scarf and warm accent colors, clean flat readable shapes. Four equal 32x32 cells in one row: idle, running, jumping, falling. Transparent background with fully isolated cells and no adjacent-cell pixels, no magenta bleed, no glow touching cell edges, no text, no watermark.",
+        "width": 128,
+        "height": 32,
+        "transparent_background": true,
+        "columns": 4,
+        "rows": 1,
+        "frame_names": [
+          "player_idle",
+          "player_run",
+          "player_jump",
+          "player_fall"
+        ]
+      },
+      "visual_review": "not_performed"
+    },
+    "sha256": "1f1242c26d6f232e94ba0c67e02732a835eda18a8056dd482865f4b06c3d99c8"
+  },
+  {
+    "file": "oga_scene_layer.png",
+    "recorded_manifest": "runs/fixed-loop-permissions-002/workspace/public/artifacts/art_producer/f3846261acec79fb86d29ad7/asset_manifest.json",
+    "recorded_asset": {
+      "request": {
+        "asset_id": "platform_atlas",
+        "source": "opengameart",
+        "source_path": "cavern-tile-set/caverns-files/layers/tiles.png",
+        "generation_prompt": null,
+        "purpose": "Library-sourced 2D platform tile atlas for ground, platforms, slopes, and bridge-like surfaces replacing flat graybox world rects.",
+        "requirement_ids": [
+          "R001",
+          "R003",
+          "R007",
+          "R008",
+          "R011",
+          "R016",
+          "R019",
+          "R021",
+          "R022",
+          "R040"
+        ],
+        "target_path": "assets/tiles/platform_atlas.png",
+        "width": 512,
+        "height": 288,
+        "transparent_background": true,
+        "columns": 1,
+        "rows": 1,
+        "frame_names": [
+          "atlas"
+        ],
+        "filter_mode": "nearest",
+        "integration_notes": "Whole-sheet OGA cavern tileset copied unchanged from cavern-tile-set/caverns-files/layers/tiles.png as a 512x288 PNG. Use nearest filtering. Developer must visually inspect the sheet and build a TileSet or select regions manually; this proposal does not assume a regular tile grid from metadata. Use the tileset for readable ground, platform, slope, and bridge surfaces. Preserve the source license text from cavern-tile-set/caverns-files/license.txt.",
+        "affected_scenes": [
+          "Gameplay"
+        ],
+        "license_handling": "OpenGameArt cavern-tile-set by Luis Zuno (@ansimuz). Observed license path: cavern-tile-set/caverns-files/license.txt. Observed license: CC0. Preserve the original license text with the project and credit the author where practical. Do not claim Kenney provenance for this asset."
+      },
+      "record": {
+        "asset_id": "platform_atlas",
+        "artifact_ref": {
+          "artifact_id": "art-asset-platform_atlas",
+          "version": 2,
+          "kind": "asset",
+          "path": "artifacts/art_producer/f3846261acec79fb86d29ad7/assets/tiles/platform_atlas.png",
+          "created_by": "art_producer",
+          "media_type": "image/png",
+          "sha256": "c62bdddb3b544018fae2e68cca3c89bd4d9bd0afbf671ad147839a84634945bf"
+        },
+        "purpose": "Library-sourced 2D platform tile atlas for ground, platforms, slopes, and bridge-like surfaces replacing flat graybox world rects.",
+        "source": "opengameart:cavern-tile-set/caverns-files/layers/tiles.png",
+        "license": "Artwork created by Luis Zuno (@ansimuz)\r\n\r\nLicense (CC0) You can copy, modify, distribute and perform the work, even for commercial purposes, all without asking permission: http://creativecommons.org/publicdomain/zero/1.0/\r\n\r\nGet more resources at ansimuz.com, Spread the word!\r\n\r\n",
+        "integration_notes": "Copy to assets/tiles/platform_atlas.png. Filter: nearest. Grid: 1 x 1. Frames (row-major): atlas. Whole-sheet OGA cavern tileset copied unchanged from cavern-tile-set/caverns-files/layers/tiles.png as a 512x288 PNG. Use nearest filtering. Developer must visually inspect the sheet and build a TileSet or select regions manually; this proposal does not assume a regular tile grid from metadata. Use the tileset for readable ground, platform, slope, and bridge surfaces. Preserve the source license text from cavern-tile-set/caverns-files/license.txt. License handling: OpenGameArt cavern-tile-set by Luis Zuno (@ansimuz). Observed license path: cavern-tile-set/caverns-files/license.txt. Observed license: CC0. Preserve the original license text with the project and credit the author where practical. Do not claim Kenney provenance for this asset. Visual review has not been performed."
+      },
+      "is_mock": false,
+      "width": 512,
+      "height": 288,
+      "has_alpha": true,
+      "source_sha256": "c62bdddb3b544018fae2e68cca3c89bd4d9bd0afbf671ad147839a84634945bf",
+      "source_license_path": "cavern-tile-set/caverns-files/license.txt",
+      "source_license_sha256": "0cdee69377c1ca66a47d88118133ecb17349f5dfcb0afcb9f76b1ece53c74e3c",
+      "license_ref": {
+        "artifact_id": "art-license-platform_atlas",
+        "version": 1,
+        "kind": "document",
+        "path": "artifacts/art_producer/f3846261acec79fb86d29ad7/licenses/platform_atlas.txt",
+        "created_by": "art_producer",
+        "media_type": "text/plain",
+        "sha256": "0cdee69377c1ca66a47d88118133ecb17349f5dfcb0afcb9f76b1ece53c74e3c"
+      },
+      "image_job": null,
+      "visual_review": "not_performed"
+    },
+    "sha256": "c62bdddb3b544018fae2e68cca3c89bd4d9bd0afbf671ad147839a84634945bf"
+  },
+  {
+    "file": "oga_font.png",
+    "recorded_manifest": "runs/fixed-loop-permissions-002/workspace/public/artifacts/art_producer/f3846261acec79fb86d29ad7/asset_manifest.json",
+    "recorded_asset": {
+      "request": {
+        "asset_id": "bitmap_font",
+        "source": "opengameart",
+        "source_path": "bitmap-font/font.png",
+        "generation_prompt": null,
+        "purpose": "Library-sourced bitmap font sheet for title, menu, HUD, and level-complete UI text styling when glyph layout can be safely sliced.",
+        "requirement_ids": [
+          "R003",
+          "R010",
+          "R018",
+          "R019",
+          "R021",
+          "R022",
+          "R038",
+          "R040"
+        ],
+        "target_path": "assets/fonts/bitmap_font.png",
+        "width": 128,
+        "height": 72,
+        "transparent_background": true,
+        "columns": 1,
+        "rows": 1,
+        "frame_names": [
+          "font_sheet"
+        ],
+        "filter_mode": "nearest",
+        "integration_notes": "Whole 128x72 PNG from actual OpenGameArt search result bitmap-font/font.png. Use nearest filtering. Developer must inspect glyph layout before slicing; if regions are not safely identifiable, retain Godot default labels and use this sheet only as a documented library font candidate. Preserve the source license text from bitmap-font/LICENSE.txt.",
+        "affected_scenes": [
+          "TitleScreen",
+          "ChapterMenu",
+          "HUD",
+          "LevelComplete"
+        ],
+        "license_handling": "OpenGameArt bitmap-font. Observed license path: bitmap-font/LICENSE.txt. Observed license: CC0. Preserve the original license text with the project. Do not claim Kenney provenance for this asset."
+      },
+      "record": {
+        "asset_id": "bitmap_font",
+        "artifact_ref": {
+          "artifact_id": "art-asset-bitmap_font",
+          "version": 1,
+          "kind": "asset",
+          "path": "artifacts/art_producer/f3846261acec79fb86d29ad7/assets/fonts/bitmap_font.png",
+          "created_by": "art_producer",
+          "media_type": "image/png",
+          "sha256": "eac5d8f06c5838733f73db668d4bee2f60ae0f3d32442ef7444eb8c2621c5a43"
+        },
+        "purpose": "Library-sourced bitmap font sheet for title, menu, HUD, and level-complete UI text styling when glyph layout can be safely sliced.",
+        "source": "opengameart:bitmap-font/font.png",
+        "license": "Title: bitmap-font\nSource: https://opengameart.org/content/bitmap-font\nLicense: CC0\n",
+        "integration_notes": "Copy to assets/fonts/bitmap_font.png. Filter: nearest. Grid: 1 x 1. Frames (row-major): font_sheet. Whole 128x72 PNG from actual OpenGameArt search result bitmap-font/font.png. Use nearest filtering. Developer must inspect glyph layout before slicing; if regions are not safely identifiable, retain Godot default labels and use this sheet only as a documented library font candidate. Preserve the source license text from bitmap-font/LICENSE.txt. License handling: OpenGameArt bitmap-font. Observed license path: bitmap-font/LICENSE.txt. Observed license: CC0. Preserve the original license text with the project. Do not claim Kenney provenance for this asset. Visual review has not been performed."
+      },
+      "is_mock": false,
+      "width": 128,
+      "height": 72,
+      "has_alpha": true,
+      "source_sha256": "eac5d8f06c5838733f73db668d4bee2f60ae0f3d32442ef7444eb8c2621c5a43",
+      "source_license_path": "bitmap-font/LICENSE.txt",
+      "source_license_sha256": "ec0cef565e5a76360b4440920bc0d1ef49a1169701bd8225683c72845dca57c8",
+      "license_ref": {
+        "artifact_id": "art-license-bitmap_font",
+        "version": 1,
+        "kind": "document",
+        "path": "artifacts/art_producer/f3846261acec79fb86d29ad7/licenses/bitmap_font.txt",
+        "created_by": "art_producer",
+        "media_type": "text/plain",
+        "sha256": "ec0cef565e5a76360b4440920bc0d1ef49a1169701bd8225683c72845dca57c8"
+      },
+      "image_job": null,
+      "visual_review": "not_performed"
+    },
+    "sha256": "eac5d8f06c5838733f73db668d4bee2f60ae0f3d32442ef7444eb8c2621c5a43"
+  }
+]

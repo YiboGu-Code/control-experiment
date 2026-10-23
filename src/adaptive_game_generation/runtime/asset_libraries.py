@@ -13,6 +13,8 @@ from typing import Literal, Mapping, Protocol
 from pydantic import Field
 
 from ..models.base import Model, PositiveCount, Text
+from ..models.asset_pipeline import AtlasMetadata
+from .asset_normalization import parse_atlas_metadata
 from .errors import InvalidSubmission, PermissionDenied
 from .media import raster_info
 from .workspace import logical_path, no_links, safe_path
@@ -35,6 +37,7 @@ class LibraryAsset(Model):
     license_path: Text
     license_text: Text
     license_sha256: Text
+    atlas_metadata: AtlasMetadata | None = None
 
 
 class LibrarySearch(Model):
@@ -151,13 +154,20 @@ class MountedAssetLibraries:
             raise InvalidSubmission("Empty or oversized library asset")
         license_path, license_text, license_sha = self._license(root, path, library)
         media = {"media_type": _TYPES[path.suffix.lower()]}
+        metadata = None
         if media["media_type"].startswith("image/"):
             media = raster_info(data)
             if media["media_type"] != _TYPES[path.suffix.lower()]:
                 raise InvalidSubmission("Asset extension does not match raster bytes")
+            for suffix in (".json", ".xml"):
+                sidecar = safe_path(root, path.with_suffix(suffix).relative_to(root).as_posix())
+                if sidecar.is_file() and sidecar.stat().st_size <= 256 * 1024:
+                    metadata = parse_atlas_metadata(sidecar.read_bytes(), sidecar.relative_to(root).as_posix(), path.name)
+                    break
         return data, LibraryAsset(library=library, path=relative,
             sha256=hashlib.sha256(data).hexdigest(), size_bytes=len(data), **media,
-            license_path=license_path, license_text=license_text, license_sha256=license_sha)
+            license_path=license_path, license_text=license_text, license_sha256=license_sha,
+            atlas_metadata=metadata)
 
     async def search(self, library, query, *, offset=0, limit=12):
         if not isinstance(query, str) or len(query) > 256 or not 0 <= offset <= self.max_entries or not 1 <= limit <= 20:

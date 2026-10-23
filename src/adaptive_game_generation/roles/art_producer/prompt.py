@@ -24,6 +24,14 @@ Generation is an additional source when allow_generation=true and image_service 
 it does not revoke permission to use libraries. Respect any more restrictive task requirements.
 If a library is absent, do not invent its inventory or paths. A mock image service produces
 test placeholders only; its identity and license come from the host, not your response.
+When the original instruction requests browsing the mounted libraries and they are available,
+search before choosing sources; record actual selected paths or explain why generation is needed.
+Prefer returned standalone sprites over uncertain large atlases for small actors and UI.
+Generation remains permitted; browsing is not a requirement to use library assets exclusively.
+Keep style_guide to palette and rendering guidance. Put each requested subject in its own
+generation_prompt; do not ask the image service to render a whole game, framed example scene,
+ground/platform or labels inside an isolated actor sprite. Declared grids are requests, not
+proof that generated frames have correct boundaries. Do not call real generated assets mocks.
 
 Return action=submit, status=completed with a focused list of assets and a shared style_guide.
 Use stable lowercase asset_id values; reuse IDs when revising existing assets. Omitted assets
@@ -83,13 +91,57 @@ a continuation or a patch to the rejected JSON. If JSON was incomplete, substant
 the new response, especially frame_names and repetitive prose. Searches and corrections share
 the same turns_left budget. Do not repeat searches whose results are already available.
 """
+    if config.normalize_assets:
+        start = instructions.index("For raster assets specify")
+        end = instructions.index("Give Developer", start)
+        instructions = instructions[:start] + instructions[end:]
+        if "Keep atlas metadata compact." in instructions:
+            start = instructions.index("Keep atlas metadata compact.")
+            end = instructions.index("Single button images", start)
+            instructions = instructions[:start] + instructions[end:]
+        instructions += """
+ASSET NORMALIZATION (required for every raster image):
+Supply layout.kind: sprite, sprite_sheet, tile_set, background, ui, or source_atlas.
+Use layout.mode=whole ONLY for a genuine standalone sprite/background/UI with one frame,
+columns=rows=1. Never label a collage, sheet or multi-tile atlas as a standalone sprite.
+For a regular sheet use mode=grid with cell_width, cell_height, margin_x/y, spacing_x/y,
+columns, rows and frame_names in row-major order (at most 64). Margins and gaps are pixels.
+For irregular sheets use mode=regions and explicit rectangles {name,x,y,width,height,
+pivot_x,pivot_y,animation,duration_ms}; coordinates are source pixels, pivots are normalized
+0..1, durations are milliseconds. frame_names must match the selected region names in order.
+For available library atlas_metadata use mode=catalog and select exact returned frame names;
+the host resolves coordinates. Rotated or trimmed metadata is not supported. Do not guess
+coordinates from filenames. When a layout is unknown, use kind=source_atlas, mode=unresolved,
+one frame name describing the source, and explain the missing layout, or select standalone files.
+An unresolved atlas creates no usable frames and leaves Art partial. A frame cannot cover an
+entire declared atlas. Keep target_path outside reserved assets/normalized/.
+The host preserves the original and license, writes normalized RGBA frame PNGs and a contact sheet,
+and publishes source hashes, rectangles and pivots. Developer receives only derived frames
+under assets/normalized/<asset_id>/<frame_name>.png; original images are source-only.
+Generated native-resolution frames retain source pixels; width/height describe a logical
+layout/display canvas, not permission to downsample textures. Use actual source dimensions
+for library assets. The host maps generated layout boundaries to native pixels and records
+display_size separately. Recommend linear filtering for smooth painted artwork and nearest
+only for intentional pixel art. Avoid requesting many tiny poses on a single canvas.
+Library coordinates and dimensions are preserved; reliable magenta mattes
+may be removed. Structural checks quarantine suspect backgrounds, panels, ground bands and
+text-like fragments. They do not prove semantic correctness or visual acceptance.
+Read previous_manifest asset normalization.quality.findings. Rejected assets publish no usable
+frames: replace the source, simplify the generation request, or select a clean library sprite.
+Do not relabel an actor as a background/UI/tile to bypass checks. Preserve its actual purpose.
+Prefer one pose per generated asset, or a small sheet of 2-4 poses of the SAME character.
+Describe the character and body motion, not a miniature scene illustrating that action.
+For running/jumping sprites, request no visible ground, platform, caption, card or scenery.
+For generated sheets, request isolated aligned cells with no labels, panels, scenery or gaps
+unless explicitly specified. Generated layout correctness still needs visual review.
+"""
     payload = {"prompt_version": config.prompt_version, "instructions": instructions,
         "output_schema": ArtTurn.model_json_schema(),
         "mandatory_asset_fields": ["asset_id", "source", "purpose", "requirement_ids", "target_path",
                                    "frame_names", "integration_notes", "affected_scenes", "license_handling"],
         "input": inputs,
         "limits": {"max_assets": config.max_assets, "turns_left": turns_left,
-                   "allow_generation": config.allow_generation},
+                   "allow_generation": config.allow_generation, "normalize_assets": config.normalize_assets},
         "search_observations": observations}
     if config.prompt_version == "art-producer.v4":
         payload["limits"].update(max_frame_names_per_asset=64, max_grid_cells_per_asset=64)

@@ -16,6 +16,8 @@ class ImageServiceInfo(Model):
     is_mock: StrictBool
     license: Text
     output_format: Literal["png"] = "png"
+    # Trusted host contract, never inferred from model-authored PNG metadata.
+    output_geometry: Literal["requested", "source_native"] = "requested"
 
 
 def raster_info(data: bytes) -> dict:

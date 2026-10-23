@@ -47,6 +47,11 @@ class WorkPolicy:
         art = self._report(state, "art-manifest")
         art_reviewed = self._art_reviewed(state, art)
         if role == Role.ART_PRODUCER:
+            unresolved = [a for a in (art or {}).get("assets", ())
+                          if (a.get("normalization") or {}).get("status") in ("unresolved", "rejected")]
+            if unresolved:
+                work = tuple(dict.fromkeys((*issues, *(r for a in unresolved for r in a["request"]["requirement_ids"]))))
+                return True, "Resolve source-only layouts and replace quality-rejected assets with clean standalone frames", work
             needed = not art_reviewed or bool(issues)
             return needed, "Synchronize art with the design or address assigned issues", issues
         if not art_reviewed:

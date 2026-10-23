@@ -74,7 +74,8 @@ or claim rejected files already exist. Rejections consume the same model-call bu
 """
 
 
-def build_prompt(inputs, config, files, attempts, turns_left, rejections=(), rejected_proposal=None, *, inspection_feedback=None):
+def build_prompt(inputs, config, files, attempts, turns_left, rejections=(), rejected_proposal=None, *, inspection_feedback=None,
+                 optimization=None, prepared_brief=None):
     instructions = INSTRUCTIONS
     if config.prompt_version in ("developer.v2", "developer.v3", "developer.v4"):
         instructions += """
@@ -155,6 +156,11 @@ Main.tscn with the first declared scenario (or ordinary entry when none is decla
 Read inspection_feedback: it contains actual MCP scene/log output and a separately labeled
 visual model interpretation of the attached image. You receive the interpretation as text;
 do not claim you personally saw image pixels. Inspect all relevant feedback before finishing.
+The visual helper also receives a bounded selection of actual referenced Art textures. It can
+distinguish bad source artwork from integration errors. A requested atlas grid is unverified
+metadata: never repeatedly guess regions to extract a character from a baked scene or poster.
+If the artwork itself is unusable, retain a concrete Art Producer dependency in remaining_work;
+keep separate Developer fixes for valid-texture cropping, scale, opacity, HUD layout and logic.
 Repair concrete sprite cropping, scale, layout, UI and runtime defects through normal source
 patches. Every passing patch receives another preview while inspection allowance remains.
 Use status=inspect with inspection={scene_path, scenario, frames} to inspect another existing
@@ -167,11 +173,90 @@ current self-review. Remove items actually resolved by that review; retain unfin
 asset integration, trace packaging and other delivery obligations. Never clear work just to
 obtain completed. A passing build and current review with no remaining work or mock assets
 allow completed for this invocation; Player and QA still independently determine acceptance.
+Unresolved severity=error findings from any current preview remain host-recorded work even if
+finish omits them. Fix and re-inspect the changed project or finish honestly as partial.
 Do not use no_op after staging a patch. A successful build or screenshot does not prove correct
 gameplay or replay. Previews run instrumented copies and are never Player input traces.
 An inspection refers only to its project_sha256; old previews cannot validate a later repair.
 Use the finite inspections_left and turns_left; prioritize a repair and leave one model turn
 to read its new feedback. Once previews are exhausted, stop honestly with limitations rather
 than submitting cosmetic no-change patches. All helper model calls share the role/run budget.
+"""
+    if inputs.get("asset_packages") or config.require_normalized_assets:
+        payload["instructions"] += """
+NORMALIZED ART CONTRACT:
+Rejected quality assets have no usable frames. Read asset_packages.quality.findings;
+request replacement from Art Producer. Never recreate/copy the rejected source into
+the game, claim it is fixed by scaling, or load its diagnostic preview as a texture.
+Use only integrated_assets.target_path for game textures. Each raster is published as a
+derived PNG frame; the original source image/atlas and contact sheet are review evidence
+and are NOT packaged in the game. Do not load request.target_path, even via AtlasTexture,
+Sprite2D region_rect, hframes/vframes or dynamically constructed paths. Literal references
+are rejected before build; source-only files and renamed atlas copies fail package checks.
+asset_packages contains exact source rectangles, dimensions, normalized pivots, animations
+and durations. Frames are already cropped: load each PNG as an entire texture, without
+applying the old atlas rectangle again. Honor filter mode, frame order, pivot and timing.
+Native PNG textures preserve full source detail. If a frame has display_size, it is a
+logical display bounding box, NOT the texture's pixel dimensions. Fit with one scalar
+s=min(display_size[0]/texture_width, display_size[1]/texture_height) and set scale=Vector2(s,s).
+Never independently scale X/Y, overwrite the PNG with a tiny raster, or change physics and
+collision sizes to match a high-resolution texture. Keep one uniform scale across equal-size
+animation frames. For odd one-pixel cell differences use a shared scale that fits all frames.
+Adjust logical display size to gameplay needs while preserving aspect ratio. Use linear
+filtering for smooth painted artwork; nearest is for deliberately pixel-art assets.
+Keep 2D texture imports lossless; do not enable lossy/VRAM compression or import size reduction.
+For a Sprite2D with centered=true, offset=(Vector2(0.5,0.5)-pivot)*frame_size aligns the
+requested pivot with its origin. Use shared scaling and alignment across animation frames.
+Replace references to obsolete assets when Art revisions change. Empty or semantically
+incorrect crops still require Art repair; geometric validation is not visual acceptance.
+Unresolved layouts remain Art dependencies in remaining_work and cannot be silently omitted.
+The visual helper can inspect normalized contact sheets alongside current scene screenshots.
+"""
+    if optimization is not None:
+        from pydantic import TypeAdapter
+        from .contracts import DeveloperContext, DeveloperInspect, DeveloperFinish
+        decision = (DeveloperProposal | DeveloperContext | DeveloperInspect | DeveloperFinish
+                    if config.prompt_version == "developer.v4" else DeveloperProposal | DeveloperContext)
+        payload["output_schema"] = TypeAdapter(decision).json_schema()
+        payload["instructions"] = payload["instructions"].replace(
+            "Return one JSON DeveloperProposal.", "Return one JSON decision matching output_schema, including context requests.").replace(
+            "Return one JSON decision matching output_schema: a source patch, inspect, or finish.",
+            "Return one JSON decision matching output_schema: a source patch, context request, inspect, or finish.").replace(
+            "On repair, use the full current project and actual latest diagnostic logs,",
+            "On repair, use the verified source catalog, request relevant omitted source and logs,").replace(
+            "Every implementation response requires files/delete_paths, affected IDs,",
+            "Every implementation response requires files, edits or delete_paths, affected IDs,")
+        payload["optimization"] = optimization
+        payload["repair_brief"] = prepared_brief
+        payload["build_feedback"] = [{"attempt": a.attempt, "model_turn": a.model_turn, "status": a.status,
+            "source_digest": a.source_digest, "steps": [{"name": s.name, "status": s.status, "reason": s.reason}
+                for s in a.steps]} for a in attempts[-2:]]
+        payload["proposal_feedback"] = [r.model_dump(mode="json") for r in rejections[-2:]]
+        payload["rejected_proposal"] = ({"excerpt": rejected_proposal[:2048], "truncated": len(rejected_proposal) > 2048,
+            "resource_id": "rejected_proposal"} if rejected_proposal else None)
+        payload["instructions"] += """
+DEVELOPER EXECUTION CAPABILITIES v1:
+The original instruction and all acceptance requirements remain mandatory. Omitted context
+means not loaded, never permission to drop a mechanic or claim it is absent. The host's
+optimization.stage controls reasoning settings, not your permissions or acceptance gates.
+Use optimization.context.source_index for current source hashes and symbols. Read omitted
+source/design/Art/evidence through {"status":"context","summary":"why needed",
+"reads":[{"resource_id":"source/scripts/gameplay.gd"}],"request_deep_reasoning":false}.
+Use start_line/end_line (inclusive, 1-based) to retrieve a bounded text range; omit both for
+the full resource. Only listed resource IDs are permitted; no shell, URL or filesystem path.
+You may request deep reasoning when a repair involves uncertain causes, interactions,
+physics, determinism, architecture or gameplay. Context requests consume the existing
+model-call budget; batch related reads. Missing evidence must remain an explicit limitation.
+For existing sources prefer edits: [{"path":"scripts/gameplay.gd","expected_sha256":
+"<current full-source SHA256>","replacements":[{"old_text":"exact unique source text",
+"new_text":"replacement text"}]}]. All matches refer to the ORIGINAL file, must occur
+exactly once and cannot overlap. No fuzzy replacement, ellipsis or line-number-only edits.
+Keep unrelated code intact. Use files for new files or justified rewrites after reading the
+complete current file. Do not write/edit/delete the same path in one proposal.
+local_repair permits at most two existing source files and 8192 edit/write bytes; request
+deep reasoning for broader changes. finalize permits finish, inspection or a context/deep
+request, not code changes. Deep calls retain the original full output allowance.
+Keep the complete current controls and scenarios in a patch. All changes still require the
+same engine checks, fresh MCP review when enabled, and independent Player replay and QA.
 """
     return json.dumps(payload, ensure_ascii=False, sort_keys=True)

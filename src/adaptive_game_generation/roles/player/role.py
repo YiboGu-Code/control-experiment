@@ -324,7 +324,7 @@ class Player:
              if self.config.max_visual_images else
              "The text model received actual scene observations and screenshot references, but did not visually inspect images."),
             "Godot wall-clock time is not rewritten; wall-clock animations can legitimately fail exact visual replay.",
-            "The published Developer project and mock assets are unchanged. New captures can be assembled by Developer in a later cycle; the assembled revision requires fresh checks."]
+            "The published Developer project and its assets are unchanged. New captures can be assembled by Developer in a later cycle; the assembled revision requires fresh checks."]
         if not finished:
             limitations.append("A final model observation decision was not reached within the configured resources.")
         report = PlayerReport(config=self.config, task_id=context.state.task.task_id, game_revision_id=game.revision_id,

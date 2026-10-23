@@ -82,7 +82,8 @@ class ImageGatewayConfig(Model):
         return {"adapter": "openai-compatible-images.v1", **self.model_dump(mode="json"),
                 "max_retries": 0, "images_per_request": 1, "output_format": "png",
                 "max_image_bytes": MAX_IMAGE_BYTES, "max_response_bytes": MAX_RESPONSE_BYTES,
-                "normalization": "Resize to the ImageJob dimensions; preserve and validate requested transparency"}
+                "normalization": "asset-pixels.v3: native resolution, no resampling, lossless PNG, matte cleanup and conservative sprite checks",
+                "output_geometry": "source_native", "resample_applied": False}
 
     @property
     def configuration_id(self):
@@ -91,7 +92,8 @@ class ImageGatewayConfig(Model):
 
     @property
     def info(self):
-        return ImageServiceInfo(provider_id=self.configuration_id, is_mock=False, license=self.license)
+        return ImageServiceInfo(provider_id=self.configuration_id, is_mock=False, license=self.license,
+                                output_geometry="source_native")
 
 
 class OpenAICompatibleImageProvider:
@@ -121,10 +123,22 @@ class OpenAICompatibleImageProvider:
         atomic_text(path, text)
 
     def _image_prompt(self, job):
+        from .image_prompts import is_actor, subject_instructions
         grid = (f"Produce one image with {job.columns} columns and {job.rows} rows of equally sized cells. "
-                f"Frame names in row-major order: {json.dumps(job.frame_names)}. "
+                f"Frame meanings in row-major order (never render these words): {json.dumps(job.frame_names)}. "
                 "Keep every subject fully inside its cell, with consistent scale and alignment. "
+                "Fill the regular grid edge to edge; no presentation cards, poster margins, sample scenes or comparison panels. "
                 "No grid lines, labels, captions or watermarks. ")
+        if job.layout:
+            from ..runtime.asset_normalization import regions_for
+            regions = regions_for(job.layout, job.width, job.height, job.columns, job.rows, job.frame_names)
+            grid = ("Produce one image following these logical layout rectangles: " +
+                    json.dumps([r.model_dump(mode="json") for r in regions]) + ". "
+                    "Each name describes its subject; never render names or coordinates as text. "
+                    "Preserve the specified margins and gaps. Keep subjects fully inside their rectangles, "
+                    "with consistent scale and pivot alignment across animation frames. "
+                    "No grid lines, captions, watermarks, presentation cards or sample scenes. "
+                    "Coordinates refer to the logical dimensions below; preserve their proportional positions on the native canvas. ")
         if job.transparent_background:
             background = ("Use a perfectly flat solid magenta (#FF00FF) background, including the gaps between frames. "
                           "Do not use magenta in the subjects. No shadows or gradients on the background. "
@@ -133,9 +147,16 @@ class OpenAICompatibleImageProvider:
                           "Use a genuinely transparent background with an alpha channel, not a drawn checkerboard.")
         else:
             background = "Create a complete opaque image."
-        return (job.prompt + "\n\n" + grid +
-                f"The final game asset is {job.width} by {job.height} pixels. "
-                "The host will resize the full canvas to these dimensions. " + background)
+        return (subject_instructions(job) + "\n\n" + job.prompt + "\n\n" + grid +
+                f"The logical layout canvas is {job.width} by {job.height}; it is not a request to rasterize at that low resolution. "
+                "Render sharp detail at the full requested generation resolution. The host keeps native pixels and "
+                "crops cells without downsampling, upscaling or stretching. Draw natural subject proportions. "
+                "Keep subject scale and alignment consistent across cells. " + background +
+                (" FINAL ACTOR CHECK: only the requested character poses on the specified removable matte or real alpha. "
+                 "No text of any language, typography, annotations, labels, numbers, logos, watermark, scenery, ground, "
+                 "pedestal, border, card, UI, cast shadow or decorative objects. Pose names and instructions are metadata, "
+                 "never visible image content. These constraints also apply when the asset/style description mentions them."
+                 if is_actor(job) else ""))
 
     def _payload(self, job):
         payload = {"model": self.config.model, "n": 1, "size": self.config.size,
@@ -193,39 +214,24 @@ class OpenAICompatibleImageProvider:
         raise ProviderFailure("Image download exceeded the redirect limit")
 
     def _normalize(self, source, job):
-        from PIL import Image, ImageChops
-
+        from PIL.PngImagePlugin import PngInfo
+        from ..runtime.image_processing import prepare_generated, PROCESSING_KEY
         details = raster_info(source)
-        with Image.open(io.BytesIO(source)) as original:
-            image = original.convert("RGBA" if job.transparent_background else "RGB")
-        operations = []
-        if job.transparent_background:
-            if image.getchannel("A").getextrema()[0] == 255 and self.config.transparency == "chroma_key":
-                # Hard key before resizing avoids importing a magenta fringe into transparent pixels.
-                tolerance = self.config.chroma_tolerance
-                red, green, blue, _ = image.split()
-                mask = ImageChops.multiply(
-                    red.point(lambda v: 255 if v >= 255 - tolerance else 0),
-                    green.point(lambda v: 255 if v <= tolerance else 0))
-                mask = ImageChops.multiply(mask, blue.point(lambda v: 255 if v >= 255 - tolerance else 0))
-                image.paste((0, 0, 0, 0), mask=mask)
-                operations.append({"operation": "chroma_key", "color": "#FF00FF", "tolerance": tolerance})
-            lo, hi = image.getchannel("A").getextrema()
-            if lo == 255 or hi == 0:
-                raise ProviderFailure("Generated image has no usable transparency; inspect source image and ART_IMAGE_TRANSPARENCY")
-        if image.size != (job.width, job.height):
-            image = image.resize((job.width, job.height), resample=getattr(Image.Resampling, self.config.resample.upper()))
-            operations.append({"operation": "resize", "width": job.width, "height": job.height, "filter": self.config.resample})
-        if job.transparent_background:
-            lo, hi = image.getchannel("A").getextrema()
-            if lo == 255 or hi == 0:
-                raise ProviderFailure("Resized image lost usable transparency or all visible content")
+        try:
+            image, report = prepare_generated(source, job, transparency=self.config.transparency,
+                tolerance=self.config.chroma_tolerance, resample=self.config.resample)
+        except ValueError as exc:
+            raise ProviderFailure(str(exc)) from exc
         output = io.BytesIO()
-        image.save(output, format="PNG")
+        metadata = PngInfo()
+        # Only rejection findings travel with the candidate PNG. The full transform
+        # stays in image_calls metadata; a forged clean report cannot bypass checks.
+        metadata.add_text(PROCESSING_KEY, json.dumps({"findings": report["findings"][:128]}))
+        image.save(output, format="PNG", pnginfo=metadata)
         result = output.getvalue()
         if len(result) > MAX_IMAGE_BYTES:
             raise ProviderFailure("Normalized image exceeded the byte limit")
-        return result, {"source": details, "output": raster_info(result), "operations": operations}
+        return result, {"source": details, "output": raster_info(result), **report}
 
     async def _generate(self, payload, job, directory, metadata, timeout):
         status, _, body = await self._read_response(self._client, "POST",
@@ -275,7 +281,13 @@ class OpenAICompatibleImageProvider:
         import httpx
 
         job = ImageJob.model_validate_json(prompt)
-        if job.width % job.columns or job.height % job.rows or len(job.frame_names) != job.columns * job.rows:
+        if job.layout:
+            from ..runtime.asset_normalization import regions_for
+            try:
+                regions_for(job.layout, job.width, job.height, job.columns, job.rows, job.frame_names)
+            except ValueError:
+                raise ProviderFailure("Image job layout is inconsistent") from None
+        elif job.width % job.columns or job.height % job.rows or len(job.frame_names) != job.columns * job.rows:
             raise ProviderFailure("Image job dimensions and frame grid are inconsistent")
         allowed = min(timeout, self.config.timeout_seconds)
         if allowed <= 0:

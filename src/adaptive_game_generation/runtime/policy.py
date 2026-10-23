@@ -30,7 +30,7 @@ class RolePolicy:
         if role == Role.DEVELOPER:
             allowed = allowed | {"remove", "vision"}
         if role == Role.ART_PRODUCER:
-            allowed = allowed | {"image", "library"}
+            allowed = allowed | {"image", "library", "asset_normalize"}
         if tool not in allowed:
             raise PermissionDenied(f"{role} cannot use tool {tool}")
 

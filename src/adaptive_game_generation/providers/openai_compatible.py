@@ -48,6 +48,9 @@ class GatewayConfig(Model):
     # Alibaba Cloud uses a different wire parameter, including for hosted DeepSeek.
     enable_thinking: StrictBool | None = None
     input_token_margin: PositiveCount = 1024
+    developer_profiles: bool = False
+    developer_local_effort: Literal["inherit", "low", "medium", "high"] = "medium"
+    developer_finalize_effort: Literal["inherit", "low", "medium", "high"] = "low"
 
     @model_validator(mode="after")
     def thinking_dialect_is_unambiguous(self):
@@ -90,6 +93,9 @@ class GatewayConfig(Model):
                 enable_thinking = enable_thinking == "true"
             if json_mode not in ("true", "false") or stream not in ("true", "false") or vision not in ("true", "false"):
                 raise ValueError("invalid boolean")
+            optimized = str(setting("OPTIMIZE_EXECUTION", "true")).lower()
+            if prefix == "CODE_DEVELOPER" and optimized not in ("true", "false"):
+                raise ValueError("invalid Developer optimization boolean")
             return cls(
                 model=setting("MODEL"), api_key=values["MODEL_GATEWAY_API_KEY"],
                 base_url=values["MODEL_GATEWAY_BASE_URL"],
@@ -103,12 +109,18 @@ class GatewayConfig(Model):
                 thinking=setting("THINKING"),
                 enable_thinking=enable_thinking,
                 input_token_margin=int(setting("INPUT_TOKEN_MARGIN", "1024")),
+                developer_profiles=prefix == "CODE_DEVELOPER" and optimized == "true",
+                developer_local_effort=setting("LOCAL_REASONING_EFFORT", "medium") if prefix == "CODE_DEVELOPER" else "medium",
+                developer_finalize_effort=setting("FINALIZE_REASONING_EFFORT", "low") if prefix == "CODE_DEVELOPER" else "low",
             )
         except (ValueError, TypeError):
             raise ProviderFailure("Invalid text-role gateway configuration; check the documented setting types") from None
 
     def public_settings(self) -> dict:
         settings = self.model_dump(mode="json")
+        if not self.developer_profiles:
+            for key in ("developer_profiles", "developer_local_effort", "developer_finalize_effort"):
+                settings.pop(key)
         if self.thinking is None:
             settings.pop("thinking")  # Preserve existing configuration identities.
         if self.enable_thinking is None:
@@ -231,8 +243,26 @@ class OpenAICompatibleTextProvider:
             }}],
         })
 
+    def profile_settings(self, profile):
+        if profile not in ("deep", "local_repair", "finalize"):
+            raise ProviderFailure("Unknown Developer reasoning profile")
+        effort = self.config.reasoning_effort
+        choice = {"deep": "inherit", "local_repair": self.config.developer_local_effort,
+                  "finalize": self.config.developer_finalize_effort}[profile]
+        # Never invent a reasoning_effort parameter for gateways configured only
+        # with a thinking toggle. Their full thinking remains enabled/inherited.
+        if self.config.developer_profiles and effort is not None and choice != "inherit":
+            effort = choice
+        return {"profile": profile, "configured": self.config.developer_profiles,
+                "reasoning_effort": effort, "thinking": self.config.thinking,
+                "enable_thinking": self.config.enable_thinking,
+                "changed": effort != self.config.reasoning_effort}
+
+    async def generate_profiled(self, prompt, *, profile, max_output_tokens, timeout):
+        return await self.generate(prompt, max_output_tokens=max_output_tokens, timeout=timeout, profile=profile)
+
     async def generate(self, prompt: str, *, max_output_tokens: int, timeout: float,
-                       images: tuple[ModelImage, ...] = ()) -> TextReply:
+                       images: tuple[ModelImage, ...] = (), profile: str | None = None) -> TextReply:
         import httpx
         from openai import APIConnectionError, APIStatusError, APITimeoutError
 
@@ -251,8 +281,10 @@ class OpenAICompatibleTextProvider:
             payload["stream_options"] = {"include_usage": True}
         if self.config.json_mode:
             payload["response_format"] = {"type": "json_object"}
-        if self.config.reasoning_effort is not None:
-            payload["reasoning_effort"] = self.config.reasoning_effort
+        applied = self.profile_settings(profile) if profile else None
+        effort = applied["reasoning_effort"] if applied else self.config.reasoning_effort
+        if effort is not None:
+            payload["reasoning_effort"] = effort
         if self.config.thinking is not None:
             payload["extra_body"] = {"thinking": {"type": self.config.thinking}}
         if self.config.enable_thinking is not None:
@@ -263,6 +295,8 @@ class OpenAICompatibleTextProvider:
             **payload.get("extra_body", {}),
         })
         metadata = {"started_at": utc_now().isoformat(), "status": "started"}
+        if applied:
+            metadata["developer_profile"] = applied
         self._save(directory / "metadata.json", metadata)
         try:
             allowed = min(timeout, self.config.timeout_seconds)
