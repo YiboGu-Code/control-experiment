@@ -205,6 +205,11 @@ animation frames. For odd one-pixel cell differences use a shared scale that fit
 Adjust logical display size to gameplay needs while preserving aspect ratio. Use linear
 filtering for smooth painted artwork; nearest is for deliberately pixel-art assets.
 Keep 2D texture imports lossless; do not enable lossy/VRAM compression or import size reduction.
+For bounded UI images set TextureRect.expand_mode=TextureRect.EXPAND_IGNORE_SIZE before
+layout and use KEEP_ASPECT_CENTERED or KEEP_ASPECT_COVERED as appropriate. A small size or
+custom_minimum_size alone cannot override the native texture minimum. TextureButton needs
+ignore_texture_size=true. Set anchors before offsets/size, keep hitboxes inside the viewport,
+and inspect ordinary title/menu screens as well as gameplay after changing native textures.
 For a Sprite2D with centered=true, offset=(Vector2(0.5,0.5)-pivot)*frame_size aligns the
 requested pivot with its origin. Use shared scaling and alignment across animation frames.
 Replace references to obsolete assets when Art revisions change. Empty or semantically
@@ -244,6 +249,12 @@ source/design/Art/evidence through {"status":"context","summary":"why needed",
 "reads":[{"resource_id":"source/scripts/gameplay.gd"}],"request_deep_reasoning":false}.
 Use start_line/end_line (inclusive, 1-based) to retrieve a bounded text range; omit both for
 the full resource. Only listed resource IDs are permitted; no shell, URL or filesystem path.
+Reads accumulate in a bounded working set across turns. Source patches refresh retained
+resources from the current verified source; their hashes always describe that current source.
+Do not repeatedly request content already present. Use drop_resources=["resource_id"] to
+release unused reads when the retained byte budget is full. Check evicted_resources and
+reads_left. Never evade a read or rewrite rejection by cloning a script under a new filename
+and redirecting the scene to a competing implementation; repair the existing module instead.
 You may request deep reasoning when a repair involves uncertain causes, interactions,
 physics, determinism, architecture or gameplay. Context requests consume the existing
 model-call budget; batch related reads. Missing evidence must remain an explicit limitation.
@@ -256,7 +267,13 @@ complete current file. Do not write/edit/delete the same path in one proposal.
 local_repair permits at most two existing source files and 8192 edit/write bytes; request
 deep reasoning for broader changes. finalize permits finish, inspection or a context/deep
 request, not code changes. Deep calls retain the original full output allowance.
+Finalization with unresolved visual findings means an honest partial handoff, not approval.
+Keep every unresolved source-art, gameplay and visual issue in remaining_work; the host also
+retains current visual errors. Request deep reasoning if more implementation is necessary.
 Keep the complete current controls and scenarios in a patch. All changes still require the
 same engine checks, fresh MCP review when enabled, and independent Player replay and QA.
+Use a level/scenario-reset simulation tick for every visible pulse, particle, flash and HUD
+animation, including cosmetic draw helpers. Never use Time.get_ticks_msec/usec or system
+time for visible effects: identical replay inputs must reproduce pixels as well as state.
 """
     return json.dumps(payload, ensure_ascii=False, sort_keys=True)

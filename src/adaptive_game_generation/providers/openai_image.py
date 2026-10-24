@@ -124,6 +124,7 @@ class OpenAICompatibleImageProvider:
 
     def _image_prompt(self, job):
         from .image_prompts import is_actor, subject_instructions
+        single_sprite = is_actor(job) and len(job.frame_names) == 1
         grid = (f"Produce one image with {job.columns} columns and {job.rows} rows of equally sized cells. "
                 f"Frame meanings in row-major order (never render these words): {json.dumps(job.frame_names)}. "
                 "Keep every subject fully inside its cell, with consistent scale and alignment. "
@@ -139,20 +140,30 @@ class OpenAICompatibleImageProvider:
                     "with consistent scale and pivot alignment across animation frames. "
                     "No grid lines, captions, watermarks, presentation cards or sample scenes. "
                     "Coordinates refer to the logical dimensions below; preserve their proportional positions on the native canvas. ")
+        if single_sprite:
+            if job.layout and job.layout.mode != "whole":
+                grid = "One isolated cutout only. " + grid.replace(
+                    "with consistent scale and pivot alignment across animation frames.",
+                    "with the subject centered inside the specified rectangle.")
+            else:
+                grid = ("One isolated cutout only, with breathing room inside the canvas. "
+                        "The requested state is " + json.dumps(job.frame_names[0]) + "; never render this metadata as text. ")
         if job.transparent_background:
             background = ("Use a perfectly flat solid magenta (#FF00FF) background, including the gaps between frames. "
                           "Do not use magenta in the subjects. No shadows or gradients on the background. "
                           "The host will remove this exact background color to create transparency."
                           if self.config.transparency == "chroma_key" else
                           "Use a genuinely transparent background with an alpha channel, not a drawn checkerboard.")
+            if single_sprite:
+                background = background.replace(", including the gaps between frames", ", including empty spaces inside the subject")
         else:
             background = "Create a complete opaque image."
         return (subject_instructions(job) + "\n\n" + job.prompt + "\n\n" + grid +
                 f"The logical layout canvas is {job.width} by {job.height}; it is not a request to rasterize at that low resolution. "
                 "Render sharp detail at the full requested generation resolution. The host keeps native pixels and "
-                "crops cells without downsampling, upscaling or stretching. Draw natural subject proportions. "
-                "Keep subject scale and alignment consistent across cells. " + background +
-                (" FINAL ACTOR CHECK: only the requested character poses on the specified removable matte or real alpha. "
+                "crops cells without downsampling, upscaling or stretching. Draw natural subject proportions. " +
+                ("Keep one subject centered. " if single_sprite else "Keep subject scale and alignment consistent across cells. ") + background +
+                (" FINAL SPRITE CHECK: only the requested subject and state(s) on the specified removable matte or real alpha. "
                  "No text of any language, typography, annotations, labels, numbers, logos, watermark, scenery, ground, "
                  "pedestal, border, card, UI, cast shadow or decorative objects. Pose names and instructions are metadata, "
                  "never visible image content. These constraints also apply when the asset/style description mentions them."

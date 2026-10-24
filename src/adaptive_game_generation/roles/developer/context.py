@@ -10,7 +10,7 @@ def serialized(value):
     return value if isinstance(value, str) else json.dumps(value, ensure_ascii=False, indent=2)
 
 
-def stage_for(files, attempts, brief, inspection, *, forced_deep=False):
+def stage_for(files, attempts, brief, inspection, *, forced_deep=False, inspections_exhausted=False):
     if forced_deep:
         return "deep", "Requested escalation or a repair outside the lightweight scope"
     if not attempts:
@@ -27,8 +27,11 @@ def stage_for(files, attempts, brief, inspection, *, forced_deep=False):
             and inspection.records[-1].model_turn >= (attempts[-1].model_turn or 0)):
         current = [r for r in inspection.records if r.project_sha256 == inspection.records[-1].project_sha256]
         if all(r.result.get("status") == "passed" and r.visual_review and r.visual_review.get("status") != "invalid"
-               and not r.visual_review.get("findings") for r in current):
-            return "finalize", "Passing build and current clean visual feedback; decide finish or request more evidence"
+               for r in current):
+            if all(not r.visual_review.get("findings") for r in current):
+                return "finalize", "Passing build and current clean visual feedback; decide finish or request more evidence"
+            if inspections_exhausted:
+                return "finalize", "Current preview reviewed and inspection allowance exhausted; retain unresolved findings or escalate for code changes"
     return "deep", "Gameplay, visual integration or unresolved evidence requires deep reasoning"
 
 
@@ -39,6 +42,18 @@ class ContextWindow:
         self.read_count = 0
         self.resources = {}
         self.visible_full_files = set()
+        self.auto_paths = ()
+
+    def _read_part(self, read):
+        if read.resource_id not in self.resources:
+            raise InvalidSubmission("Unknown context resource ID; choose only from the public resource catalog")
+        text = self.resources[read.resource_id]
+        if read.start_line is not None:
+            lines = text.splitlines(keepends=True)
+            if read.end_line > len(lines):
+                raise InvalidSubmission("Context line range exceeds resource bounds")
+            text = "".join(lines[read.start_line - 1:read.end_line])
+        return text
 
     def prepare(self, inputs, files, attempts, brief, feedback, rejections, rejected, stage):
         documents = {"input/" + k: v for k, v in inputs.items() if k not in
@@ -48,6 +63,21 @@ class ContextWindow:
                           "rejected_proposal": rejected})
         self.resources = {"source/" + p: text for p, text in files.items()}
         self.resources.update({key: serialized(value) for key, value in documents.items() if value is not None})
+        # Retain a bounded working set across reads AND source patches. Always
+        # resolve against this turn's verified snapshot, never cached old text.
+        retained, evicted, retained_bytes = [], [], 0
+        for read in reversed(self.pending):
+            try:
+                size = len(self._read_part(read).encode("utf-8"))
+            except InvalidSubmission:
+                evicted.append({"resource_id": read.resource_id, "reason": "Resource removed or line range no longer valid"})
+                continue
+            if retained_bytes + size > self.config.max_context_response_bytes:
+                evicted.append({"resource_id": read.resource_id, "reason": "Updated working set exceeds retained byte budget"})
+                continue
+            retained.append(read)
+            retained_bytes += size
+        self.pending = tuple(reversed(retained))
         index = [{"resource_id": key, "sha256": source_sha256(text), "bytes": len(text.encode("utf-8")),
                   "lines": len(text.splitlines())} for key, text in sorted(self.resources.items())]
         source_index = []
@@ -56,7 +86,7 @@ class ContextWindow:
                 "symbols": re.findall(r"(?m)^(?:class_name|func|static func|class)\s+([^\n:]+)", text)[:32]})
         self.visible_full_files = set()
         selected, used = {}, 0
-        paths = list(brief.get("source_excerpts", {})) + ["project.godot", "Main.tscn"]
+        paths = list(brief.get("source_excerpts", {})) + ["project.godot", "Main.tscn", *self.auto_paths]
         if not attempts:
             paths += sorted(files, key=lambda p: (p.endswith(".uid"), len(files[p])))
         for path in dict.fromkeys(paths):
@@ -67,6 +97,7 @@ class ContextWindow:
                 selected[path] = files[path]
                 self.visible_full_files.add(path)
                 used += size
+        self.auto_paths = tuple(selected)
         results, requested_bytes = [], 0
         for read in self.pending:
             # Resolve again against the current verified snapshot, never a file path.
@@ -93,8 +124,8 @@ class ContextWindow:
                 results.append({"resource_id": read.resource_id, "sha256": source_sha256(text),
                     "start_line": read.start_line, "end_line": read.end_line, "text": part,
                     "complete": read.start_line is None})
-        # Keep the current request's full read results until superseded, rather
-        # than making a model repeatedly pay to fetch the same unchanged resource.
+        # Repeated requests accumulate; unrelated reads must not erase a file
+        # already acquired at the cost of a model turn and context allowance.
         compact = {k: v for k, v in inputs.items() if k not in
                    ("design", "art_manifest", "previous_report", "requirements", "attachments", "evidence", "asset_packages")}
         compact["requirements"] = [{k: v for k, v in r.items() if k not in ("verification", "schema_version")}
@@ -114,6 +145,8 @@ class ContextWindow:
         compact["evidence"] = [{k: v for k, v in e.items() if k not in ("observation", "artifact_refs")} for e in inputs.get("evidence", ())]
         catalog = {"source_index": source_index, "resources": index, "read_results": results,
                    "reads_left": self.config.max_context_reads - self.read_count,
+                   "retained_bytes": retained_bytes, "retained_byte_limit": self.config.max_context_response_bytes,
+                   "evicted_resources": evicted,
                    "meaning": "Full verified resources remain available through status=context. Omitted content is not evidence of absence."}
         latest_feedback = None
         if feedback:
@@ -123,23 +156,27 @@ class ContextWindow:
         return compact, selected, catalog, latest_feedback
 
     def request(self, decision):
-        if self.read_count >= self.config.max_context_reads:
-            raise InvalidSubmission("Context request allowance exhausted; use supplied evidence or report remaining work")
-        total = 0
+        if any(key not in self.resources for key in decision.drop_resources):
+            raise InvalidSubmission("Unknown context resource ID to release")
+        proposed = [r for r in self.pending if r.resource_id not in decision.drop_resources]
         for read in decision.reads:
-            if read.resource_id not in self.resources:
-                raise InvalidSubmission("Unknown context resource ID; choose only from the public resource catalog")
-            text = self.resources[read.resource_id]
-            if read.start_line is not None:
-                lines = text.splitlines(keepends=True)
-                if read.end_line > len(lines):
-                    raise InvalidSubmission("Context line range exceeds resource bounds")
-                text = "".join(lines[read.start_line - 1:read.end_line])
-            total += len(text.encode("utf-8"))
+            self._read_part(read)
+            if read.start_line is None:
+                if read in proposed:
+                    continue
+                proposed = [r for r in proposed if r.resource_id != read.resource_id]
+            elif any(r.resource_id == read.resource_id and (r.start_line is None or r == read) for r in proposed):
+                continue
+            proposed.append(read)
+        total = sum(len(self._read_part(r).encode("utf-8")) for r in proposed)
         if total > self.config.max_context_response_bytes:
-            raise InvalidSubmission("Requested context exceeds byte budget; request narrower ranges")
-        self.pending = decision.reads
-        self.read_count += 1
+            raise InvalidSubmission("Retained context exceeds byte budget; release unused drop_resources or request narrower ranges")
+        changed = tuple(proposed) != self.pending
+        if changed and decision.reads and self.read_count >= self.config.max_context_reads:
+            raise InvalidSubmission("Context request allowance exhausted; retained reads are still available. Use them or report remaining work")
+        self.pending = tuple(proposed)
+        if (changed and decision.reads) or decision.request_deep_reasoning:
+            self.read_count = min(self.config.max_context_reads, self.read_count + 1)
 
     def validate_scope(self, plan, files, stage):
         for file in plan.files:

@@ -231,9 +231,9 @@ def test_image_capabilities_are_selected_by_asset_type_without_extra_model_calls
     actor = subject_instructions(base.revised(layout=WHOLE))
     background = subject_instructions(base.revised(layout=AssetLayout(kind="background", mode="whole")))
     ui = subject_instructions(base.revised(layout=AssetLayout(kind="ui", mode="whole")))
-    assert "isolated actor" in actor and "No ground" in actor
-    assert "Scenery is allowed" in background and "isolated actor" not in background
-    assert "UI artwork" in ui and "isolated actor" not in ui
+    assert "one isolated sprite" in actor and "No ground" in actor
+    assert "Scenery is allowed" in background and "one isolated sprite" not in background
+    assert "UI artwork" in ui and "one isolated sprite" not in ui
 
 
 @pytest.mark.parametrize("controller", ["fixed_loop", "adaptive_scheduler"])

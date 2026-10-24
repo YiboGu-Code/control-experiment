@@ -1,10 +1,22 @@
 """Small host-selected image capabilities; never load arbitrary model-named files."""
 
-ACTOR = """ASSET CAPABILITY: isolated actor animation.
-Render only the same character performing the requested poses, one complete character per
-cell. A sprite sheet is a collection of cutout poses, not illustrated cards or gameplay scenes.
-Keep body proportions, outfit, camera and scale consistent. Motion is shown by the body pose;
-running and jumping do not need a visible floor, platform, obstacle or scenic context.
+SINGLE_SPRITE = """ASSET CAPABILITY: one isolated sprite.
+Draw exactly ONE instance of the requested subject in its requested state, centered and
+fully visible with empty space around it. If the request is a door, switch, crystal
+or other object, draw that object alone; do not add a character using or standing beside it.
+No repeated copies, alternative states, animation sequence, contact sheet or sample gameplay.
+No ground, grass, rocks, podium, scenery, panel, frame, UI, text, letters, numbers, labels,
+captions, contact shadow or drawn checkerboard. Keep natural subject proportions.
+Use the requested empty background around the subject and between limbs or object parts.
+Style context controls colors/rendering only; never draw its other named assets.
+"""
+
+ACTOR = """ASSET CAPABILITY: isolated sprite sequence.
+Render only the same requested subject in the requested states, one complete subject per
+cell. A sprite sheet is a collection of cutouts, not illustrated cards or gameplay scenes.
+For an object sprite, do not add an actor demonstrating it. Keep camera and scale consistent.
+For character animation, keep body proportions and outfit consistent; show motion through
+the body pose without a visible floor, platform, obstacle or scenic context.
 No ground, grass, rocks, podium, scenery, panel, frame, UI, text, letters, numbers, pose labels,
 motion captions, contact shadow or drawn checkerboard. The empty space around and between
 limbs must use the requested background. No decorative extras or unrelated game objects.
@@ -28,4 +40,4 @@ def is_actor(job):
 
 def subject_instructions(job):
     kind = job.layout.kind if job.layout else ("sprite" if job.transparent_background else "background")
-    return ACTOR if kind in ("sprite", "sprite_sheet") else UI if kind == "ui" else ENVIRONMENT
+    return (SINGLE_SPRITE if len(job.frame_names) == 1 else ACTOR) if kind in ("sprite", "sprite_sheet") else UI if kind == "ui" else ENVIRONMENT

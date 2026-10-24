@@ -89,12 +89,12 @@ def test_actor_prompt_and_native_parameters_block_embellishments_without_unsuppo
     text = payload["input"]["messages"][0]["content"][0]["text"]
     assert parameters["watermark"] is False
     assert ("prompt_extend" not in parameters) if model.startswith("wan2.7") else parameters["prompt_extend"] is False
-    assert "FINAL ACTOR CHECK" in text and "No text of any language" in text
+    assert "FINAL SPRITE CHECK" in text and "No text of any language" in text
     assert "not a request to rasterize at that low resolution" in text
     # Actor rules follow even conflicting requests, without changing background jobs.
-    assert text.index("FINAL ACTOR CHECK") > text.index(request.prompt)
+    assert text.index("FINAL SPRITE CHECK") > text.index(request.prompt)
     background = DashScopeImageProvider._payload(service, request.revised(layout=AssetLayout(kind="background", mode="whole"), transparent_background=False))
-    assert "FINAL ACTOR CHECK" not in background["input"]["messages"][0]["content"][0]["text"]
+    assert "FINAL SPRITE CHECK" not in background["input"]["messages"][0]["content"][0]["text"]
 
 
 @pytest.mark.parametrize("controller", ["fixed_loop", "adaptive_scheduler"])

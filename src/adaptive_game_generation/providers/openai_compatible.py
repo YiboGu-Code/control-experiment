@@ -338,6 +338,13 @@ class OpenAICompatibleTextProvider:
         except APIStatusError as exc:
             metadata.update(status="failed", error_code="provider_http_error", http_status=exc.status_code)
             raise ProviderFailure(f"Model gateway returned HTTP {exc.status_code}; no automatic retry was made") from None
+        except httpx.TransportError as exc:
+            # A successful HTTP header does not mean a streamed response finished.
+            # Keep original chunks and the unknown-usage reservation; never retry
+            # a possibly billed generation or treat partial prose as a QA verdict.
+            metadata.update(status="failed", error_code="provider_stream_transport_error",
+                            transport_error_type=type(exc).__name__)
+            raise ProviderFailure("Model response transport was interrupted; partial chunks are preserved, token usage is unconfirmed, and no automatic retry was made") from None
         except Exception:
             metadata.update(status="failed", error_code="provider_response_error")
             raise

@@ -111,7 +111,8 @@ class Designer:
         for draft in proposal.requirements:
             prior = old.get(draft.requirement_id)
             if draft.source_excerpt not in state.task.instruction:
-                raise InvalidSubmission("Designer requirement has no exact instruction grounding")
+                raise InvalidSubmission(f"Designer requirement has no exact instruction grounding: {draft.requirement_id}. "
+                    "Copy an exact contiguous source excerpt, preserving whitespace, Markdown and line breaks.")
             if draft.requirement_id in {issue.issue_id for issue in state.issues}:
                 raise InvalidSubmission("Designer requirement ID conflicts with an issue")
             if prior and draft.source_excerpt != prior.source_excerpt:

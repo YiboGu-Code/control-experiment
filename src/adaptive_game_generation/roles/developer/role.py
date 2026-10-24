@@ -278,7 +278,8 @@ class Developer:
             if window:
                 baseline_bytes = len(prompt.encode("utf-8"))
                 brief = repair_brief(files, attempts, inputs.get("previous_report"))
-                stage, reason = stage_for(files, attempts, brief, inspection, forced_deep=forced_deep)
+                stage, reason = stage_for(files, attempts, brief, inspection, forced_deep=forced_deep,
+                    inspections_exhausted=bool(inspection and len(inspection.records) >= self.config.max_mcp_inspections))
                 compact, selected, catalog, compact_feedback = window.prepare(inputs, files, attempts, brief,
                     feedback, rejections, rejected, stage)
                 applied = context.tools.developer_profile_settings(stage)
@@ -391,12 +392,15 @@ class Developer:
                 changed.add(file.path)
                 deleted.discard(file.path)
             if window:
-                window.pending = ()
                 optimization_calls[-1]["local_edit_files"] = len(plan.edits)
                 optimization_calls[-1]["full_write_files"] = len(plan.files)
             plans.append(plan)
             attempt, files = await self._check(context, len(attempts) + 1, plan, updated, turn + 1)
             attempts.append(attempt)
+            if window and attempt.status == "passed":
+                # Rejections require deep repair, not permanent high-effort
+                # bookkeeping after that repair has passed fresh checks.
+                forced_deep = False
             inputs["current_delivery_contract"] = plan.model_dump(mode="json", exclude={"files", "edits", "delete_paths"})
             if inspection and attempt.status == "passed":
                 # Preview the exact authored package that can be published, not

@@ -14,6 +14,45 @@ ENGINE_FAILURE = re.compile(
 _LOCATION = re.compile(r"res://([^:\s\"'()]+)(?::(\d+))?")
 
 
+def _gd_code(text):
+    """Mask strings/comments while preserving lines for narrow advisory checks."""
+    return re.sub(r'"""[\s\S]*?"""|\'\'\'[\s\S]*?\'\'\'|"(?:\\.|[^"\\])*"|\'(?:\\.|[^\'\\])*\'|#[^\n]*',
+                  lambda m: "".join("\n" if c == "\n" else " " for c in m[0]), text)
+
+
+def _render_findings(path, text, add):
+    blocks, current = [], []
+    for number, line in enumerate(_gd_code(text).splitlines(), 1):
+        if re.match(r"^(?:static\s+)?func\s+", line) and current:
+            blocks.append(current)
+            current = []
+        current.append((number, line))
+    if current:
+        blocks.append(current)
+    for block in blocks:
+        function = next((m[1] for _, line in block if (m := re.match(r"^(?:static\s+)?func\s+(\w+)", line))), "")
+        code = "\n".join(line for _, line in block)
+        for number, line in block:
+            if (function.startswith("_draw") and re.search(r"\bTime\.get_(?:ticks_msec|ticks_usec|unix_time_from_system)\s*\(", line)
+                    and not re.match(r"\s*(?:print|printerr|push_warning|push_error)\s*\(", line)):
+                add(path, number, "nondeterministic_render_clock",
+                    "A draw function reads wall-clock time. The same trace frame can render different pixels in fresh processes. "
+                    "Drive visible animation from a simulation tick reset with the level/scenario; do not disable or relax Player pixel replay.")
+            match = re.search(r"\bvar\s+(\w+)(?:\s*:\s*\w+)?\s*:?=\s*(TextureRect|TextureButton)\.new\s*\(", line)
+            if not match:
+                continue
+            variable, node_type = match.groups()
+            setting = "expand_mode" if node_type == "TextureRect" else "ignore_texture_size"
+            if re.search(r"\b" + re.escape(variable) + r"\." + setting + r"\s*=", code):
+                continue
+            add(path, number, "native_texture_control_size",
+                f"{node_type} {variable} may inherit the native image's minimum size. For a bounded UI control set " +
+                ("expand_mode=TextureRect.EXPAND_IGNORE_SIZE and an aspect-preserving stretch_mode" if node_type == "TextureRect" else
+                 "ignore_texture_size=true and an aspect-preserving stretch_mode") +
+                "; establish anchors before offsets/size, then inspect the actual control rectangle and ordinary menu. "
+                "Verify shared helper configuration if this control is configured elsewhere.", "advisory")
+
+
 def _statements(text):
     """Yield top-level resource statements, ignoring strings and nested values.
 
@@ -90,6 +129,7 @@ def source_findings(files):
                             "Input action events must be InputEvent objects, not dictionaries of physical_keycode. "
                             "Serialize Object(InputEventKey, ...) or register real InputEventKey instances through InputMap in code.")
         elif path.endswith(".gd"):
+            _render_findings(path, text, add)
             changed_scene = False
             for number, line in enumerate(text.splitlines(), 1):
                 code = line.strip()

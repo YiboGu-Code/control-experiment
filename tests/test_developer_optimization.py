@@ -153,7 +153,8 @@ def test_context_read_bounds_and_budget_do_not_expand_permission():
         window.request(DeveloperContext.model_validate(context_read(reads=[{"resource_id": "source/scripts/main.gd", "start_line": 1, "end_line": 99999}])))
     window.request(DeveloperContext.model_validate(context_read(reads=[], request_deep_reasoning=True)))
     with pytest.raises(InvalidSubmission, match="allowance"):
-        window.request(DeveloperContext.model_validate(context_read()))
+        window.request(DeveloperContext.model_validate(context_read(reads=[{
+            "resource_id": "source/scripts/main.gd", "start_line": 1, "end_line": 1}])))
 
 
 def test_unread_full_rewrites_and_large_light_repairs_are_rejected():

@@ -102,11 +102,12 @@ class DeveloperContext(Model):
     status: Literal["context"]
     summary: Text
     reads: Annotated[tuple[ContextRead, ...], Field(max_length=8)] = ()
+    drop_resources: Annotated[tuple[Text, ...], Field(max_length=8)] = ()
     request_deep_reasoning: bool = False
 
     @model_validator(mode="after")
     def useful(self):
-        if not self.reads and not self.request_deep_reasoning:
+        if not self.reads and not self.drop_resources and not self.request_deep_reasoning:
             raise ValueError("Request context or escalation to deep reasoning")
         return self
 
