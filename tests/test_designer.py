@@ -419,7 +419,7 @@ def test_verbatim_source_lines_preserve_instruction_and_legacy_prompt():
     assert legacy["input"] == inputs
 
 
-def test_flattening_a_real_instruction_line_break_remains_invalid(tmp_path):
+def test_flattening_a_real_instruction_line_break_is_canonicalized(tmp_path):
     draft = response()
     # This was the actual failure observed in the restored DeepSeek live run.
     quotation = "A chapter menu reveals four chapters of six levels each."
@@ -429,6 +429,6 @@ def test_flattening_a_real_instruction_line_break_remains_invalid(tmp_path):
     draft["requirements"][0]["source_excerpt"] = quotation
     executor, _ = make_run(tmp_path, draft)
     outcome = invoke(executor)
-    assert outcome.status == "failed"
-    assert "exact instruction grounding" in outcome.error.message
-    assert executor.state.design is None
+    assert outcome.status == "completed", outcome.error
+    assert executor.state.requirements[0].source_excerpt in instruction
+    assert executor.state.requirements[0].source_excerpt != quotation

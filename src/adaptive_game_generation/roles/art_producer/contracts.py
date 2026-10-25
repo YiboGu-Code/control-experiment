@@ -26,6 +26,8 @@ class ArtProducerConfig(Model):
     max_response_bytes: PositiveCount = 256 * 1024
     allow_generation: bool = True
     normalize_assets: bool = False
+    library_first: bool = True
+    max_quality_repair_rounds: Annotated[int, Field(strict=True, ge=0, le=3)] = 0
 
 
 class SearchRequest(Model):
@@ -34,11 +36,30 @@ class SearchRequest(Model):
     offset: Annotated[int, Field(strict=True, ge=0, le=20000)] = 0
 
 
+class RejectedLibraryCandidate(Model):
+    library: Literal["kenney", "opengameart"]
+    path: Text
+    reason: Text
+
+
+class GenerationFallback(Model):
+    reason: Text
+    search_ids: Annotated[tuple[Identifier, ...], Field(min_length=1, max_length=16)]
+    rejected_candidates: Annotated[tuple[RejectedLibraryCandidate, ...], Field(max_length=16)] = ()
+
+    @model_validator(mode="after")
+    def unique(self):
+        require_unique(self.search_ids, "fallback search IDs")
+        require_unique(((r.library, r.path) for r in self.rejected_candidates), "rejected candidates")
+        return self
+
+
 class AssetDraft(Model):
     asset_id: AssetId
     source: Literal["kenney", "opengameart", "generate"]
     source_path: Text | None = None
     generation_prompt: Text | None = None
+    generation_fallback: GenerationFallback | None = None
     purpose: Text
     requirement_ids: Annotated[tuple[Identifier, ...], Field(min_length=1)]
     target_path: Annotated[str, StringConstraints(min_length=1, pattern=r"^assets/"),
@@ -71,6 +92,8 @@ class AssetDraft(Model):
                 raise ValueError("Generated output must be PNG")
         elif not self.source_path or self.generation_prompt is not None:
             raise ValueError("Library import requires a source path, without a generation prompt")
+        if self.source != "generate" and self.generation_fallback is not None:
+            raise ValueError("Only generated assets may declare a generation fallback")
         if not self.layout and self.width and (self.width % self.columns or self.height % self.rows):
             raise ValueError(f"Sprite grid {self.columns} x {self.rows} must evenly divide image dimensions {self.width} x {self.height}")
         if not self.layout and self.columns * self.rows > 64:
@@ -151,6 +174,8 @@ class ArtManifest(Model):
     version: PositiveCount
     config: ArtProducerConfig
     proposal_rejections: tuple[ProposalRejection, ...] = ()
+    search_observations: tuple[dict, ...] = ()
+    quality_attempts: tuple[dict, ...] = ()
     design_ref: ArtifactRef
     style_guide: Text
     summary: Text

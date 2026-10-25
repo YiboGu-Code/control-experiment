@@ -118,11 +118,16 @@ def test_runner_reserves_repair_and_exploration_capacity():
                 for role in runner["PREFIXES"]}
     configs, _, limits = runner["role_setup"](gateways)
     assert configs[Role.ART_PRODUCER].max_search_turns == 3
-    assert configs[Role.ART_PRODUCER].max_model_turns == 6
+    assert configs[Role.ART_PRODUCER].max_model_turns == 8
+    assert configs[Role.ART_PRODUCER].library_first
+    assert configs[Role.ART_PRODUCER].max_quality_repair_rounds == 2
+    assert configs[Role.DESIGNER].max_grounding_repairs == 1
+    assert limits[Role.ART_PRODUCER].max_image_calls == 48  # The global limit still takes precedence.
     assert configs[Role.PLAYER].max_traces == 5
     assert configs[Role.PLAYER].max_model_turns == 5
     assert configs[Role.QA_REVIEWER].max_grounding_repairs == 1
     for role, config in configs.items():
-        assert limits[role].max_model_calls == getattr(config, "max_model_turns", 1)
+        assert limits[role].max_model_calls == getattr(config, "max_model_turns", 1) + (
+            config.max_grounding_repairs if role == Role.DESIGNER else 0)
     with pytest.raises(ValueError):
         InputTrace(duration_frames=601)  # The public Benchmark cap remains unchanged.

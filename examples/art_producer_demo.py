@@ -89,15 +89,16 @@ async def run_live(output, env_file):
     write_json(output / "asset_sources.json", {"libraries": await libraries.availability(),
         "library_configuration_id": libraries.configuration_id, "library_snapshot": libraries.snapshot_id,
         "image_service": image.info.model_dump(mode="json")})
-    art_config = ArtProducerConfig(max_output_tokens=config.max_output_tokens, max_assets=12)
+    art_config = ArtProducerConfig(max_output_tokens=config.max_output_tokens, max_assets=12,
+        max_model_turns=8, max_search_turns=3, normalize_assets=True, library_first=True, max_quality_repair_rounds=2)
     limits = ResourceLimits(max_model_calls=art_config.max_model_turns, max_input_tokens=800000,
-        max_output_tokens=config.max_output_tokens * art_config.max_model_turns, max_image_calls=12,
-        max_tool_calls=160, max_tool_seconds=config.timeout_seconds * 4 + 120.0,
-        max_wall_seconds=config.timeout_seconds * 4 + 180.0)
+        max_output_tokens=config.max_output_tokens * art_config.max_model_turns, max_image_calls=36,
+        max_tool_calls=1000, max_tool_seconds=config.timeout_seconds * 8 + 120.0,
+        max_wall_seconds=config.timeout_seconds * 8 + 180.0)
     async with OpenAICompatibleTextProvider(config, capture_directory=workspace.private / "model_calls") as text:
         executor = Executor.create(workspace, task, run_id="art-producer-live", controller="fixed_loop", budget=limits,
             config=RuntimeConfig(role_limits=limits, tool_timeout_seconds=config.timeout_seconds,
-                invocation_timeout_seconds=config.timeout_seconds * 4 + 180.0,
+                invocation_timeout_seconds=config.timeout_seconds * 8 + 180.0,
                 service_configuration_id=config.configuration_id + ":mock-image.v1:" + libraries.configuration_id),
             services=Services(text=text, image=image, image_info=image.info, libraries=libraries))
         await seed_recorded_designer(executor, recorded_state, design)
@@ -139,7 +140,9 @@ async def run_live(output, env_file):
         "requirements_and_design_unchanged": state.requirements == before.requirements and state.design == before.design,
         "no_game_or_qa_claims": not state.game_revisions and not state.evidence and state.readiness is None,
         "mock_images_labelled": manifest is not None and all(a.is_mock == (a.request.source == "generate") for a in manifest.assets),
-        "status_matches_placeholders": manifest is not None and result.status == ("partial" if any(a.is_mock for a in manifest.assets) else "completed"),
+        "status_matches_asset_readiness": manifest is not None and result.status == ("partial" if any(
+            a.is_mock or (a.normalization and a.normalization.status != "materialized")
+            for a in manifest.assets) else "completed"),
         "image_usage_matches_mock_calls": state.ledger.usage.image_calls == len(image.calls),
         "text_usage_matches_provider": state.ledger.usage.token_usage_complete and
             state.ledger.usage.input_tokens == sum(r["usage"]["prompt_tokens"] for r in responses) and
@@ -172,7 +175,8 @@ async def run_live(output, env_file):
         lines.extend(["- [Asset manifest](deliverables/asset_manifest.json)", "- [Developer handoff](deliverables/art_handoff.md)",
             "", "## Image outputs", "", "These images are test placeholders where marked MOCK. They are not generated artwork or visual acceptance evidence.", ""])
         for asset in manifest.assets:
-            lines.append(f"- [{asset.record.asset_id}](deliverables/{asset.request.target_path}): {asset.width} x {asset.height}; mock={asset.is_mock}")
+            relative = asset.record.artifact_ref.path.split("/", 3)[3]
+            lines.append(f"- [{asset.record.asset_id}](deliverables/{relative}): {asset.width} x {asset.height}; mock={asset.is_mock}")
     (output / "review.md").write_bytes(("\n".join(lines) + "\n").encode("utf-8"))
     return summary
 

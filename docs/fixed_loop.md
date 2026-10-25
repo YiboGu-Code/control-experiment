@@ -2,6 +2,8 @@
 
 第 4 步把五个角色接入同一个共享状态和执行账本，从原始 instruction 开始生成新的上游产物。入口为 `examples/fixed_loop_demo.py`，控制器为 `src/adaptive_game_generation/controllers/fixed_loop.py`。这条入口不导入历史角色示例。第 5 步 [Scheduler](scheduler.md) 已实现，两条入口共用运行装配。
 
+两条入口现已共同启用[素材库优先、质量反馈迭代与 Designer 引用修正](library_first_and_grounding_repair.md)。Art 在真实搜索和候选拒用记录支持下才允许以生图补缺，并在本轮内最多修复失败素材两次；Designer 自动还原 Markdown/空白差异，真正无依据的引用允许一次定向修正。使用新输出目录运行，旧实验配置与产物保持冻结。
+
 入口默认使用 `.env` 中各角色的真实模型，以及 `ART_IMAGE_MODEL` 指定的真实生图模型。**图片默认通过 DashScope SDK 原生接口调用；其他角色继续使用 Chat Completions。** 只有显式传入 `--mock-images` 时才使用占位图；配置缺失或接口失败不会自动降级为 mock。003 诊断后已开启文本角色思考、流式输出，以及 Player/QA 的实际截图输入，详见 [模型配置](model_configuration.md)。所有发给模型的提示词、输入和角色输出使用英文，Benchmark instruction 原文不变。
 
 ## 顺序与待办
@@ -41,7 +43,7 @@
 
 即使某条旧轨迹过去重放失败，也可以作为下一版修复后的试验输入；过去的通过或失败结论都不直接移植到新版本。装配后无法执行的命名场景、被修改的轨迹或再次分歧的重放都会留下失败证据。
 
-这些能力由 `developer.v2` 和 `player.v2` 实现，当前 Fixed Loop 的 `developer.v3` 继承轨迹装配，并增加源码检查和重复错误摘要。Developer 正式入口默认启用[执行优化](developer_optimization.md)，每次最多 8 次文本调用（含为按需读取增加的 3 轮；关闭优化时为 5 次）；Art 为 6 次、最多 3 次搜索，Player 为 5 次，QA 为 4 次并允许一次引用纠错。总调用预算与固定顺序仍由控制器统一约束。新能力既可供 Fixed Loop 使用，也供 Scheduler 使用。既有单角色示例默认保留 v1。角色配置在一次运行内冻结。打包、源文件校验、构建和重放都在角色调用内计费，没有预算耗尽后额外执行游戏的隐含步骤。
+这些能力由 `developer.v2` 和 `player.v2` 实现，当前 Fixed Loop 的 `developer.v3` 继承轨迹装配，并增加源码检查和重复错误摘要。Developer 正式入口默认启用[执行优化](developer_optimization.md)，每次最多 8 次文本调用（含为按需读取增加的 3 轮；关闭优化时为 5 次）；Art 为 8 次、最多 3 次搜索和 2 轮质量修复，Designer 最多 2 次（含一次定向引用修正），Player 为 5 次，QA 为 4 次并允许一次引用纠错。总调用预算与固定顺序仍由控制器统一约束。新能力既可供 Fixed Loop 使用，也供 Scheduler 使用。既有单角色示例默认保留 v1。角色配置在一次运行内冻结。打包、源文件校验、构建和重放都在角色调用内计费，没有预算耗尽后额外执行游戏的隐含步骤。
 
 ## 结束与交付
 

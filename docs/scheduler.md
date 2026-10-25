@@ -2,6 +2,8 @@
 
 正式入口与 Fixed Loop 共用 [素材规范化与切图](asset_normalization.md)：Art 发布明确布局和逐帧 PNG，Developer 检查原图集误用，未解决布局保留为公开待办。新配置请使用新的运行目录；原有模型和生图调用方式不变。
 
+两条入口也共用[素材库优先、质量反馈迭代与 Designer 引用修正](library_first_and_grounding_repair.md)。搜索、引用修正和失败图片重做全部计入原有共享账本；没有为 Scheduler 单独放宽权限、质量门槛或总预算。
+
 [人物精灵处理与质量检查](sprite_quality.md) 同样共享：保留原生像素、无损切图与独立显示尺寸、可靠紫红底去除、可疑源图隔离。rejected 和 unresolved 都保留为 Art 待办，Developer/QA 不将其视为已完成美术。
 
 本文对应 `role_design` 第五步。`AdaptiveScheduler` 在已有五个角色、共享状态和执行器上，每次选择一个可执行角色及其目标事项。它是控制器，不是第六个工作角色，不新增游戏制作或验收权限。实现位于 `src/adaptive_game_generation/controllers/scheduler.py`，英文模型协议位于同目录的 `scheduler_policy.py`。

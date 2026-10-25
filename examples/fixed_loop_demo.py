@@ -119,8 +119,9 @@ def role_prompt_settings(config, prefix, values):
 def role_setup(gateways, image_timeout=0.0, *, godot_mcp=False, visual_tokens=8192, values=None):
     values = {} if values is None else values
     configs = {
-        Role.DESIGNER: DesignerConfig(max_output_tokens=gateways[Role.DESIGNER].max_output_tokens),
-        Role.ART_PRODUCER: ArtProducerConfig(max_model_turns=6, max_search_turns=3, normalize_assets=True,
+        Role.DESIGNER: DesignerConfig(max_grounding_repairs=1, max_output_tokens=gateways[Role.DESIGNER].max_output_tokens),
+        Role.ART_PRODUCER: ArtProducerConfig(max_model_turns=8, max_search_turns=3, normalize_assets=True,
+                                           library_first=True, max_quality_repair_rounds=2,
                                            max_output_tokens=gateways[Role.ART_PRODUCER].max_output_tokens),
         Role.DEVELOPER: DeveloperConfig(prompt_version="developer.v3", max_model_turns=5, require_normalized_assets=True,
                                        max_output_tokens=gateways[Role.DEVELOPER].max_output_tokens),
@@ -147,17 +148,20 @@ def role_setup(gateways, image_timeout=0.0, *, godot_mcp=False, visual_tokens=81
     limits = {}
     for role, config in configs.items():
         turns = getattr(config, "max_model_turns", 1)
+        if role == Role.DESIGNER:
+            turns += config.max_grounding_repairs
         # Bounds reserve full request bytes before dispatch. Actual tokens, model
         # calls, images and tool time are still metered by the common executor.
         duration = max(3600.0, turns * gateways[role].timeout_seconds + 1800.0)
         if role == Role.ART_PRODUCER:
-            duration = max(duration, turns * gateways[role].timeout_seconds + config.max_assets * image_timeout + 1800.0)
+            duration = max(duration, turns * gateways[role].timeout_seconds +
+                           config.max_assets * (1 + config.max_quality_repair_rounds) * image_timeout + 1800.0)
         helper_calls = config.max_mcp_inspections if role == Role.DEVELOPER and godot_mcp else 0
         duration += helper_calls * (gateways[Role.QA_REVIEWER].timeout_seconds + 180.0)
         limits[role] = ResourceLimits(max_model_calls=turns + helper_calls,
             max_input_tokens=int(values.get("FIXED_LOOP_ROLE_MAX_INPUT_TOKENS", "6000000")),
             max_output_tokens=turns * config.max_output_tokens + helper_calls * visual_tokens,
-            max_image_calls=config.max_assets if role == Role.ART_PRODUCER else 0,
+            max_image_calls=config.max_assets * (1 + config.max_quality_repair_rounds) if role == Role.ART_PRODUCER else 0,
             max_tool_calls=5000, max_tool_seconds=duration, max_wall_seconds=duration)
     return configs, {r: classes[r](c) for r, c in configs.items()}, limits
 
@@ -262,7 +266,8 @@ async def run_live(output, *, task_dir=DEFAULT_TASK, env_file=ROOT / ".env", max
         budget = ResourceLimits(max_model_calls=max_model_calls,
             max_input_tokens=int(values.get("FIXED_LOOP_MAX_INPUT_TOKENS", "15000000")),
             max_output_tokens=int(values.get("FIXED_LOOP_MAX_OUTPUT_TOKENS", "1000000")),
-            max_image_calls=32, max_tool_calls=20000, max_tool_seconds=max_wall_seconds, max_wall_seconds=max_wall_seconds)
+            max_image_calls=int(values.get("FIXED_LOOP_MAX_IMAGE_CALLS", "32")), max_tool_calls=20000,
+            max_tool_seconds=max_wall_seconds, max_wall_seconds=max_wall_seconds)
         configuration = {
             "controller_kind": controller,
             "controller": loop_config.model_dump(mode="json"), "task_id": task.task_id,

@@ -84,6 +84,19 @@ class RoleTools:
     def output_path(self, relative: str) -> str:
         return self._workspace.logical_output(relative)
 
+    def remaining_allowance(self, dimension: str) -> int | None:
+        """Read-only planning hint; ordinary reservations still enforce all limits."""
+        if dimension not in ("model_calls", "image_calls"):
+            raise ValueError("Only model/image call allowances are exposed")
+        bounds = []
+        for limits, prior in ((self._meter.call_limits, 0),
+                              (self._meter.total_limits, getattr(self._meter.previous, dimension))):
+            limit = getattr(limits, "max_" + dimension)
+            if limit is not None:
+                reserved = getattr(self._meter.reserved, dimension) if self._meter.reserved else 0
+                bounds.append(max(0, limit - prior - getattr(self._meter.used, dimension) - reserved))
+        return min(bounds) if bounds else None
+
     def close(self) -> None:
         self._closed = True
 
@@ -198,7 +211,7 @@ class RoleTools:
         return await self.write_bytes(relative, text.encode("utf-8"))
 
     async def normalize_asset(self, source_ref, *, asset_id, source_target, layout,
-                              columns=1, rows=1, names, layout_source=None, display_regions=()):
+                              columns=1, rows=1, names, layout_source=None, display_regions=(), artifact_prefix=""):
         """Host-only crop capability. Reads and writes retain ordinary limits and audit entries."""
         from ..models.asset_pipeline import AssetLayout, FrameName, FrameRegion, NormalizedAsset, NormalizedFrame
         from pydantic import TypeAdapter
@@ -216,6 +229,8 @@ class RoleTools:
             raise InvalidSubmission("Display bounds must identify the declared frames in order")
         display_sizes = {r.name: (r.width, r.height) for r in display_regions}
         logical_path(source_target)
+        if artifact_prefix:
+            logical_path(artifact_prefix)
         data = await self.read_bytes(source_ref.path)
         if source_ref.sha256 != hashlib.sha256(data).hexdigest():
             raise InvalidSubmission("Normalization source digest mismatch")
@@ -233,6 +248,8 @@ class RoleTools:
         info, crops, preview = await self._operate("asset_normalize", operation)
         # No nested metered operations under _operate's lock. Writes are individually bounded.
         async def publish(relative, content):
+            if artifact_prefix:
+                relative = artifact_prefix + "/" + relative
             path = await self.write_bytes(relative, content)
             identity = hashlib.sha256((self.invocation_id + ":" + relative).encode()).hexdigest()[:24]
             return ArtifactRef(artifact_id="normalized-" + identity, version=1, kind="asset",

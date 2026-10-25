@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 from pathlib import PurePosixPath
+from types import SimpleNamespace
 
 from pydantic import ValidationError
 
@@ -16,6 +17,7 @@ from ...runtime.asset_normalization import generated_layout, regions_for
 from ...runtime.workspace import logical_path
 from .contracts import ArtManifest, ArtProducerConfig, ArtTurn, ImageJob, ProducedAsset, ProposalRejection
 from .prompt import build_prompt
+from .sourcing import validate_fallback, validate_repair
 
 
 def _object(pairs):
@@ -110,7 +112,7 @@ class ArtProducer:
         }
         return inputs, previous, sources
 
-    def _validate_plan(self, context, plan, catalog, previous, sources):
+    def _validate_plan(self, context, plan, catalog, previous, sources, observations=()):
         if len(plan.assets) > self.config.max_assets:
             raise InvalidSubmission("Art plan exceeds the asset count limit")
         known_requirements = {r.requirement_id for r in context.state.requirements}
@@ -132,6 +134,8 @@ class ArtProducer:
             if asset.source == "generate":
                 if not self.config.allow_generation or not sources["image_service"]:
                     raise InvalidSubmission("Image generation is not configured or permitted")
+                if self.config.library_first:
+                    validate_fallback(asset, sources, observations)
             else:
                 candidate = catalog.get((asset.source, asset.source_path))
                 if candidate is None:
@@ -143,10 +147,11 @@ class ArtProducer:
                 if asset.transparent_background and not candidate.has_alpha and not (self.config.normalize_assets and asset.layout and asset.layout.kind in ("sprite", "sprite_sheet")):
                     raise InvalidSubmission("Library asset does not have an alpha channel")
             self._layout(asset, catalog.get((asset.source, asset.source_path)))
+            validate_repair(asset, kept.get(asset.asset_id))
 
-    def _validate_submission(self, context, plan, catalog, previous, sources):
+    def _validate_submission(self, context, plan, catalog, previous, sources, observations=()):
         if plan.status == "completed":
-            self._validate_plan(context, plan, catalog, previous, sources)
+            self._validate_plan(context, plan, catalog, previous, sources, observations)
             return
         if plan.status == "no_op" and not context.state.assets:
             raise InvalidSubmission("Initial Art Producer invocation cannot return no_op")
@@ -167,7 +172,14 @@ class ArtProducer:
         rejected = None
         plan = None
         search_turns = 0
+        produced, refs, quality_attempts = {}, [], []
+        completed_plan, repair_stop = None, None
+        production_rounds = 0
         for turn in range(self.config.max_model_turns):
+            if produced and context.tools.remaining_allowance("model_calls") == 0:
+                repair_stop = "Shared model-call allowance exhausted; keep completed candidates and quarantine unresolved assets"
+                break
+            inputs["remaining_image_calls"] = context.tools.remaining_allowance("image_calls")
             prompt = build_prompt(inputs, self.config, observations, self.config.max_model_turns - turn,
                                   rejections, rejected, search_turns=search_turns)
             if len(prompt.encode("utf-8")) > self.config.max_prompt_bytes:
@@ -181,7 +193,19 @@ class ArtProducer:
                         and search_turns >= self.config.max_search_turns):
                     raise InvalidSubmission("Search turn allowance exhausted; submit a complete plan using existing catalog results or report a concrete blocker")
                 if plan.action == "submit":
-                    self._validate_submission(context, plan, catalog, previous, sources)
+                    current_assets = {a.record.asset_id: a for a in previous.assets} if previous else {}
+                    current_assets.update(produced)
+                    working = SimpleNamespace(assets=tuple(current_assets.values())) if current_assets else None
+                    self._validate_submission(context, plan, catalog, working, sources, observations)
+                    remaining = context.tools.remaining_allowance("image_calls")
+                    if (self.config.max_quality_repair_rounds and remaining is not None and
+                            sum(a.source == "generate" for a in plan.assets) > remaining):
+                        raise InvalidSubmission("This batch exceeds the remaining shared image-call allowance; choose library sources or report a blocker")
+                    if production_rounds:
+                        for asset in plan.assets:
+                            prior = current_assets.get(asset.asset_id)
+                            if prior and (not prior.normalization or prior.normalization.status == "materialized"):
+                                raise InvalidSubmission(f"Asset {asset.asset_id} already passed; quality repair must leave accepted candidates unchanged")
             except (ValueError, InvalidSubmission) as exc:
                 # Only model-authored proposals are repairable. Provider, permission,
                 # budget and image failures remain outside this bounded correction loop.
@@ -198,8 +222,11 @@ class ArtProducer:
                 else:
                     errors = (str(exc)[:320],)
                 rejections.append(ProposalRejection(model_turn=turn + 1, errors=errors))
-                if turn + 1 == self.config.max_model_turns:
+                if turn + 1 == self.config.max_model_turns and not produced:
                     raise InvalidSubmission("Art Producer proposal validation budget exhausted: " + "; ".join(errors)[:1200]) from None
+                if turn + 1 == self.config.max_model_turns:
+                    repair_stop = "Quality repair proposal budget exhausted: " + "; ".join(errors)
+                    break
                 # Full replies stay in the provider capture. Do not feed an unbounded
                 # tile enumeration back into the next prompt.
                 encoded = raw.encode("utf-8")
@@ -208,20 +235,61 @@ class ArtProducer:
                 continue
             rejected = None
             if plan.action == "submit":
-                break
+                if plan.status != "completed":
+                    if not produced:
+                        return self._result(context, plan.status, plan.summary, blockers=plan.blockers)
+                    repair_stop = plan.summary
+                    break
+                batch, batch_refs = await self._produce(context, plan, catalog, sources, production_rounds + 1)
+                completed_plan = plan
+                production_rounds += 1
+                produced.update({a.record.asset_id: a for a in batch})
+                refs.extend(batch_refs)
+                if self.config.max_quality_repair_rounds:
+                    quality_attempts.extend({"round": production_rounds, "model_turn": turn + 1,
+                        "asset_id": a.record.asset_id, "candidate": a.model_dump(mode="json")} for a in batch)
+                current_assets.update(produced)
+                failures = [a for a in current_assets.values() if a.normalization and a.normalization.status != "materialized"]
+                if not failures:
+                    break
+                if (context.tools.remaining_allowance("image_calls") == 0 and
+                        not any(s["available"] for s in sources["libraries"])):
+                    repair_stop = "Shared image-call allowance exhausted and no library is available; rejected candidates remain quarantined"
+                    break
+                if production_rounds > self.config.max_quality_repair_rounds or turn + 1 == self.config.max_model_turns:
+                    repair_stop = "Quality repair allowance exhausted; rejected candidates remain quarantined"
+                    break
+                inputs["current_asset_candidates"] = [a.model_dump(mode="json") for a in current_assets.values()]
+                inputs["quality_feedback"] = [{"asset_id": a.record.asset_id, "request": a.request.model_dump(mode="json"),
+                    "image_job": a.image_job.model_dump(mode="json") if a.image_job else None,
+                    "normalization": a.normalization.model_dump(mode="json")} for a in failures]
+                inputs["quality_repair_rounds_left"] = self.config.max_quality_repair_rounds - production_rounds + 1
+                continue
             if turn + 1 == self.config.max_model_turns:
+                if produced:
+                    repair_stop = "Asset discovery exhausted remaining quality repair model turns"
+                    break
                 return self._result(context, "blocked", "Asset discovery reached the configured model-turn limit",
                     blockers=(Blocker(description="No final asset plan was submitted within the bounded discovery allowance"),))
             search_turns += 1
             for search in plan.searches:
                 found = await context.tools.search_assets(search.library, search.query,
                     offset=search.offset, limit=self.config.search_results)
-                observations.append(found.model_dump(mode="json"))
+                observations.append({"search_id": f"search-{len(observations) + 1:03}", **found.model_dump(mode="json")})
                 catalog.update({(a.library, a.path): a for a in found.assets})
-        if plan.status != "completed":
-            return self._result(context, plan.status, plan.summary, blockers=plan.blockers)
+        if completed_plan is None:
+            raise InvalidSubmission("Art Producer produced no accepted plan")
+        return await self._publish(context, completed_plan, previous, list(produced.values()), refs,
+                                   rejections, observations, quality_attempts, repair_stop)
+
+    async def _produce(self, context, plan, catalog, sources, round_number):
         # The entire proposal was validated before importing bytes or spending image calls.
         tools, refs, produced = context.tools, [], []
+        prefix = f"art_attempts/{round_number:03}" if self.config.max_quality_repair_rounds else ""
+        def destination(path):
+            return prefix + "/" + path if prefix else path
+        def identity(name):
+            return name + f"-attempt-{round_number:03}" if prefix else name
         for asset in plan.assets:
             license_ref, job, candidate = None, None, None
             native_layout, display_regions = None, ()
@@ -233,7 +301,7 @@ class ArtProducer:
                     "UI panels, ground, text or backgrounds inside an isolated sprite. Follow the asset request above."),
                     width=asset.width, height=asset.height, transparent_background=asset.transparent_background,
                     columns=asset.columns, rows=asset.rows, frame_names=asset.frame_names, layout=asset.layout)
-                path = await tools.generate_image(job.model_dump_json(), asset.target_path)
+                path = await tools.generate_image(job.model_dump_json(), destination(asset.target_path))
                 data = await tools.read_bytes(path)
                 media = raster_info(data)
                 native = service.get("output_geometry", "requested") == "source_native"
@@ -250,18 +318,18 @@ class ArtProducer:
                 source = ("mock:" if is_mock else "generated:") + service["provider_id"]
             else:
                 candidate = catalog[(asset.source, asset.source_path)]
-                path = await tools.import_asset(candidate, asset.target_path)
+                path = await tools.import_asset(candidate, destination(asset.target_path))
                 data = await tools.read_bytes(path)
                 media = {"media_type": candidate.media_type, "width": candidate.width,
                          "height": candidate.height, "has_alpha": candidate.has_alpha}
                 is_mock, license_text = False, candidate.license_text
                 source = f"{candidate.library}:{candidate.path}"
                 license_bytes = license_text.encode("utf-8")
-                license_path = await tools.write_bytes(f"licenses/{asset.asset_id}.txt", license_bytes)
-                license_ref = self._ref(context, "art-license-" + asset.asset_id, license_path,
+                license_path = await tools.write_bytes(destination(f"licenses/{asset.asset_id}.txt"), license_bytes)
+                license_ref = self._ref(context, identity("art-license-" + asset.asset_id), license_path,
                                         license_bytes, media_type="text/plain")
                 refs.append(license_ref)
-            ref = self._ref(context, "art-asset-" + asset.asset_id, path, data, kind="asset", media_type=media["media_type"])
+            ref = self._ref(context, identity("art-asset-" + asset.asset_id), path, data, kind="asset", media_type=media["media_type"])
             refs.append(ref)
             layout = native_layout or self._layout(asset, candidate)
             normalization = None
@@ -269,7 +337,7 @@ class ArtProducer:
                 normalization = await tools.normalize_asset(ref, asset_id=asset.asset_id,
                     source_target=asset.target_path, layout=layout, columns=asset.columns, rows=asset.rows,
                     names=asset.frame_names, layout_source=candidate.atlas_metadata if candidate else None,
-                    display_regions=display_regions)
+                    display_regions=display_regions, artifact_prefix=prefix)
                 refs.extend(normalization.artifact_refs)
             notes = (f"Copy to {asset.target_path}. Filter: {asset.filter_mode}. Grid: {asset.columns} x {asset.rows}. "
                      f"Frames (row-major): {', '.join(asset.frame_names)}. " + asset.integration_notes +
@@ -291,9 +359,15 @@ class ArtProducer:
                 source_license_path=candidate.license_path if candidate else None,
                 source_license_sha256=candidate.license_sha256 if candidate else None,
                 license_ref=license_ref, image_job=job, normalization=normalization))
+        return produced, refs
+
+    async def _publish(self, context, plan, previous, produced, refs, rejections, observations, quality_attempts, repair_stop):
+        tools = context.tools
         merged = {a.record.asset_id: a for a in previous.assets} if previous else {}
         merged.update({a.record.asset_id: a for a in produced})
         limitations = ["Images were checked for file format and dimensions, not visually reviewed or integrated into a game."]
+        if repair_stop:
+            limitations.append(repair_stop)
         placeholders = any(a.is_mock for a in merged.values())
         if placeholders:
             limitations.append("Mock-generated images are test placeholders and do not fulfill final artwork requirements.")
@@ -301,7 +375,8 @@ class ArtProducer:
         if unresolved:
             limitations.append("Unresolved or quality-rejected sources are not display-ready: " + ", ".join(unresolved))
         manifest = ArtManifest(task_id=context.state.task.task_id, version=previous.version + 1 if previous else 1,
-            config=self.config, proposal_rejections=tuple(rejections),
+            config=self.config, proposal_rejections=tuple(rejections), search_observations=tuple(observations),
+            quality_attempts=tuple(quality_attempts),
             design_ref=context.state.design.document_ref, style_guide=plan.style_guide,
             summary=plan.summary, assets=tuple(merged.values()),
             affected_scenes=tuple(sorted({s for a in produced for s in a.request.affected_scenes})),

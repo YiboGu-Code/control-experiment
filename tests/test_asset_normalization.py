@@ -301,7 +301,7 @@ def test_qa_vetoes_unresolved_real_library_art(tmp_path):
     from types import MappingProxyType
     executor.services_by_role=MappingProxyType({**executor.services_by_role,
         Role.ART_PRODUCER:replace(executor.services_by_role[Role.ART_PRODUCER],libraries=libraries)})
-    adapters[Role.ART_PRODUCER]=ArtProducer(ArtProducerConfig(normalize_assets=True))
+    adapters[Role.ART_PRODUCER]=ArtProducer(ArtProducerConfig(normalize_assets=True, max_quality_repair_rounds=2))
     adapters[Role.DEVELOPER]=Developer(DeveloperConfig(prompt_version="developer.v3",require_normalized_assets=True))
     state=asyncio.run(FixedLoop(executor,adapters,FixedLoopConfig(max_cycles=1)).run())
     assert state.game_revisions

@@ -60,6 +60,42 @@ fields beyond the schema. Keep prose concise so every required field fits in the
 
 def build_prompt(inputs, config, observations, turns_left, rejections=(), rejected=None, *, search_turns=0):
     instructions = INSTRUCTIONS
+    if config.library_first:
+        instructions += """
+LIBRARY-FIRST SOURCING IS REQUIRED:
+Choose suitable ready-to-use Kenney/OpenGameArt files before requesting generated artwork.
+Prefer standalone transparent sprites, tiles and UI; adapt palette/style around usable library
+art instead of generating replacements merely to match an invented artistic style. Inspect
+licenses and atlas metadata; alpha alone is not proof of a single clean subject.
+Before ANY generated asset, search every library the host marks available using relevant
+asset/pack keywords. Each search_observation has a host-issued search_id. On the generated
+asset provide generation_fallback={reason, search_ids, rejected_candidates:[{library,path,reason}]}.
+Cite real searches covering all available libraries. For each cited search returning assets,
+review at least one actual candidate and explain the concrete task/asset mismatch. Never
+invent a path or dismiss usable sprites solely for stylistic preferences. Empty truncated
+searches do not prove absence. If both mounts are absent, the host records this and no
+fallback object is required. Generation remains available for genuine gaps, including when
+the instruction explicitly requires generated art; explain that requirement in the fallback.
+These reasons are auditable model judgments, not a host claim that candidates were viewed.
+"""
+    if config.max_quality_repair_rounds:
+        instructions += """
+BOUNDED QUALITY REPAIR:
+After an accepted plan the host produces candidates and runs the shared normalization checks.
+If input.quality_feedback is present, repair only failed/unresolved candidates, keeping stable
+asset IDs. Read the exact finding codes/messages and earlier image_job. Prefer replacing a
+failed generated asset with a suitable returned library candidate. Otherwise revise the
+generation_prompt and/or justified layout to address the reported problem: simplify the
+subject, remove repeated copies, captions, panels, ground and unrelated props. The next image
+is a new metered generation using your revised prompt, not an unbilled SDK edit or retry.
+Do not resubmit an unchanged rejected request. Never relabel a sprite as background/UI to
+evade checks. Do not regenerate accepted assets. New search, schema corrections and quality
+repair share turns_left and existing model/image/tool budgets. No unlimited repair loop.
+input.remaining_image_calls is the live minimum of role/global image allowances, or null
+for no image-call cap. It includes all earlier attempts; zero permits library imports only.
+Omitted accepted assets are retained; omitted failed assets stay quarantined and keep Art
+partial. If no feasible repair remains, return blocked with the concrete remaining cause.
+"""
     if config.prompt_version in ("art-producer.v3", "art-producer.v4"):
         instructions += """
 Every target_path MUST start with the literal prefix assets/. For example, use
@@ -141,7 +177,8 @@ unless explicitly specified. Generated layout correctness still needs visual rev
                                    "frame_names", "integration_notes", "affected_scenes", "license_handling"],
         "input": inputs,
         "limits": {"max_assets": config.max_assets, "turns_left": turns_left,
-                   "allow_generation": config.allow_generation, "normalize_assets": config.normalize_assets},
+                   "allow_generation": config.allow_generation, "normalize_assets": config.normalize_assets,
+                   "library_first": config.library_first, "max_quality_repair_rounds": config.max_quality_repair_rounds},
         "search_observations": observations}
     if config.prompt_version == "art-producer.v4":
         payload["limits"].update(max_frame_names_per_asset=64, max_grid_cells_per_asset=64)

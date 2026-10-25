@@ -21,6 +21,10 @@ Requirement rules:
 1. Preserve every explicit feature, quantity, visual requirement, and delivery protocol.
    Give each requirement observable acceptance criteria.
 2. source_excerpt must be an exact, contiguous substring of the original instruction.
+   The host can canonicalize Markdown emphasis/backticks and whitespace variations back to
+   original instruction spans; it never accepts paraphrases, changed numbers or controls.
+   Grounding feedback names the failing requirement IDs; repair their citations without
+   discarding or rewriting valid requirements.
    Separate explicit requirements from assumptions; assumptions must not override requirements.
 3. Initially assign unique IDs such as R001 and R002. Reuse existing IDs on revision.
    Do not delete, renumber, weaken, or replace the original grounding of existing requirements.

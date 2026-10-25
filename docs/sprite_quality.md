@@ -67,6 +67,8 @@ python -m pytest tests/test_sprite_quality.py tests/test_image_provider.py tests
 
 ## 由你运行在线场景
 
+素材库优先选择、同一次 Art 调用内的质量反馈修复与引用归一化已接入两个控制器，详见[素材库优先与引用修正](library_first_and_grounding_repair.md)。正式入口在初次产出后最多修复两轮，只重做失败素材，继续受共享预算限制；失败候选保留为诊断证据。
+
 安装现有项目依赖后使用新输出目录，沿用 `.env` 中的聊天与 DashScope 图像配置：
 
 ```bash

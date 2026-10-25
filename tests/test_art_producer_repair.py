@@ -43,7 +43,9 @@ def test_recorded_failure_is_repaired_with_catalog_retained_before_any_image(tmp
         asset("atlas", source="kenney", source_path=relative, generation_prompt=None,
               width=896, height=448, columns=1, rows=1, frame_names=["atlas"],
               integration_notes="Import the whole texture unchanged. Developer must verify regions before selecting tiles."),
-        asset("marker"),
+        asset("marker", generation_fallback={"reason": "The returned atlas has no verified isolated marker region",
+            "search_ids": ["search-001"], "rejected_candidates": [{"library": "kenney", "path": relative,
+                "reason": "Only a large unverified tile sheet was returned; a standalone marker is needed"}]}),
     )
     class GuardedImage(MockImageProvider):
         async def generate(self, prompt, *, timeout):

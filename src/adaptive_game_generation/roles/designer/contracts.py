@@ -31,6 +31,21 @@ class DesignerConfig(Model):
     max_output_tokens: PositiveCount = 8192
     max_prompt_bytes: PositiveCount = 512 * 1024
     max_response_bytes: PositiveCount = 256 * 1024
+    max_grounding_repairs: Annotated[int, Field(strict=True, ge=0, le=2)] = 0
+
+
+class GroundingCorrection(Model):
+    requirement_id: Identifier
+    source_excerpt: Text
+
+
+class GroundingRepair(Model):
+    corrections: Annotated[tuple[GroundingCorrection, ...], Field(min_length=1)]
+
+    @model_validator(mode="after")
+    def unique(self):
+        require_unique((c.requirement_id for c in self.corrections), "grounding correction IDs")
+        return self
 
 
 class RequirementDraft(Model):

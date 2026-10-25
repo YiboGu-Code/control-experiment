@@ -1,14 +1,14 @@
 # Art Producer 开发说明
 
-正式 Loop / Scheduler 入口已启用 [素材规范化与切图](asset_normalization.md)。光栅素材需要显式 layout，原图保留作来源证据，宿主发布逐帧 PNG 和联系表；旧独立示例默认配置仍可读取历史清单。
+正式 Loop / Scheduler 入口及独立 Art 示例已启用 [素材规范化与切图](asset_normalization.md)。光栅素材需要显式 layout，原图保留作来源证据，宿主发布逐帧 PNG 和联系表。底层默认配置仍兼容旧清单；正式入口增加了 [库优先和本轮质量反馈修复](library_first_and_grounding_repair.md)。
 
-[人物精灵质量规则](sprite_quality.md) 会对生成图和素材库人物帧执行共同检查；疑似地面、文字、面板或复杂背景会被隔离，清单保留具体原因且无可用帧，Art 返回 partial。下一次调用应替换或修正源素材，不能以 no_op 忽略问题。生图提示词根据人物、环境、UI 按需选择，尚未把所有角色重构为动态 skills。
+[人物精灵质量规则](sprite_quality.md) 会对生成图和素材库人物帧执行共同检查；疑似地面、文字、面板或复杂背景会被隔离。正式入口将发现和原生成请求回送本轮规划模型，最多再修复 2 轮，仅处理失败素材；仍失败才保留为 partial 交给后续调用。生图提示词区分单张精灵、动画序列、环境与 UI。
 
 Art Producer 已接入公共执行器，为固定 Loop 与 Scheduler 使用同一套角色、提示词、权限和预算逻辑。实现位于 `src/adaptive_game_generation/roles/art_producer/`。
 
-003 后续修复：Fixed Loop 配置 `max_model_turns=6`、`max_search_turns=3`，保留提交和字段纠错额度。搜索上限同时进入模型 schema 和宿主校验；不会偷偷补字段，也不增加图片接口重试。独立角色默认仍为 4 次、未单独限制搜索。新回归使用 003 的实际缺字段回复，详见 [003 诊断](fixed_loop_real_images_003_diagnosis.md)。
+当前正式入口配置 `max_model_turns=8`、`max_search_turns=3`、`max_quality_repair_rounds=2`。搜索、提交、字段纠错和质量反馈共享 8 次文本调用，所有图片尝试计入原有总预算。底层角色默认仍为 4 次规划、0 次质量反馈修复，以兼容历史单轮使用；独立运行示例已显式采用正式配置。003 的旧修复背景见 [003 诊断](fixed_loop_real_images_003_diagnosis.md)。
 
-本次使用真实 GameCraft-Bench `platformer-time-loop/instruction.md` 和此前真实 Designer 调用的设计产物作为输入。Art 规划调用 `.env` 中的真实文本模型；**只有图片生成使用 mock**。完整输入输出见 [审阅记录](examples/art_producer_review/review.md)。原始 instruction 保持不变，没有删除素材库选项，也没有将任务改写成只能生图。
+角色最初开发时使用真实 GameCraft-Bench `platformer-time-loop/instruction.md` 和此前真实 Designer 调用的设计产物作为输入，Art 规划调用 `.env` 中的真实文本模型，只有图片生成使用 mock；历史完整输入输出见 [审阅记录](examples/art_producer_review/review.md)。本次库优先和反馈修复的验证使用保存的真实数据与离线夹具，没有新的在线调用。原始 instruction 保持不变。
 
 ## 职责和产物
 
@@ -18,7 +18,7 @@ Art Producer 已接入公共执行器，为固定 Loop 与 Scheduler 使用同�
 
 - 检索、提交和纠错共用 `max_model_turns`（默认 4），每次文本调用仍通过公共执行器计入预算。错误反馈包含字段位置、网格/尺寸约束和素材来源检查结果；已有检索结果保留。模型必须返回完整替代方案，宿主不会猜测、补齐或静默删除错误字段。
 - 下一次提示包含 `proposal_rejections` 和上次无效回复的至多 8 KiB 摘录；超长枚举不会全部复制回提示。原始回复完整保留在模型调用目录。成功发布的 `asset_manifest.json` 也记录纠错原因；耗尽次数时，运行错误保留具体校验原因。
-- 规则网格仍要求尺寸整除、逐格唯一帧名且最多 64 格。大型或不规则库图集可用 `columns=1, rows=1, frame_names=["atlas"]` 声明为整张纹理，并在 `integration_notes` 交代 Developer 的区域选取需求及不确定性；这不表示宿主已经识别了内部图块。也可继续检索独立图片，不能只列大图集的前 64 格，不能凭文件名编造动画或按钮状态。
+- 规则网格仍要求尺寸整除、逐格唯一帧名且最多 64 格。正式入口遇到大型或不规则库图集，应使用实际返回的 catalog 帧名或有依据的 regions；布局未知时声明 unresolved，保留为不可直接显示的源图。不能用单格声明把整张图集当成人物，也不能凭文件名编造动画或按钮状态。优先继续检索独立图片。
 - 素材来源必须与实际检索结果匹配，库文件和许可证原文保持不变。整个方案通过校验后才执行导入/生图。预算、权限、提供商或生图失败不会触发这套方案纠错；角色调用最终失败后，仍遵循控制器原有规则。
 
 显式指定 v2/v3 时保留原先的方案校验失败即退出行为。新旧角色配置在各自运行中冻结，不在已有清单上切换版本。修复背景和原始证据见 [真实图片运行诊断](fixed_loop_real_images_001_diagnosis.md)。
@@ -30,13 +30,15 @@ Art Producer 已接入公共执行器，为固定 Loop 与 Scheduler 使用同�
 - `asset_manifest.json`：完整版本清单，记录来源、文件引用和哈希、尺寸、透明通道、逐格帧名、过滤方式、建议接入路径、需求引用、影响场景、许可证与生图请求。
 - `art_handoff.md`：供 Developer 审阅的风格与接入说明。
 
+开启本轮质量修复后，原图、许可证、逐帧 PNG 和预览按 `art_attempts/001/`、`002/`、`003/` 分开保存，避免覆盖失败图片或让引用摘要失效。清单的 `quality_attempts` 保存全部候选和质量结果，`search_observations` 保存实际查库记录；最终 `assets` 只指向每个素材的最终候选。Developer 游戏内的稳定目标路径仍为 `assets/normalized/<asset_id>/<frame>.png`，不会打包失败原图。
+
 实际产物均在执行器的 Art Producer 独立命名空间内发布；`assets/...` 是交给 Developer 的建议项目路径。Art Producer 不修改 Godot 游戏工程，不生成脚本、场景、验收证据或需求进度，不关闭 QA 问题。
 
 模型输入、协议、回复和产物内容使用英文。不会自动翻译原始 instruction 或许可证；宿主应提供英文目标和反馈。二进制图片附件只提供引用，并标记 `visually_inspected=false`，没有宣称文本模型看过图片。
 
 ## 模型协议
 
-当前协议为 `art-producer.v3`（历史 `v2` 产物仍可读取）。v3 在输出 schema 中显式标注 `target_path` 必须以 `assets/` 开头，防止模型直接沿用设计文档中的 `sprites/`、`tiles/` 简写；原有目录权限检查保持严格。一次角色调用最多进行 4 次文本规划，角色内部检索不涉及调度其他角色：
+当前协议为 `art-producer.v4`，历史 `v2/v3` 产物仍可读取。输出 schema 显式标注 `target_path` 必须以 `assets/` 开头；原有目录权限检查保持严格。底层默认 4 次、正式入口 8 次文本规划，角色内部检索不涉及调度其他角色：
 
 1. `action=search`：每轮最多检索两个素材库，传入库名、关键词和分页 offset。下一轮获得真实检索结果及许可证。
 2. `action=submit`：返回 `completed`、`no_op` 或 `blocked`，提交资产增量计划或明确阻塞原因。
@@ -45,7 +47,7 @@ Art Producer 已接入公共执行器，为固定 Loop 与 Scheduler 使用同�
 
 初次调用不能 `no_op`。缺少 Designer 规格时直接 `blocked`，不花费模型调用。增量修订复用资产 ID、增加产物版本，保留未修改资产；新资产不能占用已有资产的目标路径。角色配置随清单保存，同一资产历史中不可悄悄更换配置。
 
-只要当前完整清单中仍存在 mock 图片，角色结果就是 **`partial`**。这表示管线可以提交可检查的占位产物，同时正式美术仍待完成。真实素材全部产出时可返回 `completed`，也不表示游戏已经通过 QA。所有资产的 `visual_review` 目前均为 `not_performed`。
+只要当前完整清单中仍存在 mock 图片，或归一化结果为 rejected/unresolved，角色结果就是 **`partial`**。这表示管线可以提交可检查的候选产物，同时正式美术仍待完成。素材全部通过处理后可返回 `completed`，也不表示游戏已经通过 QA。所有资产的 `visual_review` 目前均为 `not_performed`。
 
 ## 两个预下载素材库接口
 
@@ -70,6 +72,10 @@ opengameart  /workspace/assets/library-oga/
 库不存在时正常返回不可用，不下载、不伪造目录、不把隐藏 Benchmark 资料作为素材来源。模型仍可选择另一个可用库，或在任务与宿主允许时选择生成；缺少必要来源时返回阻塞。
 
 当前读取已解压的 PNG、JPEG、WebP、TTF、OTF、OGG、WAV。PNG/JPEG/WebP 进行格式、尺寸和完整性检查；字体、音频保留字节并校验哈希，其引擎加载需后续 Developer 验证。不会解压压缩包或读取 SVG、脚本和场景文件。检索是文件名/路径关键词 OR 匹配，空关键词表示浏览，不是图像语义搜索。每次扫描默认最多 20,000 个目录项，返回最多 20 个候选；扫描截断明确报告，不能据此声称全库为空。较大素材库可调整宿主限额，或替换为实现同一协议的索引服务。
+
+有具体对象词时，`sprite/assets/png` 等通用词不再使所有同名目录都匹配；候选优先按文件名中的具体词排序，同等匹配时优先非图集/预览，分页顺序稳定。先扫描和排序路径，再读取、校验和散列候选。路径排序只是检索帮助，不代表图像已经过语义或透明度验收。
+
+`library_first=true` 默认开启。生成前必须实际搜索每个可用库；生成请求的 `generation_fallback` 引用真实 `search_ids`，并解释返回候选为何不满足该素材。引用伪造搜索/路径、跳过可用库或没有候选评估时，宿主在花费图片调用前拒绝计划。若两个库都不存在，由宿主确认不可用后可直接生成，不伪造库存、不下载、不修改 instruction 的允许来源。候选是否满足审美/语义仍是模型判断，其理由完整留档供审阅。
 
 许可证必须存在且非空，最长 32 KiB。Kenney 查找最近的 `LICENSE.txt`（兼容常见大小写及 `.md`）；OpenGameArt 必须找到**条目子目录中的 `LICENSE.txt`**，不会拿库根目录的说明替代条目许可证。无许可证的素材不进入可选清单。候选记录许可证来源和原文件哈希；发布的 `.txt` 保存解码后的原文，源文件若有 UTF-8 BOM，导出的文本不保留 BOM，所以原许可证哈希与导出文件哈希分别记录。模型的 `license_handling` 是接入建议，不替代原始条款，也不自动保证许可证解释正确。
 

@@ -29,7 +29,7 @@ result = await executor.execute(request, Designer())
 
 正式运行已提供 `OpenAICompatibleTextProvider`，位于 `src/adaptive_game_generation/providers/openai_compatible.py`。它使用异步 SDK 接入 `.env` 中指定的兼容网关，遵守 `TextProvider` 的输入上界、真实用量、取消与超时协议。Designer 本身仍只使用 `RoleTools.generate_text`，不读取凭据、不直接请求网络。原 `LLM/openai/client.py` 的同步接口保留；新适配器沿用其环境变量命名和禁止自动重试的约定，没有用后台线程包装不可取消的同步请求。
 
-每次 Designer 调用至多请求一次模型；不隐式修复 JSON、不自动重试服务失败。下一次是否再次调用仍由控制器决定，消耗保留在共同账目中。原始输入大小、模型输出上限和工具耗时仍受公共执行器约束。
+Designer 先做一次规划。正式 Fixed Loop / Scheduler 入口配置 `max_grounding_repairs=1`，必要时在本轮多调用一次模型，仅修正出错需求的引用；不重写其他需求和章节，不重试服务失败。底层 `DesignerConfig` 默认 0，保留旧的单调用兼容性。格式归一化无需额外模型调用。所有调用、token 和工具耗时仍由公共执行器记账和限额。
 
 Designer 不能修改游戏、素材、问题单、证据、需求进度或验收结论。角色返回 `completed` 只代表本次设计提交完成，不代表游戏已实现或通过 QA。
 
@@ -69,6 +69,10 @@ Designer 不能修改游戏、素材、问题单、证据、需求进度或验�
 首次设计必须包含至少一项需求及八个章节：核心玩法、操作约定、状态转换、内容配置、视觉与 UI、素材需求、实现约定、验收与试玩方案。每项需求必须至少被一个章节覆盖。章节正文允许 Markdown，完整输出须为 JSON 对象。
 
 提交前会拒绝不合法 JSON、重复 JSON 键、未知字段、虚构原文依据、未知依赖、依赖环、缺少章节、未知章节关联需求以及模型越权声明。错误信息不回显模型原文；无效回复会保留模型消耗，但不发布设计或改变共享状态。可以用 `DesignerProposal.model_json_schema()` 和 `DesignDocument.model_json_schema()` 获取输出与产物 schema。
+
+引用先尝试原文匹配；只因 Markdown 强调、反引号或空白/换行不同而不匹配时，会通过字符位置映射恢复为 instruction 中的**真实连续原文片段**再提交。不会做相似度猜测、改大小写、替换词语/数字/按键，也保留代码中的运算符、通配符和标识符。已有需求仍绑定原有引用。真正不匹配的条目以需求编号列出；定向修正只能返回这些编号与 `source_excerpt`，有效需求原样留存。修正后仍执行完整的结构、依赖和原文校验，不通过删除需求来降低验收要求。
+
+发生归一化或定向修正时额外保存 `grounding_audit.json`。对 opt-001 的真实首轮输出复查，原先失败的 R025 已通过格式归一化匹配，38 条需求全部保留，没有额外模型调用。完整证据与操作说明见 [素材优先、质量修复与确定性验证](library_first_and_grounding_repair.md)。这仍不替代 QA 对需求语义及完整性的审查。
 
 自动检查保证结构和引用有效，不能证明模型在语义上提取了所有需求，或保证某个同源改写没有弱化数量、功能等要求。提示词明确要求保留这些约束，后续 QA 仍须对照原始 instruction 审查完整性；本步骤没有把 Designer 的结果当作官方验收依据。
 

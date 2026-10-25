@@ -176,7 +176,11 @@ class MountedAssetLibraries:
         if not root.is_dir():
             return LibrarySearch(library=library, query=query, offset=offset)
         terms = re.findall(r"[\w-]+", query.lower())
-        assets, matches, visited, truncated = [], 0, 0, False
+        # Generic words such as "sprite" used to match every Sprites/ directory,
+        # letting the first unrelated atlas hide actual player images.
+        specific = [t for t in terms if t not in {"sprite", "sprites", "asset", "assets", "pack", "packs", "png", "image", "images"}]
+        terms = specific or terms
+        candidates, assets, matches, visited, truncated = [], [], 0, 0, False
         # scandir iteration bounds memory even when a mount contains huge directories.
         stack = [root]
         while stack:
@@ -200,20 +204,28 @@ class MountedAssetLibraries:
                     relative = path.relative_to(root).as_posix()
                     if path.suffix.lower() not in _TYPES or (terms and not any(t in relative.lower() for t in terms)):
                         continue
-                    await asyncio.sleep(0)
-                    try:
-                        _, asset = self._inspect(library, relative, self.max_asset_bytes)
-                    except (InvalidSubmission, UnicodeError):
-                        continue
-                    matches += 1
-                    if matches <= offset:
-                        continue
-                    assets.append(asset)
-                    if len(assets) > limit:
-                        return LibrarySearch(library=library, query=query, offset=offset,
-                            assets=tuple(assets[:limit]), next_offset=offset + limit)
+                    name = path.stem.lower()
+                    name_hits = sum(t in name for t in terms)
+                    path_hits = sum(t in relative.lower() for t in terms)
+                    sheet = any(t in relative.lower() for t in ("spritesheet", "tilesheet", "atlas", "preview", "sample"))
+                    candidates.append(((-name_hits, -path_hits, sheet, relative.casefold()), relative))
             if truncated:
                 break
+        # Rank paths first; only then read/hash eligible files and license text.
+        # The bounded scan and every returned truncation flag remain explicit.
+        for _, relative in sorted(candidates):
+            await asyncio.sleep(0)
+            try:
+                _, asset = self._inspect(library, relative, self.max_asset_bytes)
+            except (InvalidSubmission, UnicodeError):
+                continue
+            matches += 1
+            if matches <= offset:
+                continue
+            assets.append(asset)
+            if len(assets) > limit:
+                return LibrarySearch(library=library, query=query, offset=offset,
+                    assets=tuple(assets[:limit]), next_offset=offset + limit, scan_truncated=truncated)
         return LibrarySearch(library=library, query=query, offset=offset,
                              assets=tuple(assets), scan_truncated=truncated)
 
