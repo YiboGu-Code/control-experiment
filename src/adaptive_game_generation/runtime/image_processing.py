@@ -9,7 +9,7 @@ from collections import deque
 from PIL import Image, ImageChops, ImageDraw, ImageFilter
 
 PROCESSING_KEY = "agg_asset_processing_v2"
-PIPELINE_VERSION = "asset-pixels.v3"
+PIPELINE_VERSION = "asset-pixels.v4"
 
 
 def remove_matte(image, *, mode="auto", tolerance=40):
@@ -75,7 +75,7 @@ def remove_matte(image, *, mode="auto", tolerance=40):
                    "removed_pixels": count, "softened_edge_pixels": softened}
 
 
-def sprite_findings(image, name, *, check_matte=False):
+def sprite_findings(image, name, *, check_matte=False, kind="sprite"):
     """Bounded structural checks. Suspect cards, bases and glyphs are quarantined.
 
     This cannot prove the absence of baked scenery/text. Actual visual acceptance
@@ -135,6 +135,11 @@ def sprite_findings(image, name, *, check_matte=False):
     purple = sum(a > 32 and min(r, b) > 150 and min(r, b) - g > 95 for r, g, b, a in image.getdata())
     if check_matte and purple > max(4, visible * .08):
         codes.append(("magenta_residue", "Substantial visible magenta remains; inspect matte or legitimate subject colors."))
+    # Solid rectangles, boundary contact and bases are expected terrain/prop
+    # geometry. This is a declared-use profile, not semantic image approval.
+    if kind in ("tile", "tile_set", "prop"):
+        allowed = {"magenta_residue", "text_or_fragments"} if kind == "prop" else {"magenta_residue"}
+        codes = [(code, message) for code, message in codes if code in allowed]
     return [{"frame": name, "code": code, "message": message} for code, message in codes]
 
 
@@ -172,12 +177,18 @@ def prepare_generated(source, job, *, transparency="chroma_key", tolerance=40, r
         operations.append(operation)
         lo, hi = image.getchannel("A").getextrema()
         if lo >= 250 or hi == 0:
-            raise ValueError("Generated image has no usable transparency; inspect source image and ART_IMAGE_TRANSPARENCY")
-    actor = job.transparent_background and layout.kind in ("sprite", "sprite_sheet")
+            # Explicit layouts go through quarantine and bounded Art feedback.
+            # Legacy consumers without normalization must still fail closed.
+            if job.layout is None:
+                raise ValueError("Generated image has no usable transparency; inspect source image and ART_IMAGE_TRANSPARENCY")
+            findings.append({"frame": "source", "code": "missing_transparency" if hi else "empty_sprite",
+                "message": "Requested transparent subject is opaque or empty. Repair the source/background; no usable frames will be published."})
+    checked = layout.kind in ("sprite", "sprite_sheet", "tile", "tile_set", "prop")
     for r in layout.regions:
         rect = (r.x, r.y, r.x + r.width, r.y + r.height)
-        if actor:
-            findings.extend(sprite_findings(image.crop(rect), r.name, check_matte=transparency == "chroma_key"))
+        if checked:
+            findings.extend(sprite_findings(image.crop(rect), r.name,
+                check_matte=job.transparent_background and transparency == "chroma_key", kind=layout.kind))
         operations.append({"operation": "frame_native", "frame": r.name, "source_rect": rect,
                            "target_rect": (r.x, r.y, r.width, r.height), "scale": 1,
                            "resampled": False})

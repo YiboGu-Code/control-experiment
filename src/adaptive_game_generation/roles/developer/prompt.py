@@ -214,6 +214,13 @@ For a Sprite2D with centered=true, offset=(Vector2(0.5,0.5)-pivot)*frame_size al
 requested pivot with its origin. Use shared scaling and alignment across animation frames.
 Replace references to obsolete assets when Art revisions change. Empty or semantically
 incorrect crops still require Art repair; geometric validation is not visual acceptance.
+Check texture identity and footprint against its gameplay role: a controller input glyph is
+not a world switch, and an isometric building is not a side-view door. Fit world props to
+their collision/interaction bounds with uniform scaling, and preview nearby exits, hazards
+and actors for occlusion. Do not enlarge a decorative source to dominate the playable area.
+Keep pressure plates and switches distinct when they are separate gameplay objects. Request
+Art replacement when the source itself has the wrong subject/viewpoint; do not hide that
+problem by repeated code resizing or claim a structural quality pass proves semantic fitness.
 Unresolved layouts remain Art dependencies in remaining_work and cannot be silently omitted.
 The visual helper can inspect normalized contact sheets alongside current scene screenshots.
 """
@@ -275,5 +282,14 @@ same engine checks, fresh MCP review when enabled, and independent Player replay
 Use a level/scenario-reset simulation tick for every visible pulse, particle, flash and HUD
 animation, including cosmetic draw helpers. Never use Time.get_ticks_msec/usec or system
 time for visible effects: identical replay inputs must reproduce pixels as well as state.
+"""
+    payload["instructions"] += """
+Motion contracts are part of the Art handoff. Integrate provided SpriteFrames resources or all
+documented frame textures and state transitions; loading a resource without playing it is not
+animation. Fit native images uniformly to logical actor height and align feet with collision
+bounds. When context reads are enabled, load skill/actor_motion or skill/presentation_checks via
+status=context for detailed implementation guidance. Skills grant no additional tool permissions.
+Check effects after expiration as well as at onset; a flash timer needs simulation-tick decay.
+Inspect ordinary gameplay after menu checks, including movement, jump, landing and ghost spawn.
 """
     return json.dumps(payload, ensure_ascii=False, sort_keys=True)

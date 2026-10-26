@@ -98,6 +98,39 @@ def plan(**changes):
 FINISH = {"action": "finish", "summary": "Summarize observed sessions with bounded coverage"}
 
 
+@pytest.mark.parametrize("controller", ["fixed_loop", "adaptive_scheduler"])
+def test_post_capture_relevance_mapping_does_not_accept_requirements(tmp_path, controller):
+    mapping = {"session_id": "movement-capture", "frame": 0, "requirement_ids": ["R001"],
+               "rationale": "The recorded checkpoint exposes the visible scene; relevance annotation only."}
+    finish = {**FINISH, "evidence_mappings": [mapping]}
+    executor, text, backend = make_run(tmp_path, plan(), finish, controller=controller)
+    result = invoke(executor)
+    assert result.status == "completed", result.error
+    evidence = [e for e in result.proposed_updates.evidence if e.kind in ("playthrough", "replay")]
+    assert all(set(e.requirement_ids) == {"R001", "R002"} for e in evidence)
+    assert len(backend.commands) == 4  # No extra play is invented for a mapping.
+    assert not result.proposed_updates.requirements and executor.state.readiness is None
+    assert report(executor).decisions[-1].evidence_mappings[0].rationale == mapping["rationale"]
+    import os
+    if root := os.environ.get("PIPELINE_REVIEW_ROOT"):
+        folder = Path(root) / ("player-mapping-" + controller)
+        folder.mkdir(parents=True, exist_ok=True)
+        (folder / "model_io.json").write_text(json.dumps(list(zip(text.prompts, [plan(), finish])), indent=2), encoding="utf-8")
+        (folder / "result.json").write_text(result.model_dump_json(indent=2), encoding="utf-8")
+
+
+@pytest.mark.parametrize("change", [dict(session_id="probe"), dict(session_id="movement-replay-1"),
+                                    dict(frame=2), dict(requirement_ids=["invented"])])
+def test_invalid_post_capture_mapping_is_rejected_without_extra_execution(tmp_path, change):
+    mapping = {"session_id": "movement-capture", "frame": 0, "requirement_ids": ["R001"],
+               "rationale": "Offline invalid mapping fixture", **change}
+    executor, _, backend = make_run(tmp_path, plan(), {**FINISH, "evidence_mappings": [mapping]}, FINISH)
+    assert invoke(executor).status == "completed"
+    assert len(backend.commands) == 4 and len(report(executor).protocol_errors) == 1
+    assert all(e.requirement_ids == ("R002",) for e in executor.state.evidence
+               if e.evidence_id.startswith("player-") and e.kind in ("playthrough", "replay"))
+
+
 def test_missing_finding_citation_identifies_exact_item_and_repairs_without_fake_play(tmp_path):
     finding = {"category": "gameplay_concern", "description": "The offline probe contains diagnostic text.",
                "uncertainty": "This is a protocol fixture, not a gameplay claim."}

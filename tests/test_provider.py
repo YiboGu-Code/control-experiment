@@ -22,6 +22,30 @@ def settings(**changes):
     )
 
 
+def test_stream_heartbeats_do_not_extend_total_request_deadline(tmp_path):
+    closed = []
+    class EndlessStream(httpx.AsyncByteStream):
+        async def __aiter__(self):
+            while True:
+                yield b": heartbeat\n\n"
+                await asyncio.sleep(0.01)
+        async def aclose(self):
+            closed.append(True)
+    calls = []
+    def handler(request):
+        calls.append(request)
+        return httpx.Response(200, stream=EndlessStream(), headers={"content-type": "text/event-stream"})
+    async def run():
+        async with OpenAICompatibleTextProvider(settings(stream=True, timeout_seconds=2.0),
+                capture_directory=tmp_path / "calls", http_client=httpx.AsyncClient(transport=httpx.MockTransport(handler))) as provider:
+            with pytest.raises(ProviderFailure, match="timed out"):
+                await asyncio.wait_for(provider.generate("Return JSON", max_output_tokens=128, timeout=30), 8)
+    asyncio.run(run())
+    meta = json.loads((tmp_path / "calls/001/metadata.json").read_bytes())
+    assert meta["error_code"] == "provider_timeout" and "usage" not in meta
+    assert len(calls) == 1 and closed
+
+
 def completion(*, text='{"answer":"example"}', usage=None):
     return {
         "id": "completion-test", "object": "chat.completion", "created": 1, "model": "test-model",

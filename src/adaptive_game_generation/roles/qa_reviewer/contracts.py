@@ -13,6 +13,7 @@ class QAConfig(Model):
     max_output_tokens: PositiveCount = 24000
     max_model_turns: Annotated[int, Field(strict=True, ge=1, le=4)] = 4
     max_grounding_repairs: Annotated[int, Field(strict=True, ge=0, le=3)] = 0
+    grounding_repair_tokens: PositiveCount = 8192
     max_visual_images: Annotated[int, Field(strict=True, ge=0, le=8)] = 0
     max_prompt_bytes: PositiveCount = 1024 * 1024
     max_response_bytes: PositiveCount = 512 * 1024
@@ -41,10 +42,16 @@ class CriterionReview(Model):
         return self
 
 
+class ResolvedCriterion(Model):
+    requirement_id: Identifier
+    criterion_index: Count
+
+
 class IssueReview(Model):
     issue: IssueRecord
     source_ids: tuple[Identifier, ...] = ()
     instruction_excerpt: str = ""
+    resolved_criteria: tuple[ResolvedCriterion, ...] = ()
 
 
 class QAProposal(Model):

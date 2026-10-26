@@ -18,6 +18,7 @@ class ImageServiceInfo(Model):
     output_format: Literal["png"] = "png"
     # Trusted host contract, never inferred from model-authored PNG metadata.
     output_geometry: Literal["requested", "source_native"] = "requested"
+    supports_reference_images: StrictBool = False
 
 
 def raster_info(data: bytes) -> dict:

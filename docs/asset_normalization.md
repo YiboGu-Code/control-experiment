@@ -11,7 +11,7 @@
 
 `AssetRecord.artifact_ref` 继续指向原图。可用帧在 `ProducedAsset.normalization.frames`；不要把来源引用当作游戏纹理。Developer 报告的 `asset_packages` 保留规范化信息，`integrated_assets` 每帧使用 `素材ID:帧名`。
 
-生成图片使用 `asset-pixels.v3`：在接口原图上去除指定的紫红色底，映射布局边界并逐帧裁取，保留原生分辨率和像素，使用无损 PNG 编码，不再缩到规划的小尺寸。`NormalizedFrame.display_size` 记录可选逻辑显示范围，Developer 统一缩放宽高；实际原生坐标、pivot 和动画时长保持完整。原始返回图、候选 PNG 和处理记录保留在 `image_calls/`。详见 [原分辨率保留与生图内容约束](sprite_fidelity.md)。
+生成图片从 `asset-pixels.v3` 起保留原生像素，当前为 `asset-pixels.v4`：在接口原图上去除指定的紫红色底，映射布局边界并逐帧裁取，保留原生分辨率和像素，使用无损 PNG 编码，不再缩到规划的小尺寸。`NormalizedFrame.display_size` 记录可选逻辑显示范围，Developer 统一缩放宽高；实际原生坐标、pivot 和动画时长保持完整。原始返回图、候选 PNG 和处理记录保留在 `image_calls/`。详见 [原分辨率保留与生图内容约束](sprite_fidelity.md)。
 
 公共 `asset_normalize` 对生成 PNG 和素材库图片使用相同质量门槛。素材库帧尺寸、坐标和 pivot 不变：已有有效透明通道时保持像素；没有有效透明通道且边界可靠呈紫红色时，只去除与边界连通的底色，并处理紧邻底色的色边，不全局删除人物内部的紫色细节。UI、字体、背景、瓦片不套用人物轮廓规则。
 
@@ -19,7 +19,9 @@
 
 ## 布局协议
 
-`layout.kind` 支持 `sprite`、`sprite_sheet`、`tile_set`、`background`、`ui`、`source_atlas`。
+`layout.kind` 支持 `sprite`、`sprite_sheet`、`tile`、`tile_set`、`prop`、`background`、`ui`、`source_atlas`。
+
+`asset-pixels.v4` 新增单块地砖 `tile` 和世界道具 `prop`，均可使用 `whole`。合法矩形地砖和道具底座不套用人物背景规则，空图和生成透明度失败仍隔离。库地砖保留颜色与透明度，不把本身为紫红色的地形当作人物底色删除；生成任务明确要求的去底仍由提供商处理并记录。显式布局任务的透明度失败进入 Art 的有限反馈修复，保留其他成功素材。详见 [真实运行诊断](fixed_loop_library_first_001_diagnosis.md)。
 
 | mode | 用途及约束 |
 | --- | --- |

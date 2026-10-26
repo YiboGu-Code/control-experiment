@@ -202,7 +202,11 @@ class EvidenceReader:
             manifest = ArtManifest.model_validate_json(await self.read(developer.art_manifest_ref))
             mock_art = mock_art or any(a.is_mock for a in manifest.assets)
             unresolved_art = unresolved_art or any(a.normalization and a.normalization.status != "materialized" for a in manifest.assets)
+            from ..art_producer.motion import motion_quality
+            unresolved_art = unresolved_art or bool(manifest.production_failures) or bool(motion_quality(manifest.assets))
             self.add("art-manifest", "art_manifest", {"summary": manifest.summary, "limitations": manifest.limitations,
+                "motion_contracts": developer.motion_contracts, "production_failures": manifest.production_failures,
+                "library_availability": manifest.library_availability,
                 "assets": [a.model_dump(mode="json", exclude={"request", "image_job"}) for a in manifest.assets]}, developer.art_manifest_ref, build_ids)
         player_ref, player = await self.report("player-report", PlayerReport, optional=True)
         if player:

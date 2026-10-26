@@ -24,7 +24,7 @@ class FrameRegion(Model):
 
 
 class AssetLayout(Model):
-    kind: Literal["sprite", "sprite_sheet", "tile_set", "background", "ui", "source_atlas"]
+    kind: Literal["sprite", "sprite_sheet", "tile", "tile_set", "prop", "background", "ui", "source_atlas"]
     mode: Literal["whole", "grid", "regions", "catalog", "unresolved"]
     cell_width: Extent | None = None
     cell_height: Extent | None = None
@@ -76,7 +76,7 @@ class AssetQualityFinding(Model):
 
 
 class AssetQualityReport(Model):
-    pipeline: Literal["asset-pixels.v2", "asset-pixels.v3"] = "asset-pixels.v3"
+    pipeline: Literal["asset-pixels.v2", "asset-pixels.v3", "asset-pixels.v4"] = "asset-pixels.v4"
     status: Literal["checks_passed", "rejected", "not_applicable", "mock_not_reviewed"]
     findings: tuple[AssetQualityFinding, ...] = ()
     operations: tuple[dict, ...] = ()

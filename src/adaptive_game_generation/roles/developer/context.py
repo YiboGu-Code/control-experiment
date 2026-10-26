@@ -63,6 +63,8 @@ class ContextWindow:
                           "rejected_proposal": rejected})
         self.resources = {"source/" + p: text for p, text in files.items()}
         self.resources.update({key: serialized(value) for key, value in documents.items() if value is not None})
+        from ..capabilities import DEVELOPER_SKILLS
+        self.resources.update(DEVELOPER_SKILLS)
         # Retain a bounded working set across reads AND source patches. Always
         # resolve against this turn's verified snapshot, never cached old text.
         retained, evicted, retained_bytes = [], [], 0

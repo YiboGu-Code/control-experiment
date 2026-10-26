@@ -43,7 +43,7 @@ def validate_criterion(criterion, reader):
         check("instruction" in criterion.source_ids, "Design conflict must cite the original instruction")
 
 
-def validate_issue(review, state, reader, statuses, previous, requirement_ids):
+def validate_issue(review, state, reader, statuses, previous, requirement_ids, criteria=()):
     issue = review.issue
     check(issue.issue_id in previous or issue.issue_id.startswith("QA-"), "New issue IDs must begin with QA-")
     check(not set(issue.requirement_ids) - requirement_ids, "Issue references unknown requirements")
@@ -72,10 +72,31 @@ def validate_issue(review, state, reader, statuses, previous, requirement_ids):
             times.append(reader.previous_review_time)
         check(not times or all(reader.evidence[i].recorded_at > max(times) for i in new),
               "Issue closure evidence must be recorded after the previous review or finding")
-        check(bool(issue.requirement_ids) and all(statuses[r] == "verified_pass" for r in issue.requirement_ids),
-              "Issue closure requires verified affected requirements")
-        check(all(any(r in reader.evidence[i].requirement_ids for i in new) for r in issue.requirement_ids),
-              "New closure evidence must cover all affected requirements")
+        if review.resolved_criteria:
+            # Concrete defect closure is separate from whole-requirement readiness.
+            # Evidence gaps/design disputes retain the stricter legacy closure rule.
+            check(issue.issue_type in ("runtime", "gameplay", "trace", "visual"),
+                  "Scoped closure is only for concrete observed defects")
+            lookup = {(c.requirement_id, c.criterion_index): c for c in criteria}
+            for scope in review.resolved_criteria:
+                key = (scope.requirement_id, scope.criterion_index)
+                check(scope.requirement_id in old.requirement_ids and key in lookup,
+                      "Closure scope must identify an existing affected criterion")
+                criterion = lookup[key]
+                check(criterion.verdict == "pass", "Scoped closure requires a passing current criterion")
+                validate_criterion(criterion, reader)
+                check(bool(new.intersection(criterion.evidence_ids)) and
+                      bool(set(review.source_ids).intersection(criterion.source_ids)),
+                      "Scoped closure must cite the criterion's fresh evidence and inspected source")
+                if issue.issue_type == "visual":
+                    check(criterion.basis == "visual", "Visual closure requires observed pixels")
+                elif issue.issue_type in ("runtime", "gameplay", "trace"):
+                    check(criterion.basis in ("runtime", "replay"), "Runtime closure requires runtime or replay acceptance")
+        else:
+            check(bool(issue.requirement_ids) and all(statuses[r] == "verified_pass" for r in issue.requirement_ids),
+                  "Issue closure requires verified affected requirements")
+            check(all(any(r in reader.evidence[i].requirement_ids for i in new) for r in issue.requirement_ids),
+                  "New closure evidence must cover all affected requirements")
         check(all(any(i in reader.sources[s]["evidence_ids"] for s in review.source_ids) for i in new),
               "Closure evidence needs inspected source citations")
         if issue.issue_type in ("runtime", "gameplay", "trace"):
@@ -133,7 +154,7 @@ def evaluate(proposal, state, reader):
     errors = []
     for review in proposal.issues:
         try:
-            validate_issue(review, state, reader, statuses, previous, by_requirement.keys())
+            validate_issue(review, state, reader, statuses, previous, by_requirement.keys(), proposal.criteria)
         except InvalidSubmission as exc:
             errors.append(f"{review.issue.issue_id}: {exc}")
         issues[review.issue.issue_id] = review.issue
@@ -183,22 +204,29 @@ class QAReviewer:
         inputs = await reader.collect()
         rejections, proposal, previous_response = [], None, None
         grounding_repairs = 0
+        repair_base, repair_notes = None, ()
         for turn in range(self.config.max_model_turns):
-            prompt = build_prompt(inputs, self.config, rejections, previous_response)
+            from .repair import repair_prompt, merge_patch
+            prompt = (repair_prompt(inputs, repair_base, repair_notes) if repair_base else
+                      build_prompt(inputs, self.config, rejections, previous_response))
             check(len(prompt.encode()) <= self.config.max_prompt_bytes, "QA prompt exceeds its byte limit")
-            raw = await context.tools.generate_text(prompt, max_output_tokens=self.config.max_output_tokens,
-                                                   image_refs=reader.visual_refs)
+            raw = await context.tools.generate_text(prompt,
+                max_output_tokens=min(self.config.max_output_tokens, self.config.grounding_repair_tokens) if repair_base else self.config.max_output_tokens,
+                image_refs=() if repair_base else reader.visual_refs)
             check(len(raw.encode()) <= self.config.max_response_bytes, "QA response exceeds its byte limit")
             try:
-                candidate = QAProposal.model_validate(strict_json(raw))
+                candidate = (merge_patch(repair_base, strict_json(raw), repair_notes,
+                    allowed_sources={s["source_id"] for s in json.loads(prompt)["sources"]} | {"instruction"}) if repair_base else
+                             QAProposal.model_validate(strict_json(raw)))
                 from .grounding import ground_proposal
                 effective, grounding_notes = ground_proposal(candidate, context.state, reader)
                 reviewed, issues, readiness, gates, statuses = evaluate(effective, context.state, reader)
                 if (grounding_notes and grounding_repairs < self.config.max_grounding_repairs
-                        and turn + 1 < self.config.max_model_turns):
+                        and turn + 1 < self.config.max_model_turns and context.tools.remaining_allowance("model_calls") != 0):
                     # Let the model repair citations before publishing conservative
                     # abstentions. This shares the same bounded, metered turn budget.
                     grounding_repairs += 1
+                    repair_base, repair_notes = candidate, grounding_notes
                     previous_response = raw
                     rejections.append({"model_turn": turn + 1, "kind": "grounding",
                         "errors": list(grounding_notes)})
@@ -209,6 +237,12 @@ class QAReviewer:
                 previous_response = raw
                 errors = [f"{'.'.join(map(str, e['loc']))}: {e['msg']}" for e in exc.errors(include_input=False, include_url=False)] if isinstance(exc, ValidationError) else [str(exc)]
                 rejections.append({"model_turn": turn + 1, "errors": errors[:30]})
+                if repair_base:
+                    # A malformed patch cannot erase an otherwise usable review.
+                    proposal = repair_base
+                    effective, grounding_notes = ground_proposal(proposal, context.state, reader)
+                    reviewed, issues, readiness, gates, statuses = evaluate(effective, context.state, reader)
+                    break
         check(proposal is not None, "QA model exhausted its bounded protocol repair attempts")
         check(await context.tools.fingerprint(game.project_ref.path) == game.project_ref.sha256, "Game changed during QA review")
         report = QAReport(config=self.config, task_id=context.state.task.task_id, game_revision_id=game.revision_id,

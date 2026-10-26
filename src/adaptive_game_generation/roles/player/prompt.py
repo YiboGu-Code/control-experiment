@@ -68,6 +68,18 @@ changes without implementing them. Do not fabricate demo files from a plan that 
 Use action=blocked only when an essential dependency prevents play. If protocol_feedback is
 present, correct the rejected decision; no invalid trial was executed. Each correction consumes
 the same model-call budget. Finish with limitations when no further experiment is possible.
+
+Prioritize open Player issues and uncovered acceptance criteria when allocating remaining
+trials. Do not spend every slot repeating already-passing probes. Plan checkpoints before,
+during and after short transitions (rewind flashes, resets, airborne jump, switch activation),
+not only after the transition ends. Ask for a reproducible named scenario if 600 frames
+cannot reach a required behavior. State the exact untested behavior instead of claiming failure.
+After observing a capture you may add evidence_mappings=[{session_id,frame,requirement_ids,
+rationale}] for genuinely relevant requirements omitted from its original plan. Cite an
+existing successful CAPTURE and one of its actual checkpoint frames. Explain observed nodes,
+properties or supplied pixels; do not map a probe, replay, future trial or unobserved behavior.
+This records relevance only; QA still independently judges every criterion. Never map all
+requirements merely because a session ran or replayed. Keep remaining gaps explicit.
 """
 
 
@@ -119,6 +131,15 @@ Read the current numeric limits.trials_left rather than assuming that packaged s
 every slot. Every finding except category=unexplored needs at least one existing session_id,
 including observations of mock-art labels. When protocol_feedback identifies a finding index,
 correct that specific finding; do not merely rewrite the summary or repeat the invalid finding.
+"""
+    instructions += """
+TEMPORAL PRESENTATION: Capture several checkpoints during actual locomotion, jump, landing,
+ghost spawn and effect expiration. Compare actor animation/frame/pose properties across time.
+A changing position or flip_h alone does not prove body animation; a still image cannot establish
+smoothness. Report single-texture sliding, oversized actors, persistent flashes, origin ghosts
+and literal format strings using actual sessions and frames. Check that a brief rewind flash
+clears later. Deterministic replay matching is independent of gameplay/visual quality: a frozen
+or ugly game can replay perfectly. Do not invent animation evidence from source declarations.
 """
     return json.dumps({"prompt_version": config.prompt_version, "instructions": instructions,
         "output_schema": schema, "input": inputs,

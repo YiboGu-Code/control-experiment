@@ -214,27 +214,28 @@ def test_grounding_normalization_preserves_words_numbers_controls_and_operators(
     assert instruction_span("identifier foo", "identifier `_foo_`") is None
 
 
-def test_actual_saved_kenney_asset_is_imported_and_cropped_without_generation(tmp_path):
+def test_actual_saved_kenney_tile_is_imported_without_generation(tmp_path):
+    import io
     from adaptive_game_generation.runtime.asset_libraries import MountedAssetLibraries
     from adaptive_game_generation.runtime.workspace import safe_path
-    root = Path(__file__).resolve().parents[1] / "runs/fixed-loop-developer-opt-001/workspace/public"
-    doc = json.loads((root / "artifacts/art_producer/f0308b8eb711b84113fc1c0c/asset_manifest.json").read_bytes())
-    original = next(a for a in doc["assets"] if a["request"]["source"] == "kenney")
-    source_bytes = safe_path(root, original["record"]["artifact_ref"]["path"]).read_bytes()
+    root = Path(__file__).parent / "fixtures/fixed_loop_library_first_001"
+    doc = json.loads((root / "provenance.json").read_bytes())
+    original = next(a["asset"] for a in doc["assets"] if a["name"] == "terrain")
+    source_bytes = (root / "terrain.png").read_bytes()
     assert hashlib.sha256(source_bytes).hexdigest() == original["source_sha256"]
     mount = tmp_path / "recorded-library-subset"
     selected = safe_path(mount, original["request"]["source_path"])
     selected.parent.mkdir(parents=True)
     selected.write_bytes(source_bytes)
     license_file = safe_path(mount, original["source_license_path"])
-    license_bytes = safe_path(root, original["license_ref"]["path"]).read_bytes()
+    license_bytes = (root / "terrain.license.txt").read_bytes()
     assert hashlib.sha256(license_bytes).hexdigest() == original["source_license_sha256"]
     license_file.write_bytes(license_bytes)
     libraries = MountedAssetLibraries(kenney=mount, opengameart=tmp_path / "missing-oga")
-    # Use the previously verified public region; no reconstructed/fabricated atlas sidecar.
-    request = {**original["request"], "requirement_ids": ["R001"], "layout": original["normalization"]["layout"]}
+    # This is an actual single tile, not an invented atlas region or actor.
+    request = {**original["request"], "requirement_ids": ["R001"], "layout": {"kind": "tile", "mode": "whole"}}
     search = {"action": "search", "summary": "Browse the saved real Kenney subset",
-              "searches": [{"library": "kenney", "query": "onlyObjects"}]}
+              "searches": [{"library": "kenney", "query": "terrain_stone_block", "asset_ids": [original["request"]["asset_id"]]}]}
     replies = [search, proposal(request)]
     executor, text, image = make_run(tmp_path / "case", *replies, libraries=libraries)
     result = invoke(executor, ArtProducer(ArtProducerConfig(normalize_assets=True, max_quality_repair_rounds=2)))
@@ -242,15 +243,15 @@ def test_actual_saved_kenney_asset_is_imported_and_cropped_without_generation(tm
     new = manifest(executor).assets[0]
     assert not image.calls and new.normalization.status == "materialized"
     assert new.source_license_sha256 == original["source_license_sha256"]
-    expected = safe_path(root, original["normalization"]["frames"][0]["artifact_ref"]["path"]).read_bytes()
+    expected = png(Image.open(io.BytesIO(source_bytes)).convert("RGBA"))
     assert executor.workspace.read_public(new.normalization.frames[0].artifact_ref.path).read_bytes() == expected
     target = export_review("recorded-kenney", executor, text, replies)
     if target:
         (target / "source_provenance.json").write_text(json.dumps({
-            "recorded_manifest": str(root / "artifacts/art_producer/f0308b8eb711b84113fc1c0c/asset_manifest.json"),
+            "recorded_manifest": str(root / "provenance.json"),
             "source_sha256": original["source_sha256"], "source_license_sha256": original["source_license_sha256"],
             "expected_frame_sha256": hashlib.sha256(expected).hexdigest(), "image_calls": 0,
-            "scope": "Actual saved Kenney atlas, license and region; subset mount only, not the full live library"
+            "scope": "Actual saved Kenney tile and license; subset mount only, not the full live library"
         }, indent=2) + "\n", encoding="utf-8")
 
 

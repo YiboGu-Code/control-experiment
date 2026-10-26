@@ -1,0 +1,16 @@
+[
+  {
+    "kind": "criterion_abstention",
+    "requirement_id": "R002",
+    "criterion_index": 0,
+    "model_verdict": "pass",
+    "reason": "Evidence kind cannot establish the requested acceptance basis: R002"
+  },
+  {
+    "kind": "criterion_abstention",
+    "requirement_id": "R015",
+    "criterion_index": 0,
+    "model_verdict": "pass",
+    "reason": "Criterion evidence does not cover its requirement: R015"
+  }
+]

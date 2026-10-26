@@ -20,6 +20,17 @@ from test_developer import make_run, invoke, proposal, report, ScriptedSandbox
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def test_scoped_preview_uses_scanner_warnings_without_disabling_security():
+    driver = runpy.run_path(str(ROOT / "configs/godot_mcp/mcp_driver.py"))
+    env = driver["preview_environment"](Path("/tmp/mcp-reviewed"), {
+        "GODOT_MCP_STRICT": "true", "GODOT_MCP_DISABLE_SECURITY": "true",
+        "GODOT_MCP_DISABLE_ELICITATION": "true", "GAMECRAFT_PREVIEW_SCENARIO": "stale"})
+    assert not any(k in env for k in ("GODOT_MCP_STRICT", "GODOT_MCP_DISABLE_SECURITY", "GODOT_MCP_DISABLE_ELICITATION", "GAMECRAFT_PREVIEW_SCENARIO"))
+    assert env["LIBGL_ALWAYS_SOFTWARE"] == "1"
+    assert driver["preview_environment"](Path("/tmp/mcp-reviewed"), {}, "loop_rewrite_imminent")["GAMECRAFT_PREVIEW_SCENARIO"] == "loop_rewrite_imminent"
+    assert driver["TOOLS"] == ("get_scene_tree", "run_project", "simulate_input", "take_screenshot", "get_ui_elements", "get_debug_output", "stop_project")
+
+
 def image_bytes():
     output = io.BytesIO()
     Image.new("RGB", (1280, 720), (30, 50, 70)).save(output, "PNG")

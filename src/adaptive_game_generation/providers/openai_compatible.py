@@ -300,11 +300,12 @@ class OpenAICompatibleTextProvider:
         self._save(directory / "metadata.json", metadata)
         try:
             allowed = min(timeout, self.config.timeout_seconds)
+            metadata["timeout_seconds"] = allowed
             request_timeout = httpx.Timeout(allowed, connect=min(10.0, allowed))
             if self.config.stream:
-                response = await self._receive_stream(payload, directory, request_timeout, metadata)
+                response = await asyncio.wait_for(self._receive_stream(payload, directory, request_timeout, metadata), allowed)
             else:
-                response = await self._client.chat.completions.create(**payload, timeout=request_timeout)
+                response = await asyncio.wait_for(self._client.chat.completions.create(**payload, timeout=request_timeout), allowed)
             # Preserve provider-returned fields, including any reasoning/usage details.
             self._save(directory / "response.json", response.model_dump(mode="json", exclude_unset=True))
             content = response.choices[0].message.content if response.choices else None
@@ -329,7 +330,7 @@ class OpenAICompatibleTextProvider:
         except asyncio.CancelledError:
             metadata.update(status="cancelled", error_code="cancelled")
             raise
-        except APITimeoutError as exc:
+        except (APITimeoutError, asyncio.TimeoutError) as exc:
             metadata.update(status="failed", error_code="provider_timeout", transport_error_type=type(exc.__cause__).__name__)
             raise ProviderFailure("Provider request timed out; no automatic retry was made") from None
         except APIConnectionError as exc:

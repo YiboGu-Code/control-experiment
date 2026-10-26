@@ -28,6 +28,13 @@ Render only the requested background/tile content. Scenery is allowed for this a
 Do not add a player, presentation board, caption, watermark or unrequested UI.
 """
 
+PROP = """ASSET CAPABILITY: one isolated world object.
+Draw only the requested functional object in the game's camera view. A switch is an actual
+world switch, not a console/controller button glyph. A door is a gate/door, not a building.
+The object's own base/body is allowed; no unrelated ground, character, scene, text, labels,
+UI, contact shadow or presentation board. Preserve proportions and the requested background.
+"""
+
 UI = """ASSET CAPABILITY: UI artwork.
 Render only the requested UI component. Do not add a sample gameplay scene or presentation
 board. Keep text out of the image unless the asset request explicitly requires baked glyphs.
@@ -40,4 +47,6 @@ def is_actor(job):
 
 def subject_instructions(job):
     kind = job.layout.kind if job.layout else ("sprite" if job.transparent_background else "background")
+    if kind == "prop":
+        return PROP
     return (SINGLE_SPRITE if len(job.frame_names) == 1 else ACTOR) if kind in ("sprite", "sprite_sheet") else UI if kind == "ui" else ENVIRONMENT

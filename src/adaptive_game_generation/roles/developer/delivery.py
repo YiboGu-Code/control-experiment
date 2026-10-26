@@ -6,6 +6,20 @@ from ...runtime import InvalidSubmission
 from .contracts import PackagedTrace
 
 
+def rank_captures(captures, previous_hashes):
+    """Prefer fresh exploration with input variety; no semantic success inferred."""
+    def rank(session):
+        trace = session.executed_trace
+        actions = [e for e in trace.events if e.type not in ("wait", "mouse_move", "key_up", "mouse_up")]
+        variety = {(e.type, e.keycode, e.button) for e in actions}
+        return (session.trace_ref.sha256 in previous_hashes, -len(variety),
+                -min(len(actions), 30), -trace.duration_frames)
+    ordered = sorted(captures, key=rank)
+    first = [next((s for s in ordered if (s.scenario is None) == ordinary), None) for ordinary in (True, False)]
+    first = [s for s in first if s is not None]
+    return first + [s for s in ordered if s not in first]
+
+
 async def captured_demos(developer, context, current, prior):
     # Local import avoids the Player -> Developer handoff import cycle.
     from ..player.contracts import InputTrace, PlayerReport, normalize_trace
@@ -28,20 +42,12 @@ async def captured_demos(developer, context, current, prior):
         # formerly divergent inputs deterministic. Player must rerun the new bytes.
         captures = [s for s in report.sessions if s.mode == "capture" and s.status == "passed" and s.trace_ref]
         previous_hashes = {p.trace_ref.sha256 for p in prior.packaged_traces} if prior else set()
-        # Prefer newly explored input. Within that group reserve one slot for
+        # Prefer newly explored input within each entry type. Reserve one slot for
         # ordinary entry and one for a named scenario when both exist, rather
         # than exhausting the package with the first two menu captures.
         # This deterministic diversity rule is shared by both controllers;
         # it is not a claim about trace quality or gameplay success.
-        captures.sort(key=lambda s: s.trace_ref.sha256 in previous_hashes)
-        diverse = []
-        for reused in (False, True):
-            group = [s for s in captures if (s.trace_ref.sha256 in previous_hashes) == reused]
-            ordinary = next((s for s in group if s.scenario is None), None)
-            scenario = next((s for s in group if s.scenario is not None), None)
-            first = [s for s in (ordinary, scenario) if s is not None]
-            diverse.extend(first + [s for s in group if s not in first])
-        captures = diverse
+        captures = rank_captures(captures, previous_hashes)
         seen = set()
         for session in captures:
             raw = await developer._read_ref(context, session.trace_ref)

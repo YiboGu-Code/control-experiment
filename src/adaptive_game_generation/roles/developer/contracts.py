@@ -228,6 +228,7 @@ class DeveloperReport(Model):
     model_implementation_claims: tuple[Identifier, ...]
     integrated_assets: tuple[IntegratedAsset, ...]
     asset_packages: tuple[NormalizedAsset, ...] = ()
+    motion_contracts: tuple[dict, ...] = ()
     scenarios: tuple[ScenarioSpec, ...]
     controls: tuple[Text, ...]
     build_attempts: tuple[BuildAttempt, ...]

@@ -14,7 +14,7 @@ schedule the pipeline, close issues or claim gameplay or visual quality has been
 
 Sources: kenney and opengameart are two independent read-only mounted asset libraries.
 Use action=search to browse available libraries by filename/path keywords (OR match), or an
-empty query to browse. Up to two searches per turn; use next_offset to page. A truncated
+empty query to browse. Up to twelve searches per turn; use next_offset to page. A truncated
 scan is incomplete. Only select exact source/path pairs returned in search results. Read and
 respect the supplied original license text; license_handling must explain attribution and
 redistribution obligations. Never invent licenses or claim an OGA item is CC0 without evidence.
@@ -77,6 +77,14 @@ searches do not prove absence. If both mounts are absent, the host records this 
 fallback object is required. Generation remains available for genuine gaps, including when
 the instruction explicitly requires generated art; explain that requirement in the fallback.
 These reasons are auditable model judgments, not a host claim that candidates were viewed.
+When normalization is enabled, each fallback search MUST declare asset_ids (up to four
+related variants). Search one subject/family at a time with specific keywords, e.g. separate
+character, terrain and world-switch searches. Batch those independent searches in one turn.
+Do not combine every game's object into one OR query: the first page may contain only doors
+and says nothing about available characters. A fallback may cite only searches scoped to its
+own asset_id. Refine/page when results are unrelated. Console input glyphs are UI prompts,
+not world switches; isometric buildings are not side-view gates. Choose the correct function
+and camera view before color/style. Empty or unrelated results are not proof of exhaustive absence.
 """
     if config.max_quality_repair_rounds:
         instructions += """
@@ -127,6 +135,7 @@ a continuation or a patch to the rejected JSON. If JSON was incomplete, substant
 the new response, especially frame_names and repetitive prose. Searches and corrections share
 the same turns_left budget. Do not repeat searches whose results are already available.
 """
+    normalization_skill = ""
     if config.normalize_assets:
         start = instructions.index("For raster assets specify")
         end = instructions.index("Give Developer", start)
@@ -135,10 +144,15 @@ the same turns_left budget. Do not repeat searches whose results are already ava
             start = instructions.index("Keep atlas metadata compact.")
             end = instructions.index("Single button images", start)
             instructions = instructions[:start] + instructions[end:]
-        instructions += """
+        normalization_skill = """
 ASSET NORMALIZATION (required for every raster image):
-Supply layout.kind: sprite, sprite_sheet, tile_set, background, ui, or source_atlas.
-Use layout.mode=whole ONLY for a genuine standalone sprite/background/UI with one frame,
+Supply layout.kind: sprite, sprite_sheet, tile, tile_set, prop, background, ui, or source_atlas.
+Use sprite/sprite_sheet for actors; tile for ONE terrain tile, tile_set for a multi-tile atlas;
+prop for standalone world switches, doors, pressure plates and other objects. Tiles may be
+fully opaque rectangular blocks. Props may legitimately have a rectangular body or base.
+Classify by intended use before production; a rejected actor cannot be relabeled to evade
+checks. A structural pass does not establish correct object identity, viewpoint or scale.
+Use layout.mode=whole ONLY for a genuine standalone sprite/tile/prop/background/UI with one frame,
 columns=rows=1. Never label a collage, sheet or multi-tile atlas as a standalone sprite.
 For a regular sheet use mode=grid with cell_width, cell_height, margin_x/y, spacing_x/y,
 columns, rows and frame_names in row-major order (at most 64). Margins and gaps are pixels.
@@ -171,6 +185,22 @@ For running/jumping sprites, request no visible ground, platform, caption, card 
 For generated sheets, request isolated aligned cells with no labels, panels, scenery or gaps
 unless explicitly specified. Generated layout correctness still needs visual review.
 """
+        if not config.progressive_skills:
+            instructions += normalization_skill
+        else:
+            instructions += "\nEvery raster needs a correct layout and native, lossless source pixels. Load asset_layout for slicing and quality rules; source atlases never become display textures.\n"
+    instructions += """
+ACTOR PRESENTATION CONTRACT:
+When require_actor_motion=true, each sprite/sprite_sheet needs motion metadata or membership in
+another actor's motion.clips. Provide appropriate body poses for locomotion/jump/idle, a logical
+display_height and a concrete runtime handoff. A single sliding idle image is not animated.
+Use static only for intentionally motionless game objects, not to evade actor animation. Moving
+enemies are actors, not props. Library frame sets and generated frames use the same contract.
+Use reference_asset_ids when the image service supports references to preserve character identity
+across poses and repairs. These name existing or earlier batch assets, not paths or URLs.
+Keep the established style_guide on incremental repairs. Production failures in previous_manifest
+are pending work; retain completed assets and complete missing candidates within the live budget.
+"""
     payload = {"prompt_version": config.prompt_version, "instructions": instructions,
         "output_schema": ArtTurn.model_json_schema(),
         "mandatory_asset_fields": ["asset_id", "source", "purpose", "requirement_ids", "target_path",
@@ -178,7 +208,8 @@ unless explicitly specified. Generated layout correctness still needs visual rev
         "input": inputs,
         "limits": {"max_assets": config.max_assets, "turns_left": turns_left,
                    "allow_generation": config.allow_generation, "normalize_assets": config.normalize_assets,
-                   "library_first": config.library_first, "max_quality_repair_rounds": config.max_quality_repair_rounds},
+                   "library_first": config.library_first, "max_quality_repair_rounds": config.max_quality_repair_rounds,
+                   "require_actor_motion": config.require_actor_motion},
         "search_observations": observations}
     if config.prompt_version == "art-producer.v4":
         payload["limits"].update(max_frame_names_per_asset=64, max_grid_cells_per_asset=64)
@@ -196,5 +227,15 @@ for schema corrections; do not defer your first submission until the last model 
         remaining = max(0, config.max_search_turns - search_turns)
         payload["limits"]["search_turns_left"] = remaining
         if remaining == 0:
-            payload["output_schema"]["properties"]["action"]["enum"] = ["submit"]
+            payload["output_schema"]["properties"]["action"]["enum"] = ["submit", "load_skills"] if config.progressive_skills else ["submit"]
+    if config.progressive_skills:
+        from ..capabilities import ACTOR_MOTION, REFERENCE_EDIT
+        skills = {"asset_layout": normalization_skill, "actor_motion": ACTOR_MOTION, "reference_edit": REFERENCE_EDIT}
+        payload["skill_catalog"] = {"asset_layout": "Slicing, pivots, native geometry and quality gates",
+            "actor_motion": "State/pose planning, library frame sets and on-screen sizing",
+            "reference_edit": "Identity anchors and bounded reference-image repairs"}
+        payload["loaded_skill_bodies"] = {key: skills[key] for key in inputs.get("loaded_skills", ()) if key in skills}
+        payload["instructions"] += "\nLoad only needed guidance with action=load_skills, skills=[catalog names], summary. Batch up to three. This consumes an ordinary model turn, grants no tool permissions and never relaxes mandatory contracts. Skill bodies remain available once loaded.\n"
+    else:
+        payload["output_schema"]["properties"]["action"]["enum"] = ["search", "submit"] if config.max_search_turns is None or search_turns < config.max_search_turns else ["submit"]
     return json.dumps(payload, ensure_ascii=False, sort_keys=True)

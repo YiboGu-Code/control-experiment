@@ -28,7 +28,7 @@ def ground_proposal(proposal, state, reader):
     requirement_ids = {r.requirement_id for r in state.requirements}
     for item in proposal.issues:
         try:
-            validate_issue(item, state, reader, statuses, previous, requirement_ids)
+            validate_issue(item, state, reader, statuses, previous, requirement_ids, criteria)
             issues.append(item)
         except InvalidSubmission as exc:
             notes.append({"kind": "issue_update_withheld", "issue_id": item.issue.issue_id, "reason": str(exc)})

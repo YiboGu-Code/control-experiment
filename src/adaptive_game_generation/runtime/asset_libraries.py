@@ -116,6 +116,11 @@ class MountedAssetLibraries:
                       "license_policy": "Original nearby LICENSE.txt required; preserve and review its terms"}
                      for name in self._roots)
 
+    def mount_diagnostics(self):
+        """Host-only mount paths for preflight, never included in role catalogs."""
+        return [{"library": name, "root": str(self._root(name)),
+                 "available": self._root(name).is_dir()} for name in self._roots]
+
     def _license(self, root, path, library):
         parent = path.parent
         while True:

@@ -15,7 +15,7 @@ import shutil
 import subprocess
 from types import SimpleNamespace
 
-from PIL import Image
+from PIL import Image, ImageChops
 
 from adaptive_game_generation.runtime import DockerSandbox
 from adaptive_game_generation.runtime.commit import digest_path
@@ -101,7 +101,7 @@ def read_session(directory, job, trace_id, session_id):
     trace = InputTrace.model_validate_json((result / "executed_trace.json").read_bytes())
     expected = InputTrace.model_validate(job["trace"])
     if (driver["status"] != "passed" or driver["project_sha256"] != job["project_sha256"]
-            or driver["network"] != "none" or not all(driver[k] for k in
+            or driver["network"] != "none" or not all(driver[k] is True for k in
                 ("fresh_process", "fresh_user_data", "authored_files_unchanged", "original_project_unchanged"))):
         raise ValueError("Player isolation, source integrity or engine checks failed")
     count = expected.duration_frames
@@ -112,6 +112,9 @@ def read_session(directory, job, trace_id, session_id):
     events = [json.loads(line) for line in (result / "events.jsonl").read_text().splitlines()]
     if events != job["trace"]["events"]:
         raise ValueError("Injected event journal does not match the trace")
+    if any(not isinstance(row.get(key), str) or not re.fullmatch(r"[0-9a-f]{64}", row[key])
+           for row in rows for key in ("state_sha256", "pixels_sha256")):
+        raise ValueError("Missing or malformed per-frame digest")
     for frame in job["checkpoints"]:
         image = Image.open(result / f"frame_{frame:04}.png").convert("RGBA")
         if image.size != (1280, 720) or hashlib.sha256(image.tobytes()).hexdigest() != rows[frame]["pixels_sha256"]:
@@ -120,6 +123,131 @@ def read_session(directory, job, trace_id, session_id):
             raise ValueError("Scene snapshot does not match the recorded state")
     return SimpleNamespace(status="passed", session_id=session_id, trace_id=trace_id,
         state_digests=tuple(r["state_sha256"] for r in rows), pixel_digests=tuple(r["pixels_sha256"] for r in rows)), trace
+
+
+def audit_saved_replay(output, run=None):
+    """Recompute the saved result without Docker or following server absolute paths.
+
+    This verifies the returned files, not an independent attestation of the server.
+    Only the declared traces and the recorded engine/environment are covered.
+    """
+    output = output.resolve()
+    repair = json.loads((output / "repair.json").read_bytes())
+    reported = json.loads((output / "summary.json").read_bytes())
+    preflight = json.loads((output / "docker_preflight.json").read_bytes())
+    if (len(preflight) != 2 or any(p["returncode"] != 0 for p in preflight)
+            or json.loads(preflight[-1]["stdout"]) != reported.get("engine_image_id")
+            or not re.fullmatch(r"sha256:[0-9a-f]{64}", reported.get("engine_image_id", ""))):
+        raise ValueError("Missing or inconsistent frozen engine image provenance")
+    projects = {v: safe_path(output, f"{v}/public/game") for v in ("before", "after")}
+    digests = {"before": repair["original_project_sha256"], "after": repair["patched_project_sha256"]}
+    inventories = {}
+    for variant, project in projects.items():
+        inspect_tree(project)
+        if digest_path(project) != digests[variant]:
+            raise ValueError(f"{variant} project differs from its recorded digest")
+        inventories[variant] = {p.relative_to(project).as_posix(): digest_path(p)
+                                for p in project.rglob("*") if p.is_file()}
+    if inventories["before"].keys() != inventories["after"].keys():
+        raise ValueError("Clock repair unexpectedly added or removed source files")
+    changed = [p for p in inventories["before"] if inventories["before"][p] != inventories["after"][p]]
+    before_code, after_code = ((projects[v] / SCRIPT).read_bytes() for v in ("before", "after"))
+    if (changed != [SCRIPT] or before_code.count(OLD.encode()) != 1
+            or before_code.replace(OLD.encode(), NEW.encode()) != after_code
+            or digest_path(projects["before"] / SCRIPT) != repair["before_source_sha256"]
+            or digest_path(projects["after"] / SCRIPT) != repair["after_source_sha256"]):
+        raise ValueError("Source change does not match the reviewed simulation-clock patch")
+    requests = repair["requests"]
+    trace_ids = [r["trace_id"] for r in requests]
+    if not 1 <= len(requests) <= 10 or len(set(trace_ids)) != len(trace_ids):
+        raise ValueError("Expected 1..10 distinct recorded traces")
+    if any(not isinstance(t, str) or not re.fullmatch(r"[A-Za-z0-9_-]+", t) for t in trace_ids):
+        raise ValueError("Invalid trace identifier")
+    original_verified = None
+    if run is not None:
+        run = run.resolve()
+        state = json.loads((run / "state_final.json").read_bytes())
+        game = state["game_revisions"][-1]
+        original_verified = (game["revision_id"] == repair["game_revision"] and
+            game["project_ref"]["sha256"] == digest_path(safe_path(run / "workspace/public", game["project_ref"]["path"])) == digests["before"])
+        if not original_verified or (output / "instruction.md").read_text(encoding="utf-8") != state["task"]["instruction"]:
+            raise ValueError("Replay source does not match the local registered game/instruction")
+        ref = max((r for r in state["artifacts"] if r["artifact_id"] == "player-report"), key=lambda r: r["version"])
+        report_path = safe_path(run / "workspace/public", ref["path"])
+        if digest_path(report_path) != ref["sha256"]:
+            raise ValueError("Original Player report digest mismatch")
+        source_report = json.loads(report_path.read_bytes())
+        if source_report["project_ref"] != game["project_ref"]:
+            raise ValueError("Original Player report is for a different game")
+        for request in requests:
+            source_job = safe_path(report_path.parent, f"requests/{request['trace_id']}-capture.json")
+            if digest_path(source_job) != request["request_sha256"] or json.loads(source_job.read_bytes()) != request["job"]:
+                raise ValueError("Recorded trace differs from the original Player input")
+    comparisons = {v: [] for v in projects}
+    sessions, captures, trace_checks, warnings = [], {}, [], []
+    screenshots = 0
+    for variant in projects:
+        expected_ids = {t + "-" + m for t in trace_ids for m in ("capture", "replay-1", "replay-2")}
+        if {p.name for p in (output / variant / "sessions").iterdir() if p.is_dir()} != expected_ids:
+            raise ValueError(f"{variant} session coverage is incomplete or unexpected")
+        for request in requests:
+            trace_id = request["trace_id"]
+            capture = None
+            for mode in ("capture", "replay-1", "replay-2"):
+                identity = trace_id + "-" + mode
+                directory = safe_path(output, f"{variant}/sessions/{identity}")
+                inspect_tree(directory)
+                job = json.loads((directory / "request.json").read_bytes())
+                if job != {**request["job"], "project_sha256": digests[variant]}:
+                    raise ValueError("Session input changed between capture/replay or before/after")
+                if json.loads((directory / "process.json").read_bytes())["returncode"] != 0:
+                    raise ValueError("Recorded engine process failed")
+                session, trace = read_session(directory, job, trace_id, identity)
+                sessions.append({"variant": variant, "session_id": identity, "frames": trace.duration_frames})
+                screenshots += len(job["checkpoints"])
+                driver = json.loads((directory / "result/driver.json").read_bytes())
+                for step in driver.get("steps", []):
+                    log = step.get("stderr", "")
+                    if log.strip():
+                        warnings.append({"variant": variant, "session_id": identity, "step": step.get("name"), "stderr": log})
+                if mode == "capture":
+                    capture = session
+                    captures[variant, trace_id] = session
+                else:
+                    comparisons[variant].append(compare_sessions(capture, session).model_dump(mode="json"))
+    if comparisons != reported["comparisons"] or sessions != reported["sessions"]:
+        raise ValueError("Saved summary does not match recomputed complete session evidence")
+    for request in requests:
+        trace_id = request["trace_id"]
+        screenshot_pairs = []
+        for variant in projects:
+            for frame in request["job"]["checkpoints"]:
+                paths = [output / variant / "sessions" / (trace_id + "-" + mode) / "result" / f"frame_{frame:04}.png"
+                         for mode in ("capture", "replay-1")]
+                with Image.open(paths[0]) as a, Image.open(paths[1]) as b:
+                    bands = ImageChops.difference(a.convert("RGBA"), b.convert("RGBA")).split()
+                    mask = bands[0]
+                    for band in bands[1:]:
+                        mask = ImageChops.lighter(mask, band)
+                    screenshot_pairs.append({"variant": variant, "frame": frame,
+                        "different_pixels": sum(mask.histogram()[1:]), "difference_bbox": mask.getbbox()})
+        trace_checks.append({"trace_id": trace_id, "duration_frames": request["job"]["trace"]["duration_frames"],
+            "before_passed": sum(c["status"] == "passed" for c in comparisons["before"] if c["trace_id"] == trace_id),
+            "after_passed": sum(c["status"] == "passed" for c in comparisons["after"] if c["trace_id"] == trace_id),
+            "cross_variant_state_match": captures["before", trace_id].state_digests == captures["after", trace_id].state_digests,
+            "checkpoint_pixel_checks": screenshot_pairs})
+    verified = len(comparisons["after"]) == 2 * len(requests) and all(c["status"] == "passed" for c in comparisons["after"])
+    if reported["real_replay_verified"] is not verified or reported["status"] != ("passed" if verified else "failed"):
+        raise ValueError("Saved overall verdict disagrees with complete replay comparisons")
+    return {"status": "passed" if verified else "failed", "real_replay_verified": verified,
+        "mode": "Offline audit of user-supplied real engine execution; no new engine or model calls",
+        "engine_image_id": reported["engine_image_id"], "original_project_verified_locally": original_verified,
+        "changed_files": changed, "trace_count": len(requests), "session_count": len(sessions),
+        "total_recorded_frames": sum(s["frames"] for s in sessions),
+        "after_compared_frame_pairs": 2 * sum(t["duration_frames"] for t in trace_checks),
+        "verified_checkpoint_images": screenshots, "trace_checks": trace_checks,
+        "comparisons": comparisons, "engine_stderr": warnings,
+        "scope": "These input traces in the recorded image/render environment; not full gameplay/QA acceptance or cross-platform proof"}
 
 
 async def execute(output, repair, image, timeout):
@@ -197,9 +325,26 @@ def main():
     parser.add_argument("--player-image", default="gamecraft-player:4.5.1")
     parser.add_argument("--timeout", type=float, default=180)
     parser.add_argument("--prepare-only", action="store_true")
+    parser.add_argument("--verify-only", action="store_true", help="Audit an existing --output without an engine/model call")
+    parser.add_argument("--audit-output", type=Path, help="New analysis directory for --verify-only (default: --output/analysis)")
     args = parser.parse_args()
     if args.timeout <= 0:
         parser.error("--timeout must be positive")
+    if args.verify_only:
+        if args.prepare_only or args.trace:
+            parser.error("--verify-only audits the entire saved run; do not combine with --prepare-only/--trace")
+        destination = args.audit_output or args.output / "analysis"
+        if destination.exists():
+            parser.error("Use a new audit output directory; preserve previous analysis")
+        try:
+            result = audit_saved_replay(args.output, args.run)
+        except (ValueError, OSError, KeyError, TypeError) as exc:
+            result = {"status": "invalid_evidence", "real_replay_verified": False, "error": f"{type(exc).__name__}: {exc}"}
+        save(destination / "verification.json", result)
+        print(json.dumps({k: result[k] for k in ("status", "real_replay_verified", "error") if k in result}))
+        return 0 if result["status"] == "passed" else 1
+    if args.audit_output:
+        parser.error("--audit-output requires --verify-only")
     repair = prepare(args.run, args.output, args.trace)
     if args.prepare_only:
         print("Prepared two immutable comparison projects; real replay has NOT run.")

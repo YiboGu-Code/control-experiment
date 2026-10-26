@@ -60,6 +60,7 @@ def runner_settings(tmp_path, monkeypatch, *, with_image=True):
     settings = {"MODEL_GATEWAY_API_KEY": "RUNNER-SECRET",
                 "MODEL_GATEWAY_BASE_URL": "https://runner.cn-beijing.maas.aliyuncs.com/compatible-mode/v1"}
     settings.update({prefix + "_MODEL": "fixture-text-model" for prefix in runner["PREFIXES"].values()})
+    settings["ART_LIBRARY_POLICY"] = "optional"  # This fixture intentionally has no mounted libraries.
     if with_image:
         settings["ART_IMAGE_MODEL"] = "fixture-image-model"
         settings["ART_IMAGE_TIMEOUT_SECONDS"] = "701"
@@ -70,7 +71,8 @@ def runner_settings(tmp_path, monkeypatch, *, with_image=True):
             monkeypatch.delenv(name)
     env.write_text("\n".join(f"{key}={value}" for key, value in settings.items()) + "\n")
     monkeypatch.setitem(runner["run_live"].__globals__, "engine_settings",
-        lambda values: {"developer": {"image_id": "offline-engine"}, "player": {"image_id": "offline-player"}})
+        lambda values: {role: {"image_id": image, "cpus": 2.0, "memory_mb": 3072, "tmpfs_mb": 512, "pids": 128}
+                       for role, image in (("developer", "offline-engine"), ("player", "offline-player"))})
     return runner, env
 
 

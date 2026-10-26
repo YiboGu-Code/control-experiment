@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import base64
 import os
 from pathlib import Path
 from typing import Literal, Mapping
@@ -35,6 +36,7 @@ class DashScopeImageConfig(ImageGatewayConfig):
     prompt_extend: StrictBool | None = None
     watermark: StrictBool = False
     seed: int | None = Field(default=None, ge=0, le=2147483647, strict=True)
+    reference_images: StrictBool = True
 
     @field_validator("size", mode="before")
     @classmethod
@@ -74,6 +76,7 @@ class DashScopeImageConfig(ImageGatewayConfig):
                 transparency=setting("TRANSPARENCY", "chroma_key"), resample=setting("RESAMPLE", "nearest"),
                 chroma_tolerance=int(setting("CHROMA_TOLERANCE", "40")),
                 prompt_extend=boolean("PROMPT_EXTEND"), watermark=boolean("WATERMARK", False),
+                reference_images=boolean("REFERENCE_IMAGES", True),
                 seed=int(setting("SEED")) if setting("SEED") is not None else None, **options)
         except (ValueError, TypeError):
             raise ProviderFailure("Invalid DashScope image configuration; check ART_IMAGE_BASE_URL and native parameters in docs/fixed_loop.md") from None
@@ -83,6 +86,13 @@ class DashScopeImageConfig(ImageGatewayConfig):
         settings.update(adapter="dashscope-multimodal-images.v1", sdk_method="AioMultiModalConversation.call",
                         endpoint_path="/services/aigc/multimodal-generation/generation")
         return settings
+
+    @property
+    def info(self):
+        # Only advertise a documented native edit-capable family. Other native
+        # providers retain text-to-image behavior and cannot silently drop refs.
+        return super().info.revised(supports_reference_images=self.reference_images and
+            self.model.startswith(("qwen-image-3.0", "qwen-image-2.0", "qwen-image-2.1", "qwen-image-edit")))
 
 
 def require_dashscope_sdk():
@@ -127,6 +137,14 @@ class DashScopeImageProvider(OpenAICompatibleImageProvider):
         return {"model": self.config.model,
                 "input": {"messages": [{"role": "user", "content": [{"text": self._image_prompt(job)}]}]},
                 "parameters": parameters}
+
+    def _attach_references(self, payload, images):
+        if not self.info.supports_reference_images:
+            raise ProviderFailure("This image configuration does not support reference images")
+        content = payload["input"]["messages"][0]["content"]
+        content[:0] = [{"image": "data:" + image.media_type + ";base64," +
+                        base64.b64encode(image.data).decode("ascii")} for image in images]
+        return payload
 
     async def _generate(self, payload, job, directory, metadata, timeout):
         import aiohttp

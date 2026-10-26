@@ -28,12 +28,15 @@ class ArtProducerConfig(Model):
     normalize_assets: bool = False
     library_first: bool = True
     max_quality_repair_rounds: Annotated[int, Field(strict=True, ge=0, le=3)] = 0
+    require_actor_motion: bool = False
+    progressive_skills: bool = False
 
 
 class SearchRequest(Model):
     library: Literal["kenney", "opengameart"]
     query: Annotated[str, StringConstraints(max_length=256)]
     offset: Annotated[int, Field(strict=True, ge=0, le=20000)] = 0
+    asset_ids: Annotated[tuple[AssetId, ...], Field(max_length=4)] = ()
 
 
 class RejectedLibraryCandidate(Model):
@@ -51,6 +54,30 @@ class GenerationFallback(Model):
     def unique(self):
         require_unique(self.search_ids, "fallback search IDs")
         require_unique(((r.library, r.path) for r in self.rejected_candidates), "rejected candidates")
+        return self
+
+
+class MotionClip(Model):
+    name: AssetId
+    # Cross-asset references permit clean individual library frames in one clip.
+    frames: Annotated[tuple[str, ...], Field(min_length=1, max_length=32)]
+    fps: Annotated[int, Field(strict=True, ge=1, le=30)] = 8
+    loop: bool = True
+
+
+class ActorMotion(Model):
+    mode: Literal["frames", "procedural", "static"]
+    display_height: Annotated[int, Field(strict=True, ge=8, le=512)]
+    clips: Annotated[tuple[MotionClip, ...], Field(max_length=8)] = ()
+    implementation: Text
+
+    @model_validator(mode="after")
+    def coherent(self):
+        require_unique((c.name for c in self.clips), "animation names")
+        if (self.mode == "frames") != bool(self.clips):
+            raise ValueError("Frame animation requires clips; procedural/static modes use implementation notes")
+        if self.mode == "frames" and not any(len(set(c.frames)) >= 2 for c in self.clips):
+            raise ValueError("An animated actor needs at least one clip with two distinct frame references")
         return self
 
 
@@ -75,6 +102,8 @@ class AssetDraft(Model):
     affected_scenes: Annotated[tuple[Text, ...], Field(min_length=1)]
     license_handling: Text
     layout: AssetLayout | None = None
+    reference_asset_ids: Annotated[tuple[AssetId, ...], Field(max_length=3)] = ()
+    motion: ActorMotion | None = None
 
     @model_validator(mode="after")
     def consistent_request(self):
@@ -106,12 +135,16 @@ class AssetDraft(Model):
             raise ValueError("Only raster assets have layouts")
         require_unique(self.requirement_ids, "asset requirements")
         require_unique(self.frame_names, "frame names")
+        require_unique(self.reference_asset_ids, "reference assets")
+        if self.reference_asset_ids and self.source != "generate":
+            raise ValueError("Only generated assets use image references")
         return self
 
 
 class ArtTurn(Model):
-    action: Literal["search", "submit"]
-    searches: Annotated[tuple[SearchRequest, ...], Field(max_length=2)] = ()
+    action: Literal["search", "submit", "load_skills"]
+    skills: Annotated[tuple[Literal["asset_layout", "actor_motion", "reference_edit"], ...], Field(max_length=3)] = ()
+    searches: Annotated[tuple[SearchRequest, ...], Field(max_length=12)] = ()
     status: Literal["completed", "no_op", "blocked"] | None = None
     summary: Text
     style_guide: Text | None = None
@@ -120,6 +153,13 @@ class ArtTurn(Model):
 
     @model_validator(mode="after")
     def consistent_turn(self):
+        if self.action == "load_skills":
+            if not self.skills or self.searches or self.status or self.assets or self.style_guide or self.blockers:
+                raise ValueError("Skill loads contain only skills and a summary")
+            require_unique(self.skills, "skill names")
+            return self
+        if self.skills:
+            raise ValueError("Only load_skills may request skill bodies")
         if self.action == "search":
             if not self.searches or self.status or self.assets or self.style_guide or self.blockers:
                 raise ValueError("Search turns contain only searches and a summary")
@@ -176,6 +216,8 @@ class ArtManifest(Model):
     proposal_rejections: tuple[ProposalRejection, ...] = ()
     search_observations: tuple[dict, ...] = ()
     quality_attempts: tuple[dict, ...] = ()
+    production_failures: tuple[dict, ...] = ()
+    library_availability: tuple[dict, ...] = ()
     design_ref: ArtifactRef
     style_guide: Text
     summary: Text

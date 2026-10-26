@@ -180,3 +180,9 @@ python examples/art_producer_demo.py --output runs/art-producer-live-new
 成功调用报告输入 19,720 token（其中缓存 18,048）、输出 6,877 token。完整模型请求、原始回复、图片请求、PNG、清单、状态与账目均见 [审阅记录](examples/art_producer_review/review.md)。Art Producer 本步骤不生成游戏或执行正式评测。后续已实现 [Developer](developer.md)，读取原始 instruction、Designer 规格及本 Art 清单接入工程；其独立测试见 [Developer 审阅记录](examples/developer_review/review.md)。
 
 最终离线回归为 **194 passed / 4 skipped**，Art 真实模型集成另有 **1 passed**。收尾时还修复了公共导入器在 Windows 上自动转换 instruction 换行的问题，新增 LF/CRLF 原始字节保留测试；历史真实调用记录不回写，细节见 [审阅备注](examples/art_producer_review/reviewer_notes.md)。
+
+## 参考图、动作合同与按需技能
+
+正式 Fixed Loop / Scheduler 入口启用 `require_actor_motion` 与 `progressive_skills`；旧单角色配置仍可显式关闭。`reference_asset_ids` 由宿主解析为公开、哈希校验过的图像，支持时送入原生 DashScope SDK；不支持时拒绝引用请求。一次生成仍是一笔预算，部分成功的批次在传输失败后保留已完成素材，`production_failures` 明确列出待办。
+
+`motion` 区分 frames/procedural/static，声明显示高度和状态帧；跨库独立 PNG 也能组成同一角色的动画。新增三个固定技能 asset_layout、actor_motion、reference_edit，模型可按需加载，预算和工具权限不扩大。详情与英文协议例子见 [library-first-002 诊断](fixed_loop_library_first_002_diagnosis.md)。

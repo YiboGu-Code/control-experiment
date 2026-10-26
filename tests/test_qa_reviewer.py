@@ -207,6 +207,35 @@ def test_qa_gateway_prefix_and_secret_exclusion(tmp_path):
     assert "fixture-secret" not in json.dumps(config.public_settings())
 
 
+@pytest.mark.parametrize("malformed_patch", [False, True])
+def test_scoped_grounding_repair_keeps_review_publishable(tmp_path, malformed_patch):
+    class ScopedText(OfflineText):
+        async def generate(self, prompt, **kwargs):
+            data = json.loads(prompt)
+            self.prompts.append(data)
+            if len(self.prompts) == 1:
+                proposal = conservative_proposal(data["input"])
+                proposal["criteria"][0].update(verdict="pass", evidence_ids=["unknown-evidence"], source_ids=["unknown-source"])
+                return TextReply(json.dumps(proposal), 1000, 2000)
+            assert data["protocol"] == "qa-grounding-patch.v1"
+            assert len(data["criteria"]) == 1 and "input" not in data and not kwargs.get("images")
+            assert kwargs["max_output_tokens"] == 8192
+            row = {**data["criteria"][0], "verdict": "insufficient", "evidence_ids": [], "source_ids": []}
+            return TextReply("not JSON" if malformed_patch else json.dumps({"criteria": [row]}), 300, 200)
+    async def run():
+        text = ScopedText()
+        executor, workspace = await setup_executor(tmp_path / "workspace", text)
+        result = await executor.execute(request(executor), QAReviewer(QAConfig(max_grounding_repairs=1)))
+        assert result.status == "completed", result
+        assert len(text.prompts) == 2 and not executor.state.readiness.ready
+        ref = next(r for r in result.artifact_refs if r.artifact_id == "qa-report")
+        report = QAReport.model_validate_json(workspace.read_public(ref.path).read_bytes())
+        assert len(report.effective_proposal.criteria) == len(report.proposal.criteria)
+        assert report.effective_proposal.criteria[0].verdict == "insufficient"
+        assert bool(report.grounding_notes) == malformed_patch
+    asyncio.run(run())
+
+
 def test_successful_static_verification_has_current_provenance(inspected):
     raw = conservative_proposal(inspected.inputs)
     # Synthetic semantic decisions here test bookkeeping, not actual game acceptance.
@@ -248,6 +277,57 @@ def test_issue_closure_requires_new_successful_current_runtime_evidence(inspecte
     else:
         _, issues, *_ = evaluate(QAProposal.model_validate(raw), state, reader)
         assert next(i for i in issues if i.issue_id == old.issue_id).status == "closed"
+
+
+@pytest.mark.parametrize("fault", [None, "insufficient", "unknown_scope", "stale", "gap", "wrong_source"])
+def test_scoped_defect_closes_without_certifying_unrelated_requirement(inspected, fault):
+    raw = conservative_proposal(inspected.inputs)
+    original = inspected.reader.evidence["player-0001-play-04"]
+    old = IssueRecord(issue_id="QA-focused-defect", issue_type="evidence_gap" if fault == "gap" else "runtime",
+        severity="major", description="Offline concrete defect associated with two requirements",
+        suggested_role="developer", requirement_ids=("R001", "R002"), evidence_ids=(original.evidence_id,),
+        reproduction_steps=("Replay the affected checkpoint",))
+    fresh = original.revised(evidence_id="fresh-scoped-proof", recorded_at=original.recorded_at + timedelta(days=1),
+                             requirement_ids=("R001",), outcome="passed")
+    state = inspected.state.revised(evidence=(*inspected.state.evidence, fresh), issues=(old,))
+    reader = copy.copy(inspected.reader)
+    reader.evidence = {**reader.evidence, fresh.evidence_id: fresh}
+    reader.sources = copy.deepcopy(reader.sources)
+    source = "snapshot:near_rewind_probe-capture:180"
+    reader.sources[source]["evidence_ids"].append(fresh.evidence_id)
+    reader.previous_review_time = fresh.recorded_at if fault == "stale" else original.recorded_at
+    criterion = next(c for c in raw["criteria"] if c["requirement_id"] == "R001")
+    criterion.update(verdict="insufficient" if fault == "insufficient" else "pass", basis="runtime",
+                     evidence_ids=[fresh.evidence_id], source_ids=[source])
+    raw["issues"].append({"issue": old.revised(status="closed", resolution="Fresh checkpoint proves the specific defect fixed; unrelated tests remain pending",
+        evidence_ids=(fresh.evidence_id,)).model_dump(mode="json"),
+        "source_ids": ["project-inventory" if fault == "wrong_source" else source],
+        "resolved_criteria": [{"requirement_id": "R001", "criterion_index": 999 if fault == "unknown_scope" else criterion["criterion_index"]}]})
+    proposal = QAProposal.model_validate(raw)
+    if fault:
+        with pytest.raises(InvalidSubmission):
+            evaluate(proposal, state, reader)
+    else:
+        requirements, issues, readiness, gates, _ = evaluate(proposal, state, reader)
+        assert next(i for i in issues if i.issue_id == old.issue_id).status == "closed"
+        assert next(r for r in requirements if r.requirement_id == "R002").status != "verified_pass"
+        assert not readiness.ready and not gates["all_requirements_verified"]
+        from adaptive_game_generation.roles.qa_reviewer.grounding import ground_proposal
+        effective, notes = ground_proposal(proposal, state, reader)
+        assert not notes and next(i for i in effective.issues if i.issue.issue_id == old.issue_id).issue.status == "closed"
+        import os
+        if root := os.environ.get("PIPELINE_REVIEW_ROOT"):
+            folder = Path(root) / "qa-scoped-closure"
+            folder.mkdir(parents=True, exist_ok=True)
+            (folder / "proposal.json").write_text(proposal.model_dump_json(indent=2), encoding="utf-8")
+            (folder / "readiness.json").write_text(readiness.model_dump_json(indent=2), encoding="utf-8")
+            (folder / "validation_input.json").write_text(json.dumps({
+                "mode": "Offline scoped-closure protocol fixture; no live acceptance claim",
+                "state": state.model_dump(mode="json"),
+                "current_evidence": {k: e.model_dump(mode="json") for k, e in reader.evidence.items()},
+                "inspected_sources": reader.sources,
+                "previous_review_time": reader.previous_review_time.isoformat(),
+                "gates": reader.gates}, indent=2), encoding="utf-8")
 
 
 @pytest.mark.parametrize("fault", ["events", "journal", "checkpoint", "isolation", "comparison"])

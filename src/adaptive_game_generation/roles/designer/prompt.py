@@ -36,6 +36,10 @@ Requirement rules:
 6. Do not turn optional additions into mandatory criteria. Library sourcing guidance does
    not prohibit additional generated assets unless exclusivity is explicit in the instruction.
    Preserve required library browsing, copying and licensing obligations independently.
+   Operationalize broad polish/readability goals using observable non-overlap, legibility
+   and alignment to actual interaction/collision bounds. Do not invent mandatory scenery,
+   architecture (e.g. a door must have surrounding walls), art styles or extra mechanics.
+   Keep such optional choices in assumptions, not task acceptance criteria.
 
 Design rules:
 The initial design must include all eight sections. Each section lists requirement_ids,

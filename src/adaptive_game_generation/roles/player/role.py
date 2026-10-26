@@ -90,6 +90,7 @@ class Player:
             "game_revision": game.model_dump(mode="json"), "requirements": [r.model_dump(mode="json") for r in context.state.requirements],
             "developer": {"ref": ref.model_dump(mode="json"), "summaries": developer.summaries,
                 "controls": developer.controls, "scenarios": [s.model_dump(mode="json") for s in developer.scenarios],
+                "motion_contracts": developer.motion_contracts,
                 "limitations": developer.limitations, "mock_art": any(a.is_mock for a in developer.integrated_assets),
                 "inspection_hints": [{"request": r.request.model_dump(mode="json"), "result": r.result,
                     "visual_interpretation": r.visual_review, "formal_player_evidence": False}
@@ -283,6 +284,8 @@ class Player:
                                 "use category=unexplored and describe the uncertainty instead. "
                                 "No trial in this rejected response was executed."
                             )
+                    from .mapping import validate_mappings, apply_mappings
+                    validate_mappings(decision.evidence_mappings, sessions, known_requirements)
                     prepared = []
                     checkpoint_errors = []
                     for plan in decision.trials:
@@ -306,6 +309,7 @@ class Player:
                     errors.append({"model_turn": turn + 1, "error": str(exc)[:1500], "rejected_response": raw})
                     continue
                 decisions.append(decision)
+                apply_mappings(decision.evidence_mappings, sessions, bindings)
                 if decision.action in ("finish", "blocked"):
                     finished = decision.action == "finish"
                     break
@@ -365,6 +369,8 @@ class Player:
         lines.extend(["", "## Model observations (not QA verdicts)", ""])
         for decision in report.decisions:
             lines.append("- " + decision.summary)
+            lines.extend(f"- Evidence relevance: {m.session_id} frame {m.frame} -> {', '.join(m.requirement_ids)}. {m.rationale} (Not acceptance.)"
+                         for m in decision.evidence_mappings)
             lines.extend(f"- {f.category}: {f.description} Sessions: {', '.join(f.session_ids) or 'none'}. Uncertainty: {f.uncertainty}" for f in decision.findings)
             lines.extend("- " + item for item in decision.limitations)
         lines.extend(["", "## Limits and next steps", "", *["- " + item for item in report.limitations], ""])

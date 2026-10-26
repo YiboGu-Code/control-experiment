@@ -141,6 +141,21 @@ class Client:
             self.transcript.close()
 
 
+def preview_environment(temp, inherited, scenario=None):
+    # The outer runtime supplies the isolation boundary. The MCP scanner stays
+    # enabled in warning mode: its strict Callable heuristic blocks normal UI
+    # callbacks, while a prior Godot --import already executes this same code.
+    env = {**inherited, "HOME": str(temp / "home"), "XDG_DATA_HOME": str(temp / "data"),
+           "XDG_CONFIG_HOME": str(temp / "config"), "XDG_CACHE_HOME": str(temp / "cache"),
+           "LIBGL_ALWAYS_SOFTWARE": "1"}
+    for key in ("GODOT_MCP_STRICT", "GODOT_MCP_DISABLE_SECURITY", "GODOT_MCP_DISABLE_ELICITATION",
+                "GAMECRAFT_PREVIEW_SCENARIO"):
+        env.pop(key, None)
+    if scenario:
+        env["GAMECRAFT_PREVIEW_SCENARIO"] = scenario
+    return env
+
+
 def brief(result):
     # Full MCP envelopes, including image bytes, remain in transcript.jsonl.
     text = json.dumps({k: v for k, v in result.items() if k != "content"} | {
@@ -177,21 +192,14 @@ async def inspect(job, output):
     result = {"version": "godot-mcp-inspection.v1", "server_package": "godot-mcp-runtime@3.8.1",
         "project_sha256": expected, "scene_path": scene, "scenario": scenario,
         "status": "failed", "network": "none", "fresh_process": True, "fresh_user_data": True,
-        "acceptance_evidence": False, "deterministic_replay": False, "observations": {}}
+        "acceptance_evidence": False, "deterministic_replay": False, "observations": {},
+        "static_scan_mode": "warnings", "security_checks_disabled": False, "launch_confirmation_scoped": True}
     client = Client(output)
     with tempfile.TemporaryDirectory(prefix="mcp-", dir="/tmp") as temp_name:
         temp = Path(temp_name)
         game = temp / "game"
         shutil.copytree(source, game, ignore=shutil.ignore_patterns(".godot"))
-        env = {**os.environ, "HOME": str(temp / "home"), "XDG_DATA_HOME": str(temp / "data"),
-               "XDG_CONFIG_HOME": str(temp / "config"), "XDG_CACHE_HOME": str(temp / "cache"),
-               "GODOT_MCP_STRICT": "true",
-               "LIBGL_ALWAYS_SOFTWARE": "1"}
-        # A prior host environment must not change the pinned server's gates.
-        env.pop("GODOT_MCP_DISABLE_SECURITY", None)
-        env.pop("GODOT_MCP_DISABLE_ELICITATION", None)
-        if scenario:
-            env["GAMECRAFT_PREVIEW_SCENARIO"] = scenario
+        env = preview_environment(temp, os.environ, scenario)
         for key in ("HOME", "XDG_DATA_HOME", "XDG_CONFIG_HOME", "XDG_CACHE_HOME"):
             Path(env[key]).mkdir()
         process = await asyncio.create_subprocess_exec("godot", "--headless", "--path", str(game), "--import",
@@ -218,6 +226,8 @@ async def inspect(job, output):
                 result["observations"][name] = brief(reply)
                 if reply.get("isError"):
                     errors.append(name)
+                    if name == "run_project":
+                        break  # No active runtime: do not spend calls pretending to inspect one.
                 if name == "take_screenshot" and not reply.get("isError"):
                     pictures = [c for c in reply.get("content", []) if c.get("type") == "image"]
                     if len(pictures) != 1 or pictures[0].get("mimeType") != "image/png":

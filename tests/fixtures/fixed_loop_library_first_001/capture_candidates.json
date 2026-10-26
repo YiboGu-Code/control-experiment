@@ -1,0 +1,446 @@
+{
+  "source_report": "artifacts/player/f9fa53851f0f0068b38592ff/player_report.json",
+  "sessions": [
+    {
+      "session_id": "ordinary_title_start-capture",
+      "mode": "capture",
+      "status": "passed",
+      "scenario": null,
+      "trace_ref": {
+        "artifact_id": "player-trace-ordinary_title_start",
+        "version": 1,
+        "kind": "input_trace",
+        "path": "artifacts/player/f9fa53851f0f0068b38592ff/demo_outputs/ordinary_title_start.json",
+        "created_by": "player",
+        "media_type": "application/json",
+        "sha256": "deef4714c2396dd2517dd06528b2864f46ecf117d8286aef5641727b978f7e16"
+      },
+      "executed_trace": {
+        "scenario": null,
+        "duration_frames": 120,
+        "events": [
+          {
+            "frame": 30,
+            "type": "mouse_down",
+            "button": "left",
+            "x": 639,
+            "y": 603,
+            "keycode": null
+          },
+          {
+            "frame": 31,
+            "type": "mouse_up",
+            "button": "left",
+            "x": 639,
+            "y": 603,
+            "keycode": null
+          }
+        ]
+      }
+    },
+    {
+      "session_id": "scenario_c1_l1_pre_rewind-capture",
+      "mode": "capture",
+      "status": "passed",
+      "scenario": "c1_l1_pre_rewind",
+      "trace_ref": {
+        "artifact_id": "player-trace-scenario_c1_l1_pre_rewind",
+        "version": 1,
+        "kind": "input_trace",
+        "path": "artifacts/player/f9fa53851f0f0068b38592ff/demo_outputs/scenario_c1_l1_pre_rewind.json",
+        "created_by": "player",
+        "media_type": "application/json",
+        "sha256": "b0963f8b9b1bc990791ddb7873d9539d203b3dedf199c06ac2741bab4432d9e4"
+      },
+      "executed_trace": {
+        "scenario": "c1_l1_pre_rewind",
+        "duration_frames": 540,
+        "events": [
+          {
+            "frame": 10,
+            "type": "key_down",
+            "button": null,
+            "x": null,
+            "y": null,
+            "keycode": "D"
+          },
+          {
+            "frame": 50,
+            "type": "key_up",
+            "button": null,
+            "x": null,
+            "y": null,
+            "keycode": "D"
+          },
+          {
+            "frame": 60,
+            "type": "key_down",
+            "button": null,
+            "x": null,
+            "y": null,
+            "keycode": "SPACE"
+          },
+          {
+            "frame": 61,
+            "type": "key_up",
+            "button": null,
+            "x": null,
+            "y": null,
+            "keycode": "SPACE"
+          },
+          {
+            "frame": 70,
+            "type": "key_down",
+            "button": null,
+            "x": null,
+            "y": null,
+            "keycode": "D"
+          },
+          {
+            "frame": 110,
+            "type": "key_up",
+            "button": null,
+            "x": null,
+            "y": null,
+            "keycode": "D"
+          },
+          {
+            "frame": 120,
+            "type": "key_down",
+            "button": null,
+            "x": null,
+            "y": null,
+            "keycode": "ENTER"
+          },
+          {
+            "frame": 121,
+            "type": "key_up",
+            "button": null,
+            "x": null,
+            "y": null,
+            "keycode": "ENTER"
+          },
+          {
+            "frame": 130,
+            "type": "key_down",
+            "button": null,
+            "x": null,
+            "y": null,
+            "keycode": "D"
+          },
+          {
+            "frame": 170,
+            "type": "key_up",
+            "button": null,
+            "x": null,
+            "y": null,
+            "keycode": "D"
+          },
+          {
+            "frame": 180,
+            "type": "key_down",
+            "button": null,
+            "x": null,
+            "y": null,
+            "keycode": "A"
+          },
+          {
+            "frame": 210,
+            "type": "key_up",
+            "button": null,
+            "x": null,
+            "y": null,
+            "keycode": "A"
+          },
+          {
+            "frame": 220,
+            "type": "key_down",
+            "button": null,
+            "x": null,
+            "y": null,
+            "keycode": "SPACE"
+          },
+          {
+            "frame": 221,
+            "type": "key_up",
+            "button": null,
+            "x": null,
+            "y": null,
+            "keycode": "SPACE"
+          },
+          {
+            "frame": 230,
+            "type": "key_down",
+            "button": null,
+            "x": null,
+            "y": null,
+            "keycode": "E"
+          },
+          {
+            "frame": 231,
+            "type": "key_up",
+            "button": null,
+            "x": null,
+            "y": null,
+            "keycode": "E"
+          }
+        ]
+      }
+    },
+    {
+      "session_id": "ordinary_title_level1_play_probe-capture",
+      "mode": "capture",
+      "status": "passed",
+      "scenario": null,
+      "trace_ref": {
+        "artifact_id": "player-trace-ordinary_title_level1_play_probe",
+        "version": 1,
+        "kind": "input_trace",
+        "path": "artifacts/player/f9fa53851f0f0068b38592ff/demo_outputs/ordinary_title_level1_play_probe.json",
+        "created_by": "player",
+        "media_type": "application/json",
+        "sha256": "48f2690d0db9d8462dfb982c54bbdd79c8909cd65388b20d0332292bab067681"
+      },
+      "executed_trace": {
+        "scenario": null,
+        "duration_frames": 420,
+        "events": [
+          {
+            "frame": 30,
+            "type": "mouse_down",
+            "button": "left",
+            "x": 639,
+            "y": 603,
+            "keycode": null
+          },
+          {
+            "frame": 31,
+            "type": "mouse_up",
+            "button": "left",
+            "x": 639,
+            "y": 603,
+            "keycode": null
+          },
+          {
+            "frame": 90,
+            "type": "mouse_down",
+            "button": "left",
+            "x": 640,
+            "y": 232,
+            "keycode": null
+          },
+          {
+            "frame": 91,
+            "type": "mouse_up",
+            "button": "left",
+            "x": 640,
+            "y": 232,
+            "keycode": null
+          },
+          {
+            "frame": 150,
+            "type": "mouse_down",
+            "button": "left",
+            "x": 640,
+            "y": 232,
+            "keycode": null
+          },
+          {
+            "frame": 151,
+            "type": "mouse_up",
+            "button": "left",
+            "x": 640,
+            "y": 232,
+            "keycode": null
+          },
+          {
+            "frame": 160,
+            "type": "key_down",
+            "button": null,
+            "x": null,
+            "y": null,
+            "keycode": "D"
+          },
+          {
+            "frame": 175,
+            "type": "key_up",
+            "button": null,
+            "x": null,
+            "y": null,
+            "keycode": "D"
+          },
+          {
+            "frame": 180,
+            "type": "key_down",
+            "button": null,
+            "x": null,
+            "y": null,
+            "keycode": "E"
+          },
+          {
+            "frame": 181,
+            "type": "key_up",
+            "button": null,
+            "x": null,
+            "y": null,
+            "keycode": "E"
+          },
+          {
+            "frame": 190,
+            "type": "key_down",
+            "button": null,
+            "x": null,
+            "y": null,
+            "keycode": "SPACE"
+          },
+          {
+            "frame": 191,
+            "type": "key_up",
+            "button": null,
+            "x": null,
+            "y": null,
+            "keycode": "SPACE"
+          },
+          {
+            "frame": 200,
+            "type": "key_down",
+            "button": null,
+            "x": null,
+            "y": null,
+            "keycode": "D"
+          },
+          {
+            "frame": 220,
+            "type": "key_up",
+            "button": null,
+            "x": null,
+            "y": null,
+            "keycode": "D"
+          },
+          {
+            "frame": 240,
+            "type": "key_down",
+            "button": null,
+            "x": null,
+            "y": null,
+            "keycode": "A"
+          },
+          {
+            "frame": 270,
+            "type": "key_up",
+            "button": null,
+            "x": null,
+            "y": null,
+            "keycode": "A"
+          },
+          {
+            "frame": 300,
+            "type": "wait",
+            "button": null,
+            "x": null,
+            "y": null,
+            "keycode": null
+          }
+        ]
+      }
+    },
+    {
+      "session_id": "scenario_c1_l1_reset_after_rewind-capture",
+      "mode": "capture",
+      "status": "passed",
+      "scenario": "c1_l1_pre_rewind",
+      "trace_ref": {
+        "artifact_id": "player-trace-scenario_c1_l1_reset_after_rewind",
+        "version": 1,
+        "kind": "input_trace",
+        "path": "artifacts/player/f9fa53851f0f0068b38592ff/demo_outputs/scenario_c1_l1_reset_after_rewind.json",
+        "created_by": "player",
+        "media_type": "application/json",
+        "sha256": "94228f3b9965a101407ec32c001ad9e61a3180c31ca142744db0fa05e3ec615c"
+      },
+      "executed_trace": {
+        "scenario": "c1_l1_pre_rewind",
+        "duration_frames": 360,
+        "events": [
+          {
+            "frame": 200,
+            "type": "mouse_down",
+            "button": "left",
+            "x": 1155,
+            "y": 35,
+            "keycode": null
+          },
+          {
+            "frame": 201,
+            "type": "mouse_up",
+            "button": "left",
+            "x": 1155,
+            "y": 35,
+            "keycode": null
+          },
+          {
+            "frame": 350,
+            "type": "wait",
+            "button": null,
+            "x": null,
+            "y": null,
+            "keycode": null
+          }
+        ]
+      }
+    },
+    {
+      "session_id": "scenario_level_complete_ready_attempt-capture",
+      "mode": "capture",
+      "status": "passed",
+      "scenario": "level_complete_ready",
+      "trace_ref": {
+        "artifact_id": "player-trace-scenario_level_complete_ready_attempt",
+        "version": 1,
+        "kind": "input_trace",
+        "path": "artifacts/player/f9fa53851f0f0068b38592ff/demo_outputs/scenario_level_complete_ready_attempt.json",
+        "created_by": "player",
+        "media_type": "application/json",
+        "sha256": "7d87edf7811ba3cc6454f3cfb40a0c97b08546440d71840b50eec5bbacc497a8"
+      },
+      "executed_trace": {
+        "scenario": "level_complete_ready",
+        "duration_frames": 300,
+        "events": [
+          {
+            "frame": 10,
+            "type": "key_down",
+            "button": null,
+            "x": null,
+            "y": null,
+            "keycode": "D"
+          },
+          {
+            "frame": 40,
+            "type": "key_up",
+            "button": null,
+            "x": null,
+            "y": null,
+            "keycode": "D"
+          },
+          {
+            "frame": 120,
+            "type": "wait",
+            "button": null,
+            "x": null,
+            "y": null,
+            "keycode": null
+          },
+          {
+            "frame": 250,
+            "type": "wait",
+            "button": null,
+            "x": null,
+            "y": null,
+            "keycode": null
+          }
+        ]
+      }
+    }
+  ]
+}

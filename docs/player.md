@@ -1,5 +1,12 @@
 # Player: real play, input capture and deterministic replay
 
+`PlayerDecision.evidence_mappings` can annotate relevance after capture using
+`{session_id, frame, requirement_ids, rationale}`. Only an existing successful
+capture and an actually saved checkpoint in this invocation are eligible. Probe,
+replay, future-session and unknown-requirement references are rejected. The host
+retains the rationale in the report and adds the relevance mapping to capture
+and replay evidence; it does not mark any requirement passed or alter recordings.
+
 Optional [Developer MCP inspection](godot_mcp.md) adds current-project diagnostic
 hints to Player's input. These are test-planning hints, not captured inputs or
 acceptance evidence. The common executor also permits Player to use the read-only

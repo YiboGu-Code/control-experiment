@@ -1,0 +1,323 @@
+{
+  "source_run": "runs/fixed-loop-library-first-001",
+  "assets": [
+    {
+      "name": "terrain",
+      "asset": {
+        "request": {
+          "asset_id": "platform_tile",
+          "source": "kenney",
+          "source_path": "2D/new-platformer-pack/Sprites/Tiles/Default/terrain_stone_block.png",
+          "generation_prompt": null,
+          "generation_fallback": null,
+          "purpose": "Display-ready stone terrain tile for readable platform and floor construction.",
+          "requirement_ids": [
+            "R001",
+            "R013",
+            "R015",
+            "R016"
+          ],
+          "target_path": "assets/tiles/platform_tile.png",
+          "width": 64,
+          "height": 64,
+          "transparent_background": true,
+          "columns": 1,
+          "rows": 1,
+          "frame_names": [
+            "platform_tile"
+          ],
+          "filter_mode": "linear",
+          "integration_notes": "Original source is source-only; load only the derived normalized frame at assets/normalized/platform_tile/platform_tile.png. Use at 64x64 logical pixels with linear filtering and one uniform render scale; do not stretch, resize, or repaint texture pixels. Place as a standalone TileMap or Sprite2D tile with top-left grid alignment; collision should match the visible block bounds. For longer surfaces, repeat horizontally or combine neighboring terrain variants. Preserve alpha. Visual acceptance remains pending.",
+          "affected_scenes": [
+            "Gameplay"
+          ],
+          "license_handling": "Source copied unchanged from Kenney New Platformer Pack 1.1 using the nearby original license file 2D/new-platformer-pack/License.txt. The supplied license is CC0/public domain for personal, educational, and commercial use; crediting Kenney or www.kenney.nl is optional but not mandatory. Preserve the original license text and source metadata alongside the copied asset. Mounted library content is not modified.",
+          "layout": {
+            "kind": "sprite",
+            "mode": "whole",
+            "cell_width": null,
+            "cell_height": null,
+            "margin_x": 0,
+            "margin_y": 0,
+            "spacing_x": 0,
+            "spacing_y": 0,
+            "regions": []
+          }
+        },
+        "record": {
+          "asset_id": "platform_tile",
+          "artifact_ref": {
+            "artifact_id": "art-asset-platform_tile-attempt-003",
+            "version": 2,
+            "kind": "asset",
+            "path": "artifacts/art_producer/f0308b8eb711b84113fc1c0c/art_attempts/003/assets/tiles/platform_tile.png",
+            "created_by": "art_producer",
+            "media_type": "image/png",
+            "sha256": "ddcb8851134f9269d7b8a0cba63a3a5749a267990451c266e13ffe69b6d64961"
+          },
+          "purpose": "Display-ready stone terrain tile for readable platform and floor construction.",
+          "source": "kenney:2D/new-platformer-pack/Sprites/Tiles/Default/terrain_stone_block.png",
+          "license": "\t\r\n\r\n\tNew Platformer Pack (1.1)\r\n\r\n\tCreated/distributed by Kenney (www.kenney.nl)\r\n\tCreation date: 03-12-2025\r\n\t\r\n\t\t\t------------------------------\r\n\r\n\tLicense: (Creative Commons Zero, CC0)\r\n\thttp://creativecommons.org/publicdomain/zero/1.0/\r\n\r\n\tYou can use this content for personal, educational, and commercial purposes.\r\n\r\n\tSupport by crediting 'Kenney' or 'www.kenney.nl' (this is not a requirement)\r\n\r\n\t\t\t------------------------------\r\n\r\n\t\u2022 Website : www.kenney.nl\r\n\t\u2022 Donate  : www.kenney.nl/donate\r\n\r\n\t\u2022 Patreon : patreon.com/kenney\r\n\t\r\n\tFollow on social media for updates:\r\n\r\n\t\u2022 Twitter:\t twitter.com/KenneyNL\r\n\t\u2022 BlueSky:\t kenney.bsky.social\r\n\t\u2022 Instagram:\t instagram.com/kenney_nl",
+          "integration_notes": "Original image is source-only and must not be loaded by the game. Use normalized frames: . Filter: linear. Preserve frame pivots and durations from the manifest. Native frame dimensions can exceed logical display_size. Use a single uniform render scale; never resize or stretch texture files. Original source is source-only; load only the derived normalized frame at assets/normalized/platform_tile/platform_tile.png. Use at 64x64 logical pixels with linear filtering and one uniform render scale; do not stretch, resize, or repaint texture pixels. Place as a standalone TileMap or Sprite2D tile with top-left grid alignment; collision should match the visible block bounds. For longer surfaces, repeat horizontally or combine neighboring terrain variants. Preserve alpha. Visual acceptance remains pending. License handling: Source copied unchanged from Kenney New Platformer Pack 1.1 using the nearby original license file 2D/new-platformer-pack/License.txt. The supplied license is CC0/public domain for personal, educational, and commercial use; crediting Kenney or www.kenney.nl is optional but not mandatory. Preserve the original license text and source metadata alongside the copied asset. Mounted library content is not modified. Visual acceptance remains pending."
+        },
+        "is_mock": false,
+        "width": 64,
+        "height": 64,
+        "has_alpha": true,
+        "source_sha256": "ddcb8851134f9269d7b8a0cba63a3a5749a267990451c266e13ffe69b6d64961",
+        "source_license_path": "2D/new-platformer-pack/License.txt",
+        "source_license_sha256": "f0bc5a99a4710f75a2d507e2ab153025af203d9a6b5a698df737a47684316077",
+        "license_ref": {
+          "artifact_id": "art-license-platform_tile-attempt-003",
+          "version": 1,
+          "kind": "document",
+          "path": "artifacts/art_producer/f0308b8eb711b84113fc1c0c/art_attempts/003/licenses/platform_tile.txt",
+          "created_by": "art_producer",
+          "media_type": "text/plain",
+          "sha256": "f0bc5a99a4710f75a2d507e2ab153025af203d9a6b5a698df737a47684316077"
+        },
+        "image_job": null,
+        "visual_review": "not_performed",
+        "normalization": {
+          "protocol": "asset-normalization.v1",
+          "asset_id": "platform_tile",
+          "source_ref": {
+            "artifact_id": "art-asset-platform_tile-attempt-003",
+            "version": 2,
+            "kind": "asset",
+            "path": "artifacts/art_producer/f0308b8eb711b84113fc1c0c/art_attempts/003/assets/tiles/platform_tile.png",
+            "created_by": "art_producer",
+            "media_type": "image/png",
+            "sha256": "ddcb8851134f9269d7b8a0cba63a3a5749a267990451c266e13ffe69b6d64961"
+          },
+          "source_target_path": "assets/tiles/platform_tile.png",
+          "source_width": 64,
+          "source_height": 64,
+          "layout": {
+            "kind": "sprite",
+            "mode": "whole",
+            "cell_width": null,
+            "cell_height": null,
+            "margin_x": 0,
+            "margin_y": 0,
+            "spacing_x": 0,
+            "spacing_y": 0,
+            "regions": []
+          },
+          "layout_source": null,
+          "source_only": true,
+          "status": "rejected",
+          "frames": [],
+          "preview_ref": {
+            "artifact_id": "normalized-ec07c80633256f635eefcc3d",
+            "version": 1,
+            "kind": "asset",
+            "path": "artifacts/art_producer/f0308b8eb711b84113fc1c0c/art_attempts/003/asset_previews/platform_tile.png",
+            "created_by": "art_producer",
+            "media_type": "image/png",
+            "sha256": "a0b159e8a2fe2a6929f4a5afda97f5ec5a052a089594a7f8e05f82996bafc7b1"
+          },
+          "visual_review": "not_performed",
+          "limitations": [
+            "Structural sprite checks are conservative heuristics, not OCR, semantic segmentation or visual acceptance.",
+            "Quarantined asset: diagnostic preview only. Replace or correct the source; no derived textures may enter the game."
+          ],
+          "quality": {
+            "pipeline": "asset-pixels.v3",
+            "status": "rejected",
+            "findings": [
+              {
+                "frame": "platform_tile",
+                "code": "opaque_sprite",
+                "message": "No usable transparent space around the actor; background may be baked in."
+              },
+              {
+                "frame": "platform_tile",
+                "code": "rectangular_panel",
+                "message": "Foreground nearly fills a rectangle; possible card, scenery or background panel."
+              },
+              {
+                "frame": "platform_tile",
+                "code": "wide_base",
+                "message": "Wide solid band under the subject; possible ground/platform or caption panel."
+              },
+              {
+                "frame": "platform_tile",
+                "code": "clipped_or_background",
+                "message": "Too much foreground touches cell boundaries; inspect frame layout/background."
+              },
+              {
+                "frame": "platform_tile",
+                "code": "solid_component_panel",
+                "message": "A foreground component nearly fills a rectangle; possible scenic/presentation panel."
+              }
+            ],
+            "operations": [
+              {
+                "frame": "platform_tile",
+                "operation": "preserve_alpha",
+                "removed_pixels": 0
+              }
+            ],
+            "semantic_review": "not_performed"
+          }
+        }
+      }
+    },
+    {
+      "name": "world_switch",
+      "asset": {
+        "request": {
+          "asset_id": "switch_blue_off",
+          "source": "opengameart",
+          "source_path": "platformer-art-complete-pack-often-updated/Request pack/Tiles/laserSwitchBlueOff.png",
+          "generation_prompt": null,
+          "generation_fallback": null,
+          "purpose": "Required switch in inactive or off state.",
+          "requirement_ids": [
+            "R003",
+            "R004",
+            "R007",
+            "R013",
+            "R016"
+          ],
+          "target_path": "assets/sprites/switch_blue_off.png",
+          "width": 70,
+          "height": 70,
+          "transparent_background": true,
+          "columns": 1,
+          "rows": 1,
+          "frame_names": [
+            "switch_blue_off"
+          ],
+          "filter_mode": "linear",
+          "integration_notes": "Load only derived normalized frame assets/normalized/switch_blue_off/switch_blue_off.png; original library source is source-only. Use at native 70x70 logical pixels, linear filtering, center pivot or center-bottom pivot matching switch_blue_on so toggling does not shift. Do not stretch texture files. Use this off-state sprite for required switches; swap to switch_blue_on when held. Keep transparent alpha clean and visually separate from background tiles.",
+          "affected_scenes": [
+            "Gameplay",
+            "PuzzleObjects"
+          ],
+          "license_handling": "Source copied unchanged from OpenGameArt platformer-art-complete-pack-often-updated. License is CC0 from platformer-art-complete-pack-often-updated/LICENSE.txt. Preserve original license text and source metadata; no attribution required, but retain the license file with the copied asset. No modification to mounted library content.",
+          "layout": {
+            "kind": "sprite",
+            "mode": "whole",
+            "cell_width": null,
+            "cell_height": null,
+            "margin_x": 0,
+            "margin_y": 0,
+            "spacing_x": 0,
+            "spacing_y": 0,
+            "regions": []
+          }
+        },
+        "record": {
+          "asset_id": "switch_blue_off",
+          "artifact_ref": {
+            "artifact_id": "art-asset-switch_blue_off-attempt-003",
+            "version": 1,
+            "kind": "asset",
+            "path": "artifacts/art_producer/f3846261acec79fb86d29ad7/art_attempts/003/assets/sprites/switch_blue_off.png",
+            "created_by": "art_producer",
+            "media_type": "image/png",
+            "sha256": "ccb7acbc0b23ed34b9e0d6e0f9946c6c2adfbd9119e0e5881c5ea6a3f5ca5194"
+          },
+          "purpose": "Required switch in inactive or off state.",
+          "source": "opengameart:platformer-art-complete-pack-often-updated/Request pack/Tiles/laserSwitchBlueOff.png",
+          "license": "Title: platformer-art-complete-pack-often-updated\nSource: https://opengameart.org/content/platformer-art-complete-pack-often-updated\nLicense: CC0\n",
+          "integration_notes": "Original image is source-only and must not be loaded by the game. Use normalized frames: . Filter: linear. Preserve frame pivots and durations from the manifest. Native frame dimensions can exceed logical display_size. Use a single uniform render scale; never resize or stretch texture files. Load only derived normalized frame assets/normalized/switch_blue_off/switch_blue_off.png; original library source is source-only. Use at native 70x70 logical pixels, linear filtering, center pivot or center-bottom pivot matching switch_blue_on so toggling does not shift. Do not stretch texture files. Use this off-state sprite for required switches; swap to switch_blue_on when held. Keep transparent alpha clean and visually separate from background tiles. License handling: Source copied unchanged from OpenGameArt platformer-art-complete-pack-often-updated. License is CC0 from platformer-art-complete-pack-often-updated/LICENSE.txt. Preserve original license text and source metadata; no attribution required, but retain the license file with the copied asset. No modification to mounted library content. Visual acceptance remains pending."
+        },
+        "is_mock": false,
+        "width": 70,
+        "height": 70,
+        "has_alpha": true,
+        "source_sha256": "ccb7acbc0b23ed34b9e0d6e0f9946c6c2adfbd9119e0e5881c5ea6a3f5ca5194",
+        "source_license_path": "platformer-art-complete-pack-often-updated/LICENSE.txt",
+        "source_license_sha256": "da5b7231fbd4ccd510947b61d1f6bf7f2c3950e5f8ef6bbf16ef72b2cebd94b1",
+        "license_ref": {
+          "artifact_id": "art-license-switch_blue_off-attempt-003",
+          "version": 1,
+          "kind": "document",
+          "path": "artifacts/art_producer/f3846261acec79fb86d29ad7/art_attempts/003/licenses/switch_blue_off.txt",
+          "created_by": "art_producer",
+          "media_type": "text/plain",
+          "sha256": "da5b7231fbd4ccd510947b61d1f6bf7f2c3950e5f8ef6bbf16ef72b2cebd94b1"
+        },
+        "image_job": null,
+        "visual_review": "not_performed",
+        "normalization": {
+          "protocol": "asset-normalization.v1",
+          "asset_id": "switch_blue_off",
+          "source_ref": {
+            "artifact_id": "art-asset-switch_blue_off-attempt-003",
+            "version": 1,
+            "kind": "asset",
+            "path": "artifacts/art_producer/f3846261acec79fb86d29ad7/art_attempts/003/assets/sprites/switch_blue_off.png",
+            "created_by": "art_producer",
+            "media_type": "image/png",
+            "sha256": "ccb7acbc0b23ed34b9e0d6e0f9946c6c2adfbd9119e0e5881c5ea6a3f5ca5194"
+          },
+          "source_target_path": "assets/sprites/switch_blue_off.png",
+          "source_width": 70,
+          "source_height": 70,
+          "layout": {
+            "kind": "sprite",
+            "mode": "whole",
+            "cell_width": null,
+            "cell_height": null,
+            "margin_x": 0,
+            "margin_y": 0,
+            "spacing_x": 0,
+            "spacing_y": 0,
+            "regions": []
+          },
+          "layout_source": null,
+          "source_only": true,
+          "status": "rejected",
+          "frames": [],
+          "preview_ref": {
+            "artifact_id": "normalized-6bd58304fc5ad0365f355bc9",
+            "version": 1,
+            "kind": "asset",
+            "path": "artifacts/art_producer/f3846261acec79fb86d29ad7/art_attempts/003/asset_previews/switch_blue_off.png",
+            "created_by": "art_producer",
+            "media_type": "image/png",
+            "sha256": "73111810c84e4ee3039579ac99fae0e97bcaccf9ab4c73ca927a4a0c608b2cb3"
+          },
+          "visual_review": "not_performed",
+          "limitations": [
+            "Structural sprite checks are conservative heuristics, not OCR, semantic segmentation or visual acceptance.",
+            "Quarantined asset: diagnostic preview only. Replace or correct the source; no derived textures may enter the game."
+          ],
+          "quality": {
+            "pipeline": "asset-pixels.v3",
+            "status": "rejected",
+            "findings": [
+              {
+                "frame": "switch_blue_off",
+                "code": "wide_base",
+                "message": "Wide solid band under the subject; possible ground/platform or caption panel."
+              },
+              {
+                "frame": "switch_blue_off",
+                "code": "clipped_or_background",
+                "message": "Too much foreground touches cell boundaries; inspect frame layout/background."
+              }
+            ],
+            "operations": [
+              {
+                "frame": "switch_blue_off",
+                "operation": "preserve_alpha",
+                "removed_pixels": 0
+              }
+            ],
+            "semantic_review": "not_performed"
+          }
+        }
+      }
+    }
+  ],
+  "failed_image": {
+    "path": "image_calls/008/source.png",
+    "sha256": "678793196f2f2eee4196075ac7fa818da37fc41a39f1d564b3e71b6a8c96fab9",
+    "original_error": "Generated image has no usable transparency"
+  }
+}

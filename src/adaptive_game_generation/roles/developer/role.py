@@ -23,6 +23,7 @@ from .edits import apply_edits
 from .context import ContextWindow, stage_for
 from .delivery import captured_demos
 from .assets import asset_reference_findings, asset_package_findings
+from .animation import animation_resources, animation_integration_findings
 from ...models.asset_pipeline import NormalizedAsset
 
 
@@ -124,6 +125,8 @@ class Developer:
                     copies[destination] = await self._read_ref(context, ref) if normalization else original
                     integrated.append(IntegratedAsset(asset_id=identity, artifact_ref=ref,
                         target_path=destination, is_mock=item.is_mock, license_target=license_target))
+        motion_files, motion_contracts = animation_resources(art)
+        copies.update(motion_files)
         current = next((g for g in state.game_revisions if g.revision_id == state.current_game_revision_id), None)
         prior_reports = [r for r in state.artifacts if r.artifact_id == "developer-report" and r.created_by == "developer"]
         prior = None
@@ -161,9 +164,13 @@ class Developer:
             "art_manifest": art.model_dump(mode="json") if art else None,
             "integrated_assets": [a.model_dump(mode="json") for a in integrated],
             "asset_packages": [p.model_dump(mode="json") for p in packages],
-            "asset_assembly_required": bool(art and (prior is None or prior.integrated_assets != tuple(integrated) or prior.asset_packages != tuple(packages))),
+            "motion_contracts": motion_contracts,
+            "asset_assembly_required": bool(art and (prior is None or prior.integrated_assets != tuple(integrated) or
+                prior.asset_packages != tuple(packages) or prior.motion_contracts != tuple(motion_contracts) or prior.art_manifest_ref != art_ref)),
             "obsolete_asset_paths": sorted({p for a in prior.integrated_assets for p in (a.target_path, a.license_target)
-                                            if p and p not in copies} if prior else set()),
+                                            if p and p not in copies} |
+                ({c["resource_path"] for c in prior.motion_contracts if c.get("resource_path") and c["resource_path"] not in copies} |
+                 ({"assets/animations/motion_contracts.json"} if prior.motion_contracts and not motion_contracts else set())) if prior else set()),
             "current_game_revision": current.model_dump(mode="json") if current else None,
             "previous_report": prior.model_dump(mode="json") if prior else None,
             "captured_demo_assembly": {"required": assembly_required,
@@ -356,6 +363,7 @@ class Developer:
             if not window:
                 updated = self._validate_patch(context, plan, files, copies)
             findings = asset_reference_findings(updated, packages)
+            findings.extend(animation_integration_findings(updated, inputs.get("motion_contracts", ())))
             if self.config.prompt_version in ("developer.v3", "developer.v4"):
                 findings.extend(f for f in source_findings(updated) if f["severity"] == "error")
             if findings:
@@ -433,10 +441,10 @@ class Developer:
         if any("/game/.godot/" in path for path in all_files):
             await context.tools.remove_output("game/.godot")
         return await self._publish(context, plans, attempts, integrated, art_ref, changed, deleted, rejections, packaged,
-                                   inspection, packages, optimization_calls, optimization_refs)
+                                   inspection, packages, optimization_calls, optimization_refs, tuple(inputs.get("motion_contracts", ())))
 
     async def _publish(self, context, plans, attempts, integrated, art_ref, changed, deleted, rejections, packaged=(), inspection=None, packages=(),
-                       optimization_calls=(), optimization_refs=()):
+                       optimization_calls=(), optimization_refs=(), motion_contracts=()):
         tools, state = context.tools, context.state
         version = self._version(context, "game-project")
         revision_id = f"game-{version:04}"
@@ -475,7 +483,8 @@ class Developer:
             parent_revision_id=state.current_game_revision_id, project_ref=project_ref, design_ref=state.design.document_ref,
             art_manifest_ref=art_ref, summaries=tuple(p.summary for p in plans), changed_files=tuple(sorted(changed)),
             deleted_files=tuple(sorted(deleted)), affected_requirement_ids=affected, model_implementation_claims=claims,
-            integrated_assets=integrated, asset_packages=packages, scenarios=plans[-1].scenarios, controls=plans[-1].controls,
+            integrated_assets=integrated, asset_packages=packages, motion_contracts=motion_contracts,
+            scenarios=plans[-1].scenarios, controls=plans[-1].controls,
             build_attempts=tuple(attempts), proposal_rejections=tuple(rejections), limitations=tuple(limitations),
             packaged_traces=packaged, mcp_inspections=tuple(inspection.records) if inspection else (),
             self_review_completed=inspection.finished if inspection else False,

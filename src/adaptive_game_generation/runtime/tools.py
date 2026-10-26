@@ -12,8 +12,8 @@ from typing import Protocol
 from ..models import ArtifactRef, ResourceUsage, Role
 from .budget import BudgetMeter
 from .asset_libraries import AssetLibraryProvider, LibraryAsset
-from .media import ImageServiceInfo
-from .errors import BudgetExceeded, PermissionDenied, RuntimeViolation
+from .media import ImageServiceInfo, raster_info
+from .errors import BudgetExceeded, PermissionDenied, RuntimeViolation, InvalidSubmission
 from .policy import RolePolicy
 from .sandbox import DisabledSandbox, ProcessResult, SandboxBackend
 from .store import StateStore
@@ -478,12 +478,28 @@ class RoleTools:
             return {"result": result, "artifact_refs": tuple(refs), "screenshot_ref": screenshot}, ResourceUsage(tool_calls=calls)
         return await self._operate("godot_inspect", operation, timeout=timeout, tool_calls=MCP_TOOL_CALLS)
 
-    async def generate_image(self, prompt: str, destination: str) -> str:
+    async def generate_image(self, prompt: str, destination: str, *, image_refs: tuple[ArtifactRef, ...] = ()) -> str:
         provider = self._services.image
         if provider is None:
             raise RuntimeViolation("No image provider configured")
+        images = []
+        if image_refs and (not self._services.image_info or not self._services.image_info.supports_reference_images):
+            raise InvalidSubmission("The configured image provider cannot use reference images")
+        if len(image_refs) > 3:
+            raise PermissionDenied("At most three public image references are allowed")
+        for ref in image_refs:
+            if not ref.sha256 or ref.kind not in ("asset", "screenshot"):
+                raise PermissionDenied("Image generation references require hashed public images")
+            data = await self.read_bytes(ref.path)
+            if hashlib.sha256(data).hexdigest() != ref.sha256:
+                raise PermissionDenied("Image generation reference checksum mismatch")
+            info = raster_info(data)
+            images.append(ModelImage(f"image:{ref.artifact_id}:v{ref.version}", data, info["media_type"]))
+        if sum(len(i.data) for i in images) > 8 * 1024 * 1024:
+            raise PermissionDenied("Image references exceed the per-call byte limit")
         async def operation(timeout):
-            data = await provider.generate(prompt, timeout=timeout)
+            kwargs = {"images": tuple(images)} if images else {}
+            data = await provider.generate(prompt, timeout=timeout, **kwargs)
             if len(data) > self._max_file_bytes or inspect_tree(self._workspace.staging) + len(data) > self._max_output_bytes:
                 raise PermissionDenied("Generated image exceeds output limits")
             path = self._workspace.output_path(destination)

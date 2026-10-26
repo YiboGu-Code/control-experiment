@@ -30,8 +30,17 @@ Issues must identify the recommended role, severity, relevant evidence, and conc
 steps or a concrete requested test. Missing original requirements may have no requirement_ids.
 Issue evidence can span its multiple requirements; criterion evidence cannot. A requirement
 can need both a design issue and an evidence_gap when different criteria have those verdicts.
-Only close an existing issue after NEW current successful evidence resolves all its requirements;
-retain its requirement mapping and include a resolution. Do not erase unresolved historical issues.
+Only close an existing issue with NEW successful current evidence after the previous review.
+For a concrete runtime/gameplay/trace/visual defect, use resolved_criteria=[{requirement_id,
+criterion_index}] to identify passing criteria that prove this SPECIFIC defect was fixed.
+Explain the before/after behavior in resolution, retaining the issue's requirement mapping.
+Do not keep a repaired countdown/overlap/clamp bug open merely because another criterion in
+the same requirement is untested. Put remaining missing tests in separate Player evidence_gap
+issues. Scoped closure needs the named criterion's fresh evidence and inspected sources;
+visual closure needs actual supplied pixels. Without resolved_criteria, all affected
+requirements must be verified_pass. Design/evidence_gap issues use that stricter rule.
+Closing one defect never verifies an entire requirement or bypasses delivery readiness.
+Do not erase unresolved historical issues or claim that execution success proves gameplay.
 Evidence outcome 'passed' for a playthrough means capture succeeded, NOT that gameplay passed.
 A passed build is not gameplay evidence. Static acceptance must cite project_file/inventory,
 build_log or art_manifest and a current build evidence ID as provenance. Runtime acceptance must
@@ -65,6 +74,11 @@ Do not convert permission to use libraries into an exclusive-source rule unless 
 explicitly requires exclusivity. Generated assets are not inherently a violation; check the
 actual sourcing obligations, licenses, integration and quality separately. Treat assumptions
 and optional additions as design choices, not new mandatory acceptance criteria.
+art-manifest.library_availability is recorded by the host's library tool, not model prose.
+When present it establishes mount availability at production, not visual quality or task waiver.
+For absent required mounts report the environment/source limitation precisely. Do not demand
+an OpenGameArt license for a project that imported no OpenGameArt content; distinguish conditional
+license obligations from an actual requirement to choose a specific asset source.
 Separate static missing implementation from missing runtime evidence. Inspect call sites:
 a function that is defined but never called on the required transition does not implement it.
 For example, storing a recording alone does not instantiate a ghost; a replay passing before

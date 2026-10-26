@@ -82,7 +82,7 @@ class ImageGatewayConfig(Model):
         return {"adapter": "openai-compatible-images.v1", **self.model_dump(mode="json"),
                 "max_retries": 0, "images_per_request": 1, "output_format": "png",
                 "max_image_bytes": MAX_IMAGE_BYTES, "max_response_bytes": MAX_RESPONSE_BYTES,
-                "normalization": "asset-pixels.v3: native resolution, no resampling, lossless PNG, matte cleanup and conservative sprite checks",
+                "normalization": "asset-pixels.v4: native resolution, no resampling, lossless PNG, matte cleanup and use-specific structural checks",
                 "output_geometry": "source_native", "resample_applied": False}
 
     @property
@@ -288,7 +288,10 @@ class OpenAICompatibleImageProvider:
                         size_bytes=len(result), output_file="output.png", status="completed")
         return result
 
-    async def generate(self, prompt: str, *, timeout: float) -> bytes:
+    def _attach_references(self, payload, images):
+        raise ProviderFailure("This Images API adapter does not support reference images")
+
+    async def generate(self, prompt: str, *, timeout: float, images=()) -> bytes:
         import httpx
 
         job = ImageJob.model_validate_json(prompt)
@@ -306,11 +309,15 @@ class OpenAICompatibleImageProvider:
         directory = self.capture_directory / f"{len(self.calls) + 1:03}"
         directory.mkdir()
         payload = self._payload(job)
+        if images:
+            payload = self._attach_references(payload, images)
         self._save(directory / "job.json", job.model_dump(mode="json"))
         self._save(directory / "request.json", payload)
         metadata = {"started_at": utc_now().isoformat(), "status": "started",
                     "timeout_seconds": allowed, "provider": self.info.model_dump(mode="json"),
                     "model": self.config.model, "capture": directory.name}
+        metadata["references"] = [{"source_id": i.source_id, "sha256": hashlib.sha256(i.data).hexdigest(),
+                                   "size_bytes": len(i.data)} for i in images]
         self.calls.append(metadata)
         self._save(directory / "metadata.json", metadata)
         try:

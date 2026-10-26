@@ -1,0 +1,1877 @@
+{
+  "summary": "First QA review of game-0001. Core loop mechanics (30 s countdown, expiry rewind with respawn, layered ghost replays that hold plates/doors/block lasers, timeline bar, reset, level-complete summary, four-chapter/six-level menus, deterministic replays) are established by current capture, replay and pixel evidence. Delivery is blocked: no demo_outputs traces ship at all, no Kenney/OpenGameArt assets were copied (all art is generated), the ghost button-press prop is never instantiated, the rewind flash overlay never decays (frame 599 fully washed out), the level-select header renders literal 'Chapter %d', and several ordinary-play actions (jump airborne, ENTER interact, level-button entry, Reset button click) plus enemy distraction and coordination-gating remain untested. Verdict: not ready.",
+  "instruction_audit": "The instruction is internally coherent: the 20 s trace cap vs the 30 s loop is reconciled by permitted deterministic named scenarios (not a conflict), and pause/ESCAPE is a Designer assumption, not an instruction requirement, so it must not become a new acceptance criterion. Two audit findings: (1) the instruction mandates browsing and copying from the read-only library mounts, but gives no fallback if a mount is unavailable; the art manifest (untrusted) claims mounts were unavailable and substituted generated art, so host confirmation of mount availability is an unresolved instruction-omission risk kept visible as QA-ASSET-LIB. (2) 'The ghost physically interacts with the world: it presses buttons' is an explicit instruction verb with no Designer-level omission; its absence is an implementation gap (QA-DEV-BUTTONS), not a design conflict. No acceptance criterion was found to contradict or overstate the instruction, so no design_conflict verdicts are issued.",
+  "criteria": [
+    {
+      "requirement_id": "R001",
+      "criterion_index": 0,
+      "verdict": "pass",
+      "basis": "static",
+      "rationale": "project.godot (config_version=5, features 4.5) and Main.tscn exist at the project root and the current build imported and launched them cleanly (build-0001 attempt 5).",
+      "evidence_ids": [
+        "build-0001"
+      ],
+      "source_ids": [
+        "file:28",
+        "file:0",
+        "project-inventory",
+        "build:build-0001"
+      ]
+    },
+    {
+      "requirement_id": "R001",
+      "criterion_index": 1,
+      "verdict": "pass",
+      "basis": "visual",
+      "rationale": "Ordinary fresh launch frame 0 pixels show the TIME LOOP title screen with Chapter Menu and Quick Start buttons before any menu, matching snapshot frame 0 node text.",
+      "evidence_ids": [
+        "player-0001-play-01"
+      ],
+      "source_ids": [
+        "image:player-ordinary_title_chapter_menu_probe-capture-frame_0000-png:v1",
+        "snapshot:ordinary_title_chapter_menu_probe-capture:0",
+        "session:ordinary_title_chapter_menu_probe-capture"
+      ]
+    },
+    {
+      "requirement_id": "R001",
+      "criterion_index": 2,
+      "verdict": "insufficient",
+      "basis": "runtime",
+      "rationale": "Movement and the 30 s timer are observed in the ordinary Quick Start session, but no evidence mapped to R001 shows a previous-loop ghost replay; the ghost sessions are mapped only to R003/R004/R005 and cannot be borrowed.",
+      "evidence_ids": [],
+      "source_ids": [
+        "snapshot:ordinary_quick_start_core_play-capture:45",
+        "snapshot:scenario_loop_rewrite_imminent-capture:599"
+      ]
+    },
+    {
+      "requirement_id": "R002",
+      "criterion_index": 0,
+      "verdict": "pass",
+      "basis": "runtime",
+      "rationale": "Title, chapter menu and level-select flows were traversed live without fatal missing-scene errors (play-13), and main.gd defines _start_level/_show_level_complete which launched cleanly in build-0001 headless runs.",
+      "evidence_ids": [
+        "player-0001-play-13",
+        "build-0001"
+      ],
+      "source_ids": [
+        "session:ordinary_level_select_probe-capture",
+        "snapshot:ordinary_level_select_probe-capture:100",
+        "file:33",
+        "build:build-0001"
+      ]
+    },
+    {
+      "requirement_id": "R002",
+      "criterion_index": 1,
+      "verdict": "pass",
+      "basis": "runtime",
+      "rationale": "level_data.gd generates 4 chapters x 6 levels = 24 entries; runtime shows the four-chapter menu (frame 40) and Chapter 1's six level buttons (frames 100-239), and every chapter/level id is reachable through the same _show_level_select path or scenarios.",
+      "evidence_ids": [
+        "player-0001-play-13"
+      ],
+      "source_ids": [
+        "file:31",
+        "snapshot:ordinary_level_select_probe-capture:40",
+        "snapshot:ordinary_level_select_probe-capture:100"
+      ]
+    },
+    {
+      "requirement_id": "R002",
+      "criterion_index": 2,
+      "verdict": "fail",
+      "basis": "static",
+      "rationale": "The project inventory contains no demo_outputs directory and zero *.json trace files, so the required demo traces are absent; ordinary launch itself is clean (build-0001), but the shipped-content half of the criterion fails.",
+      "evidence_ids": [
+        "build-0001"
+      ],
+      "source_ids": [
+        "project-inventory",
+        "build:build-0001"
+      ]
+    },
+    {
+      "requirement_id": "R003",
+      "criterion_index": 0,
+      "verdict": "pass",
+      "basis": "runtime",
+      "rationale": "After Quick Start, HUD reads Time: 29.20 at frame 45 and 21.37 at frame 280 with loop_time counting down from LOOP_DURATION 30.0.",
+      "evidence_ids": [
+        "player-0001-play-04"
+      ],
+      "source_ids": [
+        "snapshot:ordinary_quick_start_core_play-capture:45",
+        "snapshot:ordinary_quick_start_core_play-capture:280",
+        "session:ordinary_quick_start_core_play-capture"
+      ]
+    },
+    {
+      "requirement_id": "R003",
+      "criterion_index": 1,
+      "verdict": "pass",
+      "basis": "runtime",
+      "rationale": "In loop_rewrite_imminent the prepared loop expired between frames 70 and 120: loop_count went 2->3, loop_time reset to 29.03, sim_tick restarted, and the player returned to spawn x=110.",
+      "evidence_ids": [
+        "player-0001-play-07"
+      ],
+      "source_ids": [
+        "snapshot:scenario_loop_rewrite_imminent-capture:70",
+        "snapshot:scenario_loop_rewrite_imminent-capture:120"
+      ]
+    },
+    {
+      "requirement_id": "R003",
+      "criterion_index": 2,
+      "verdict": "pass",
+      "basis": "runtime",
+      "rationale": "Immediately after that rewind (frame 120) two ghost sprites exist and replay the prior track; by frame 599 a replaying ghost stands on plate_1 making it active.",
+      "evidence_ids": [
+        "player-0001-play-07"
+      ],
+      "source_ids": [
+        "snapshot:scenario_loop_rewrite_imminent-capture:120",
+        "snapshot:scenario_loop_rewrite_imminent-capture:599"
+      ]
+    },
+    {
+      "requirement_id": "R004",
+      "criterion_index": 0,
+      "verdict": "pass",
+      "basis": "runtime",
+      "rationale": "Frame 599 shows two replaying ghost sprites simultaneous with the live CharacterBody2D idling at spawn (loop 3).",
+      "evidence_ids": [
+        "player-0001-play-07"
+      ],
+      "source_ids": [
+        "snapshot:scenario_loop_rewrite_imminent-capture:599",
+        "image:player-scenario_loop_rewrite_imminent-capture-frame_0599-png:v1"
+      ]
+    },
+    {
+      "requirement_id": "R004",
+      "criterion_index": 1,
+      "verdict": "pass",
+      "basis": "runtime",
+      "rationale": "The ghost's replayed position activates plate_1 (active true) and raises HUD to Switches Held: 1 / 1 while the live player never touched the plate, proving physical world interaction.",
+      "evidence_ids": [
+        "player-0001-play-07"
+      ],
+      "source_ids": [
+        "snapshot:scenario_loop_rewrite_imminent-capture:599",
+        "file:29"
+      ]
+    },
+    {
+      "requirement_id": "R004",
+      "criterion_index": 2,
+      "verdict": "pass",
+      "basis": "replay",
+      "rationale": "Two fresh replays of the ghost scenario matched every recorded state and rendered-pixel digest, so ghost and player coexist without desynchronizing deterministic replay.",
+      "evidence_ids": [
+        "player-0001-replay-04",
+        "player-0001-replay-05"
+      ],
+      "source_ids": [
+        "comparison:scenario_loop_rewrite_imminent-replay-1",
+        "comparison:scenario_loop_rewrite_imminent-replay-2"
+      ]
+    },
+    {
+      "requirement_id": "R005",
+      "criterion_index": 0,
+      "verdict": "pass",
+      "basis": "runtime",
+      "rationale": "A replaying ghost holds pressure plate plate_1 active during loop 3 (frame 599, Switches Held: 1 / 1).",
+      "evidence_ids": [
+        "player-0001-play-07"
+      ],
+      "source_ids": [
+        "snapshot:scenario_loop_rewrite_imminent-capture:599"
+      ]
+    },
+    {
+      "requirement_id": "R005",
+      "criterion_index": 1,
+      "verdict": "insufficient",
+      "basis": "runtime",
+      "rationale": "No mapped session exercises an enemy: level 1-1 has enemies [] and the result_state snapshots record enemy_main distracted false; ghost enemy-distraction was never observed.",
+      "evidence_ids": [],
+      "source_ids": [
+        "file:29",
+        "snapshot:scenario_result_state-capture:5"
+      ]
+    },
+    {
+      "requirement_id": "R005",
+      "criterion_index": 2,
+      "verdict": "pass",
+      "basis": "runtime",
+      "rationale": "In loop_rewrite_imminent the ghost's plate hold satisfies the level's only required switch while the live player is free at spawn, demonstrating the current player benefiting from a ghost-held role.",
+      "evidence_ids": [
+        "player-0001-play-07"
+      ],
+      "source_ids": [
+        "snapshot:scenario_loop_rewrite_imminent-capture:599",
+        "snapshot:scenario_loop_rewrite_imminent-capture:0"
+      ]
+    },
+    {
+      "requirement_id": "R006",
+      "criterion_index": 0,
+      "verdict": "pass",
+      "basis": "runtime",
+      "rationale": "result_state frame 0 lists four ghost sprites and four tracks active in the same level (level 4-1, max_loops 4).",
+      "evidence_ids": [
+        "player-0001-play-10"
+      ],
+      "source_ids": [
+        "snapshot:scenario_result_state-capture:0"
+      ]
+    },
+    {
+      "requirement_id": "R006",
+      "criterion_index": 1,
+      "verdict": "pass",
+      "basis": "runtime",
+      "rationale": "At frame 5 the four ghost tracks hold all plates, door_main open true and laser_main blocked true, i.e. earlier-loop actions keep doors open and gate hazards for later progress.",
+      "evidence_ids": [
+        "player-0001-play-10"
+      ],
+      "source_ids": [
+        "snapshot:scenario_result_state-capture:5",
+        "file:29"
+      ]
+    },
+    {
+      "requirement_id": "R006",
+      "criterion_index": 2,
+      "verdict": "pass",
+      "basis": "runtime",
+      "rationale": "Completion fired (completed true) only with the four layered ghost contributions holding the required plates while the player stood in the exit rect, demonstrating a multi-loop-gated exit.",
+      "evidence_ids": [
+        "player-0001-play-10"
+      ],
+      "source_ids": [
+        "snapshot:scenario_result_state-capture:5",
+        "snapshot:scenario_result_state-capture:0"
+      ]
+    },
+    {
+      "requirement_id": "R007",
+      "criterion_index": 0,
+      "verdict": "insufficient",
+      "basis": "runtime",
+      "rationale": "No evidence mapped to R007 demonstrates a puzzle requiring a specifically timed prior-loop action; the multi_ghost_door and four_loop_finale scenarios were never captured.",
+      "evidence_ids": [],
+      "source_ids": [
+        "file:29",
+        "design"
+      ]
+    },
+    {
+      "requirement_id": "R007",
+      "criterion_index": 1,
+      "verdict": "insufficient",
+      "basis": "runtime",
+      "rationale": "The exit-hold rule is visible in code and in the prepared result_state, but no session shows a solo (no-ghost) attempt failing at the crystal, so the necessity of a prior-loop contribution is unproven for R007.",
+      "evidence_ids": [],
+      "source_ids": [
+        "file:29",
+        "snapshot:scenario_result_state-capture:0"
+      ]
+    },
+    {
+      "requirement_id": "R007",
+      "criterion_index": 2,
+      "verdict": "insufficient",
+      "basis": "runtime",
+      "rationale": "Reset clearing temporal state was observed only in the ordinary Quick Start session, whose evidence is not mapped to R007; no mapped evidence covers reset of coordination state for this requirement.",
+      "evidence_ids": [],
+      "source_ids": [
+        "snapshot:ordinary_quick_start_core_play-capture:330"
+      ]
+    },
+    {
+      "requirement_id": "R008",
+      "criterion_index": 0,
+      "verdict": "pass",
+      "basis": "static",
+      "rationale": "level_data.gd loops chapter 1..4 and index 1..6 producing 24 level dictionaries; runtime chapter menu confirms four chapters.",
+      "evidence_ids": [
+        "build-0001"
+      ],
+      "source_ids": [
+        "file:31",
+        "snapshot:ordinary_level_select_probe-capture:40",
+        "build:build-0001"
+      ]
+    },
+    {
+      "requirement_id": "R008",
+      "criterion_index": 1,
+      "verdict": "pass",
+      "basis": "static",
+      "rationale": "Level metadata escalates required_switches with chapter (1..4) under max_loops 4, matching single-ghost early puzzles to four-loop late orchestration.",
+      "evidence_ids": [
+        "build-0001"
+      ],
+      "source_ids": [
+        "file:31",
+        "build:build-0001"
+      ]
+    },
+    {
+      "requirement_id": "R008",
+      "criterion_index": 2,
+      "verdict": "pass",
+      "basis": "runtime",
+      "rationale": "The chapter menu lists Chapter 1-4 and each chapter's level select enumerates Level 1-6 (observed for Chapter 1), identifying all 24 levels through menus.",
+      "evidence_ids": [
+        "player-0001-play-13"
+      ],
+      "source_ids": [
+        "snapshot:ordinary_level_select_probe-capture:40",
+        "snapshot:ordinary_level_select_probe-capture:100",
+        "file:31"
+      ]
+    },
+    {
+      "requirement_id": "R009",
+      "criterion_index": 0,
+      "verdict": "pass",
+      "basis": "visual",
+      "rationale": "Frame 0 pixels of an ordinary launch show the title screen with TIME LOOP label and menu buttons before any chapter or level menu.",
+      "evidence_ids": [
+        "player-0001-play-01"
+      ],
+      "source_ids": [
+        "image:player-ordinary_title_chapter_menu_probe-capture-frame_0000-png:v1",
+        "snapshot:ordinary_title_chapter_menu_probe-capture:0"
+      ]
+    },
+    {
+      "requirement_id": "R009",
+      "criterion_index": 1,
+      "verdict": "pass",
+      "basis": "visual",
+      "rationale": "The title artwork shows a large clock face with multiple overlapping hands (cyan and dark-blue hands crossing at the hub) behind the title text.",
+      "evidence_ids": [
+        "player-0001-play-01"
+      ],
+      "source_ids": [
+        "image:player-ordinary_title_chapter_menu_probe-capture-frame_0000-png:v1"
+      ]
+    },
+    {
+      "requirement_id": "R009",
+      "criterion_index": 2,
+      "verdict": "pass",
+      "basis": "visual",
+      "rationale": "Ghost silhouettes are clearly visible at lower-left and lower-right of the title pixels, satisfying the ghost-silhouette requirement.",
+      "evidence_ids": [
+        "player-0001-play-01"
+      ],
+      "source_ids": [
+        "image:player-ordinary_title_chapter_menu_probe-capture-frame_0000-png:v1"
+      ]
+    },
+    {
+      "requirement_id": "R010",
+      "criterion_index": 0,
+      "verdict": "pass",
+      "basis": "runtime",
+      "rationale": "A real click on the observed Chapter Menu rect [500,340,280,70] at frames 20-21 opened the Chapters panel by frame 30.",
+      "evidence_ids": [
+        "player-0001-play-01"
+      ],
+      "source_ids": [
+        "trace:ordinary_title_chapter_menu_probe-capture",
+        "snapshot:ordinary_title_chapter_menu_probe-capture:30"
+      ]
+    },
+    {
+      "requirement_id": "R010",
+      "criterion_index": 1,
+      "verdict": "pass",
+      "basis": "visual",
+      "rationale": "Frame 119 pixels and nodes show exactly four chapter buttons (Chapter 1-4) plus Back on the chapter menu.",
+      "evidence_ids": [
+        "player-0001-play-01"
+      ],
+      "source_ids": [
+        "image:player-ordinary_title_chapter_menu_probe-capture-frame_0119-png:v1",
+        "snapshot:ordinary_title_chapter_menu_probe-capture:30"
+      ]
+    },
+    {
+      "requirement_id": "R010",
+      "criterion_index": 2,
+      "verdict": "pass",
+      "basis": "visual",
+      "rationale": "After selecting Chapter 1, frames 100-239 show six level buttons (Level 1-6) in two columns; _show_level_select builds the same six-entry list for any chapter id.",
+      "evidence_ids": [
+        "player-0001-play-13"
+      ],
+      "source_ids": [
+        "image:player-ordinary_level_select_probe-capture-frame_0239-png:v1",
+        "snapshot:ordinary_level_select_probe-capture:100",
+        "file:33"
+      ]
+    },
+    {
+      "requirement_id": "R011",
+      "criterion_index": 0,
+      "verdict": "pass",
+      "basis": "runtime",
+      "rationale": "Entering level 1-1 (via Quick Start, the same _start_level path used by level buttons) starts the countdown: Time 29.20 at frame 45; level-select button click itself remains untested but uses identical code.",
+      "evidence_ids": [
+        "player-0001-play-04"
+      ],
+      "source_ids": [
+        "snapshot:ordinary_quick_start_core_play-capture:45",
+        "file:33"
+      ]
+    },
+    {
+      "requirement_id": "R011",
+      "criterion_index": 1,
+      "verdict": "insufficient",
+      "basis": "runtime",
+      "rationale": "Running left/right is proven (player x 110 -> 330 -> back), but no captured frame shows the player airborne after the SPACE press, so jump is untested rather than broken.",
+      "evidence_ids": [],
+      "source_ids": [
+        "snapshot:ordinary_quick_start_core_play-capture:280",
+        "trace:ordinary_quick_start_core_play-capture"
+      ]
+    },
+    {
+      "requirement_id": "R011",
+      "criterion_index": 2,
+      "verdict": "insufficient",
+      "basis": "runtime",
+      "rationale": "The ENTER interact at frame 220 fired with the player at x=330 while lever_door sits at x=485, outside interact range; switch_nodes stayed active false, so live interaction is unverified.",
+      "evidence_ids": [],
+      "source_ids": [
+        "snapshot:ordinary_quick_start_core_play-capture:280",
+        "trace:ordinary_quick_start_core_play-capture",
+        "file:29"
+      ]
+    },
+    {
+      "requirement_id": "R012",
+      "criterion_index": 0,
+      "verdict": "pass",
+      "basis": "runtime",
+      "rationale": "At the rewind (frame 120) flash_timer is set to 0.35 and the flash ColorRect becomes visible; frame 599 pixels show the white overlay, confirming a flash visual occurs at zero (its failure to decay is tracked separately).",
+      "evidence_ids": [
+        "player-0001-play-07"
+      ],
+      "source_ids": [
+        "snapshot:scenario_loop_rewrite_imminent-capture:120",
+        "image:player-scenario_loop_rewrite_imminent-capture-frame_0599-png:v1"
+      ]
+    },
+    {
+      "requirement_id": "R012",
+      "criterion_index": 1,
+      "verdict": "pass",
+      "basis": "runtime",
+      "rationale": "After expiry the live player position returns to spawn [110, 605.98] at frame 120 with velocity reset, matching the respawn requirement.",
+      "evidence_ids": [
+        "player-0001-play-07"
+      ],
+      "source_ids": [
+        "snapshot:scenario_loop_rewrite_imminent-capture:120"
+      ]
+    },
+    {
+      "requirement_id": "R012",
+      "criterion_index": 2,
+      "verdict": "pass",
+      "basis": "runtime",
+      "rationale": "Ghosts are created with modulate alpha 0.5 (translucent) and replay the recorded prior track positions; frame 599 shows the faded replay figures matching the recorded loop.",
+      "evidence_ids": [
+        "player-0001-play-07"
+      ],
+      "source_ids": [
+        "snapshot:scenario_loop_rewrite_imminent-capture:599",
+        "file:29"
+      ]
+    },
+    {
+      "requirement_id": "R013",
+      "criterion_index": 0,
+      "verdict": "fail",
+      "basis": "static",
+      "rationale": "button_nodes is never populated: _build_level adds plates, door, laser, enemy, switch and exit but no button prop, and result_state snapshots show button_nodes [] , so a ghost pressing buttons is unimplemented.",
+      "evidence_ids": [
+        "build-0001"
+      ],
+      "source_ids": [
+        "file:29",
+        "snapshot:scenario_result_state-capture:0",
+        "build:build-0001"
+      ]
+    },
+    {
+      "requirement_id": "R013",
+      "criterion_index": 1,
+      "verdict": "pass",
+      "basis": "runtime",
+      "rationale": "In result_state frame 5 a ghost track inside door_main hold_rect sets open true and drops the door collision layer, proving ghosts hold doors.",
+      "evidence_ids": [
+        "player-0001-play-10"
+      ],
+      "source_ids": [
+        "snapshot:scenario_result_state-capture:5",
+        "file:29"
+      ]
+    },
+    {
+      "requirement_id": "R013",
+      "criterion_index": 2,
+      "verdict": "pass",
+      "basis": "runtime",
+      "rationale": "The same frame shows laser_main blocked true with collision layer cleared because a ghost occupies the block_rect, proving ghosts block lasers.",
+      "evidence_ids": [
+        "player-0001-play-10"
+      ],
+      "source_ids": [
+        "snapshot:scenario_result_state-capture:5",
+        "file:29"
+      ]
+    },
+    {
+      "requirement_id": "R014",
+      "criterion_index": 0,
+      "verdict": "pass",
+      "basis": "runtime",
+      "rationale": "max_loops is 4 in level data and result_state runs four simultaneous ghost tracks, confirming up-to-four loop layering as configured.",
+      "evidence_ids": [
+        "player-0001-play-10"
+      ],
+      "source_ids": [
+        "snapshot:scenario_result_state-capture:0",
+        "file:31"
+      ]
+    },
+    {
+      "requirement_id": "R014",
+      "criterion_index": 1,
+      "verdict": "pass",
+      "basis": "visual",
+      "rationale": "During play a timeline bar control is present at rect [36,58,1204,30] at the top of the HUD, visible as the horizontal track under the HUD labels in frame 599 pixels.",
+      "evidence_ids": [
+        "player-0001-play-04"
+      ],
+      "source_ids": [
+        "image:player-ordinary_quick_start_core_play-capture-frame_0599-png:v1",
+        "snapshot:ordinary_quick_start_core_play-capture:45"
+      ]
+    },
+    {
+      "requirement_id": "R014",
+      "criterion_index": 2,
+      "verdict": "pass",
+      "basis": "runtime",
+      "rationale": "The timeline exposes per-ghost fractions (0.9 at scenario start, two entries at 0.5633 at frame 599) and draws a tinted ghost icon per track at those positions within the 30 s window.",
+      "evidence_ids": [
+        "player-0001-play-07"
+      ],
+      "source_ids": [
+        "snapshot:scenario_loop_rewrite_imminent-capture:0",
+        "snapshot:scenario_loop_rewrite_imminent-capture:599",
+        "file:37"
+      ]
+    },
+    {
+      "requirement_id": "R015",
+      "criterion_index": 0,
+      "verdict": "pass",
+      "basis": "runtime",
+      "rationale": "Levels instantiate an exit crystal sprite and exit_rect (e.g. [1070,452,140,200] in 1-1 and 4-1), visible at right in gameplay pixels.",
+      "evidence_ids": [
+        "player-0001-play-04"
+      ],
+      "source_ids": [
+        "snapshot:ordinary_quick_start_core_play-capture:45",
+        "image:player-ordinary_quick_start_core_play-capture-frame_0599-png:v1"
+      ]
+    },
+    {
+      "requirement_id": "R015",
+      "criterion_index": 1,
+      "verdict": "pass",
+      "basis": "runtime",
+      "rationale": "In result_state frame 5, with all four required plates held by ghosts and the player inside exit_rect, completed becomes true and the level-complete signal fires.",
+      "evidence_ids": [
+        "player-0001-play-10"
+      ],
+      "source_ids": [
+        "snapshot:scenario_result_state-capture:5"
+      ]
+    },
+    {
+      "requirement_id": "R015",
+      "criterion_index": 2,
+      "verdict": "pass",
+      "basis": "runtime",
+      "rationale": "At frame 0 the player already stands inside exit_rect with Switches Held 0/4 and completed stays false, proving unheld switches block completion.",
+      "evidence_ids": [
+        "player-0001-play-10"
+      ],
+      "source_ids": [
+        "snapshot:scenario_result_state-capture:0",
+        "snapshot:scenario_result_state-capture:5"
+      ]
+    },
+    {
+      "requirement_id": "R016",
+      "criterion_index": 0,
+      "verdict": "pass",
+      "basis": "runtime",
+      "rationale": "A Reset TextureButton at rect [1130,20,120,48] is present in the play HUD (frame 45 nodes and frame 599 pixels).",
+      "evidence_ids": [
+        "player-0001-play-04"
+      ],
+      "source_ids": [
+        "snapshot:ordinary_quick_start_core_play-capture:45",
+        "image:player-ordinary_quick_start_core_play-capture-frame_0599-png:v1"
+      ]
+    },
+    {
+      "requirement_id": "R016",
+      "criterion_index": 1,
+      "verdict": "pass",
+      "basis": "runtime",
+      "rationale": "After the R reset press at frames 300-301, frame 330 shows tracks [] and ghost_sprites [], i.e. all ghosts cleared.",
+      "evidence_ids": [
+        "player-0001-play-04"
+      ],
+      "source_ids": [
+        "snapshot:ordinary_quick_start_core_play-capture:330",
+        "trace:ordinary_quick_start_core_play-capture"
+      ]
+    },
+    {
+      "requirement_id": "R016",
+      "criterion_index": 2,
+      "verdict": "pass",
+      "basis": "runtime",
+      "rationale": "Post-reset state at frame 330: loop_count 1, loop_time 29.03, player at spawn [110,608], no prior loop replays, i.e. a fresh start.",
+      "evidence_ids": [
+        "player-0001-play-04"
+      ],
+      "source_ids": [
+        "snapshot:ordinary_quick_start_core_play-capture:330"
+      ]
+    },
+    {
+      "requirement_id": "R017",
+      "criterion_index": 0,
+      "verdict": "pass",
+      "basis": "visual",
+      "rationale": "A Level Complete panel appears from frame 5 onward and in frame 299 pixels after the completion trigger.",
+      "evidence_ids": [
+        "player-0001-play-10"
+      ],
+      "source_ids": [
+        "image:player-scenario_result_state-capture-frame_0299-png:v1",
+        "snapshot:scenario_result_state-capture:5"
+      ]
+    },
+    {
+      "requirement_id": "R017",
+      "criterion_index": 1,
+      "verdict": "pass",
+      "basis": "visual",
+      "rationale": "The panel displays the label 'Loops Used: 2' at rect [440,290,400,40].",
+      "evidence_ids": [
+        "player-0001-play-10"
+      ],
+      "source_ids": [
+        "image:player-scenario_result_state-capture-frame_0299-png:v1",
+        "snapshot:scenario_result_state-capture:5"
+      ]
+    },
+    {
+      "requirement_id": "R017",
+      "criterion_index": 2,
+      "verdict": "pass",
+      "basis": "visual",
+      "rationale": "The panel displays 'Time in Final Loop: 10.00 s', the exit time within the final loop.",
+      "evidence_ids": [
+        "player-0001-play-10"
+      ],
+      "source_ids": [
+        "image:player-scenario_result_state-capture-frame_0299-png:v1",
+        "snapshot:scenario_result_state-capture:5"
+      ]
+    },
+    {
+      "requirement_id": "R018",
+      "criterion_index": 0,
+      "verdict": "fail",
+      "basis": "static",
+      "rationale": "The inventory contains only generated assets/normalized/* art; no file originates from /workspace/assets/library or library-oga, and the manifest admits generation replaced library sourcing.",
+      "evidence_ids": [
+        "build-0001"
+      ],
+      "source_ids": [
+        "project-inventory",
+        "art-manifest",
+        "build:build-0001"
+      ]
+    },
+    {
+      "requirement_id": "R018",
+      "criterion_index": 1,
+      "verdict": "insufficient",
+      "basis": "static",
+      "rationale": "No OpenGameArt entries were copied, so there is nothing whose LICENSE.txt obligations can be checked; compliance is untestable until copying happens.",
+      "evidence_ids": [],
+      "source_ids": [
+        "art-manifest",
+        "project-inventory"
+      ]
+    },
+    {
+      "requirement_id": "R018",
+      "criterion_index": 2,
+      "verdict": "pass",
+      "basis": "static",
+      "rationale": "All runtime loads use res://assets/normalized paths and the build never writes to the mount locations; no evidence of writes to read-only mounts exists.",
+      "evidence_ids": [
+        "build-0001"
+      ],
+      "source_ids": [
+        "file:29",
+        "file:33",
+        "project-inventory",
+        "build:build-0001"
+      ]
+    },
+    {
+      "requirement_id": "R019",
+      "criterion_index": 0,
+      "verdict": "pass",
+      "basis": "static",
+      "rationale": "Needed runtime assets are present under the project assets/ folder (assets/normalized/*) and are what the scripts load.",
+      "evidence_ids": [
+        "build-0001"
+      ],
+      "source_ids": [
+        "project-inventory",
+        "file:29",
+        "build:build-0001"
+      ]
+    },
+    {
+      "requirement_id": "R019",
+      "criterion_index": 1,
+      "verdict": "pass",
+      "basis": "static",
+      "rationale": "Runtime references only res:// paths; nothing in main.gd/level.gd reads or writes the read-only mount directories.",
+      "evidence_ids": [
+        "build-0001"
+      ],
+      "source_ids": [
+        "file:33",
+        "file:29",
+        "build:build-0001"
+      ]
+    },
+    {
+      "requirement_id": "R019",
+      "criterion_index": 2,
+      "verdict": "fail",
+      "basis": "static",
+      "rationale": "The copied asset set consists solely of AI-generated normalized frames; no chosen Kenney or OGA pack is reflected in assets/, contradicting the browse-and-copy requirement.",
+      "evidence_ids": [
+        "build-0001"
+      ],
+      "source_ids": [
+        "project-inventory",
+        "art-manifest",
+        "build:build-0001"
+      ]
+    },
+    {
+      "requirement_id": "R020",
+      "criterion_index": 0,
+      "verdict": "pass",
+      "basis": "static",
+      "rationale": "project.godot exists at the project root with config_version=5 and main scene Main.tscn.",
+      "evidence_ids": [
+        "build-0001"
+      ],
+      "source_ids": [
+        "file:28",
+        "project-inventory",
+        "build:build-0001"
+      ]
+    },
+    {
+      "requirement_id": "R020",
+      "criterion_index": 1,
+      "verdict": "pass",
+      "basis": "static",
+      "rationale": "Main.tscn exists and hosts the Node2D with scripts/main.gd as the run/main_scene.",
+      "evidence_ids": [
+        "build-0001"
+      ],
+      "source_ids": [
+        "file:0",
+        "project-inventory",
+        "build:build-0001"
+      ]
+    },
+    {
+      "requirement_id": "R020",
+      "criterion_index": 2,
+      "verdict": "fail",
+      "basis": "static",
+      "rationale": "The inventory lists scripts/ and assets/ but contains no demo_outputs/ and no scenes/ directory, so the required layout is incomplete.",
+      "evidence_ids": [
+        "build-0001"
+      ],
+      "source_ids": [
+        "project-inventory",
+        "build:build-0001"
+      ]
+    },
+    {
+      "requirement_id": "R021",
+      "criterion_index": 0,
+      "verdict": "pass",
+      "basis": "static",
+      "rationale": "build-0001 attempt 5 ran godot --headless --path /output/game --quit-after 5 with returncode 0 and clean stdout.",
+      "evidence_ids": [
+        "build-0001"
+      ],
+      "source_ids": [
+        "build:build-0001"
+      ]
+    },
+    {
+      "requirement_id": "R021",
+      "criterion_index": 1,
+      "verdict": "pass",
+      "basis": "static",
+      "rationale": "The successful headless run emitted empty stderr, i.e. no fatal script errors during launch.",
+      "evidence_ids": [
+        "build-0001"
+      ],
+      "source_ids": [
+        "build:build-0001"
+      ]
+    },
+    {
+      "requirement_id": "R021",
+      "criterion_index": 2,
+      "verdict": "pass",
+      "basis": "static",
+      "rationale": "The recorded argv places --headless/--path/--quit-after before any '--' user-argument section, matching the instructed shape.",
+      "evidence_ids": [
+        "build-0001"
+      ],
+      "source_ids": [
+        "build:build-0001",
+        "instruction"
+      ]
+    },
+    {
+      "requirement_id": "R022",
+      "criterion_index": 0,
+      "verdict": "pass",
+      "basis": "static",
+      "rationale": "Build scenario steps use 'godot --headless ... --quit-after 60 -- --scenario <id>', engine flags before '--'.",
+      "evidence_ids": [
+        "build-0001"
+      ],
+      "source_ids": [
+        "build:build-0001"
+      ]
+    },
+    {
+      "requirement_id": "R022",
+      "criterion_index": 1,
+      "verdict": "pass",
+      "basis": "static",
+      "rationale": "main.gd _parse_args reads OS.get_cmdline_user_args() and extracts --scenario from the post-'--' section; scenario sessions received pending_scenario accordingly.",
+      "evidence_ids": [
+        "build-0001"
+      ],
+      "source_ids": [
+        "file:33",
+        "snapshot:scenario_loop_rewrite_imminent-capture:0",
+        "build:build-0001"
+      ]
+    },
+    {
+      "requirement_id": "R022",
+      "criterion_index": 2,
+      "verdict": "pass",
+      "basis": "static",
+      "rationale": "--scenario appears only after '--' in the launch argv and is consumed as a user arg, never as an engine flag; the engine accepted the command (returncode 0).",
+      "evidence_ids": [
+        "build-0001"
+      ],
+      "source_ids": [
+        "build:build-0001",
+        "file:33"
+      ]
+    },
+    {
+      "requirement_id": "R023",
+      "criterion_index": 0,
+      "verdict": "pass",
+      "basis": "static",
+      "rationale": "The game launches with user args after '--' (build scenario steps) and _parse_args tolerates arbitrary extra tokens, so helper-style argument lists are launchable.",
+      "evidence_ids": [
+        "build-0001"
+      ],
+      "source_ids": [
+        "file:33",
+        "build:build-0001"
+      ]
+    },
+    {
+      "requirement_id": "R023",
+      "criterion_index": 1,
+      "verdict": "pass",
+      "basis": "static",
+      "rationale": "main.gd line 87 reads OS.get_cmdline_user_args() and scans it for --scenario, leaving remaining helper args untouched.",
+      "evidence_ids": [
+        "build-0001"
+      ],
+      "source_ids": [
+        "file:33",
+        "build:build-0001"
+      ]
+    },
+    {
+      "requirement_id": "R023",
+      "criterion_index": 2,
+      "verdict": "pass",
+      "basis": "static",
+      "rationale": "Only the exact '--scenario' token is consumed; unknown tokens such as --out/--frames fall through the loop without side effects, and all user-arg launches exited 0.",
+      "evidence_ids": [
+        "build-0001"
+      ],
+      "source_ids": [
+        "file:33",
+        "build:build-0001"
+      ]
+    },
+    {
+      "requirement_id": "R024",
+      "criterion_index": 0,
+      "verdict": "fail",
+      "basis": "static",
+      "rationale": "demo_outputs is absent from the project inventory: zero trace files ship, violating the 1-10 requirement.",
+      "evidence_ids": [
+        "build-0001"
+      ],
+      "source_ids": [
+        "project-inventory",
+        "build:build-0001"
+      ]
+    },
+    {
+      "requirement_id": "R024",
+      "criterion_index": 1,
+      "verdict": "insufficient",
+      "basis": "static",
+      "rationale": "With no trace files present, .json naming compliance cannot be checked; untestable until packaging exists.",
+      "evidence_ids": [],
+      "source_ids": [
+        "project-inventory"
+      ]
+    },
+    {
+      "requirement_id": "R024",
+      "criterion_index": 2,
+      "verdict": "insufficient",
+      "basis": "static",
+      "rationale": "No files exist to evaluate as one-demo-per-file; untestable until packaging exists.",
+      "evidence_ids": [],
+      "source_ids": [
+        "project-inventory"
+      ]
+    },
+    {
+      "requirement_id": "R025",
+      "criterion_index": 0,
+      "verdict": "pass",
+      "basis": "static",
+      "rationale": "project.godot sets viewport 1280x720 with canvas_items stretch, and observed UI rects (e.g. Reset at [1130,20,120,48]) are authored in that coordinate space.",
+      "evidence_ids": [
+        "build-0001"
+      ],
+      "source_ids": [
+        "file:28",
+        "snapshot:ordinary_quick_start_core_play-capture:45",
+        "build:build-0001"
+      ]
+    },
+    {
+      "requirement_id": "R025",
+      "criterion_index": 1,
+      "verdict": "insufficient",
+      "basis": "runtime",
+      "rationale": "No packaged demo trace exists to replay from a fresh launch; replayability of shipped demos is untested.",
+      "evidence_ids": [],
+      "source_ids": [
+        "project-inventory"
+      ]
+    },
+    {
+      "requirement_id": "R025",
+      "criterion_index": 2,
+      "verdict": "insufficient",
+      "basis": "static",
+      "rationale": "No packaged traces exist whose duration can be checked against the 20 s sampling window.",
+      "evidence_ids": [],
+      "source_ids": [
+        "project-inventory"
+      ]
+    },
+    {
+      "requirement_id": "R026",
+      "criterion_index": 0,
+      "verdict": "fail",
+      "basis": "static",
+      "rationale": "There is no demo trace at all, hence none that omits scenario and starts from the title screen; the required normal-play demo is missing.",
+      "evidence_ids": [
+        "build-0001"
+      ],
+      "source_ids": [
+        "project-inventory",
+        "build:build-0001"
+      ]
+    },
+    {
+      "requirement_id": "R026",
+      "criterion_index": 1,
+      "verdict": "insufficient",
+      "basis": "runtime",
+      "rationale": "Without a shipped normal-play trace there is no recording whose core-loop demonstration can be evaluated.",
+      "evidence_ids": [],
+      "source_ids": [
+        "project-inventory"
+      ]
+    },
+    {
+      "requirement_id": "R026",
+      "criterion_index": 2,
+      "verdict": "insufficient",
+      "basis": "static",
+      "rationale": "Supported-input compliance of a normal trace cannot be checked because no trace file ships.",
+      "evidence_ids": [],
+      "source_ids": [
+        "project-inventory"
+      ]
+    },
+    {
+      "requirement_id": "R027",
+      "criterion_index": 0,
+      "verdict": "pass",
+      "basis": "replay",
+      "rationale": "Every captured trace, including both scenario traces, replayed twice with all state and pixel digests matching, establishing deterministic demo playback.",
+      "evidence_ids": [
+        "player-0001-replay-04",
+        "player-0001-replay-05"
+      ],
+      "source_ids": [
+        "comparison:scenario_loop_rewrite_imminent-replay-1",
+        "comparison:scenario_loop_rewrite_imminent-replay-2"
+      ]
+    },
+    {
+      "requirement_id": "R027",
+      "criterion_index": 1,
+      "verdict": "pass",
+      "basis": "static",
+      "rationale": "apply_scenario defines named scenarios (loop_rewrite_imminent, multi_ghost_door, laser_block_bridge, four_loop_finale, result_state) for states needing setup, and build launched two of them cleanly.",
+      "evidence_ids": [
+        "build-0001"
+      ],
+      "source_ids": [
+        "file:29",
+        "file:33",
+        "build:build-0001"
+      ]
+    },
+    {
+      "requirement_id": "R027",
+      "criterion_index": 2,
+      "verdict": "pass",
+      "basis": "runtime",
+      "rationale": "The executed scenario trace carries scenario 'loop_rewrite_imminent' and the launch argv passes the same id after '--', showing scenario ids used in both places.",
+      "evidence_ids": [
+        "player-0001-play-07"
+      ],
+      "source_ids": [
+        "trace:scenario_loop_rewrite_imminent-capture",
+        "build:build-0001"
+      ]
+    },
+    {
+      "requirement_id": "R028",
+      "criterion_index": 0,
+      "verdict": "pass",
+      "basis": "runtime",
+      "rationale": "Sessions launched with '-- --scenario loop_rewrite_imminent' and '-- --scenario result_state' loaded those states (pending_scenario set at frame 0).",
+      "evidence_ids": [
+        "player-0001-play-07"
+      ],
+      "source_ids": [
+        "snapshot:scenario_loop_rewrite_imminent-capture:0",
+        "build:build-0001"
+      ]
+    },
+    {
+      "requirement_id": "R028",
+      "criterion_index": 1,
+      "verdict": "pass",
+      "basis": "static",
+      "rationale": "Build argv shows --scenario and its id strictly after '--', i.e. as project user arguments.",
+      "evidence_ids": [
+        "build-0001"
+      ],
+      "source_ids": [
+        "build:build-0001"
+      ]
+    },
+    {
+      "requirement_id": "R028",
+      "criterion_index": 2,
+      "verdict": "pass",
+      "basis": "runtime",
+      "rationale": "The scenario-based capture sessions used exactly this command shape and produced the named states, confirming the shape is used for scenario demos.",
+      "evidence_ids": [
+        "player-0001-play-07"
+      ],
+      "source_ids": [
+        "trace:scenario_loop_rewrite_imminent-capture",
+        "build:build-0001"
+      ]
+    },
+    {
+      "requirement_id": "R029",
+      "criterion_index": 0,
+      "verdict": "pass",
+      "basis": "runtime",
+      "rationale": "With --scenario the frame 0 snapshot is already in-level HUD (no title or chapter nodes), proving menus are skipped.",
+      "evidence_ids": [
+        "player-0001-play-07"
+      ],
+      "source_ids": [
+        "snapshot:scenario_loop_rewrite_imminent-capture:0"
+      ]
+    },
+    {
+      "requirement_id": "R029",
+      "criterion_index": 1,
+      "verdict": "pass",
+      "basis": "replay",
+      "rationale": "Scenario state is built from fixed data and sin() tracks with no RNG calls, and both replays reproduced identical state/pixel digests, confirming deterministic setup.",
+      "evidence_ids": [
+        "player-0001-replay-04"
+      ],
+      "source_ids": [
+        "comparison:scenario_loop_rewrite_imminent-replay-1",
+        "file:29"
+      ]
+    },
+    {
+      "requirement_id": "R029",
+      "criterion_index": 2,
+      "verdict": "pass",
+      "basis": "runtime",
+      "rationale": "Input dispatched at frame 30 (RIGHT) moved the player to x=550 by frame 70, i.e. the game accepts input immediately at scenario start.",
+      "evidence_ids": [
+        "player-0001-play-07"
+      ],
+      "source_ids": [
+        "snapshot:scenario_loop_rewrite_imminent-capture:20",
+        "snapshot:scenario_loop_rewrite_imminent-capture:70",
+        "trace:scenario_loop_rewrite_imminent-capture"
+      ]
+    },
+    {
+      "requirement_id": "R030",
+      "criterion_index": 0,
+      "verdict": "pass",
+      "basis": "static",
+      "rationale": "_parse_args leaves pending_scenario empty when no --scenario token exists and _ready then calls _show_title, so omitted-scenario traces are supported.",
+      "evidence_ids": [
+        "build-0001"
+      ],
+      "source_ids": [
+        "file:33",
+        "build:build-0001"
+      ]
+    },
+    {
+      "requirement_id": "R030",
+      "criterion_index": 1,
+      "verdict": "insufficient",
+      "basis": "runtime",
+      "rationale": "No packaged normal trace exists; the title-start behavior of shipped demos cannot be checked (ordinary launches do start at title, but that is not a demo trace).",
+      "evidence_ids": [],
+      "source_ids": [
+        "project-inventory",
+        "snapshot:probe:0"
+      ]
+    },
+    {
+      "requirement_id": "R030",
+      "criterion_index": 2,
+      "verdict": "insufficient",
+      "basis": "static",
+      "rationale": "No packaged scenario traces exist whose scenario fields can be checked against named ids.",
+      "evidence_ids": [],
+      "source_ids": [
+        "project-inventory"
+      ]
+    },
+    {
+      "requirement_id": "R031",
+      "criterion_index": 0,
+      "verdict": "insufficient",
+      "basis": "static",
+      "rationale": "No shipped trace files exist, so the duration_frames <= 600 check has no subject.",
+      "evidence_ids": [],
+      "source_ids": [
+        "project-inventory"
+      ]
+    },
+    {
+      "requirement_id": "R031",
+      "criterion_index": 1,
+      "verdict": "pass",
+      "basis": "static",
+      "rationale": "The project runs at 30 fps (run/max_fps=30, physics 30 Hz), aligning recorded frames with the 30 fps trace contract.",
+      "evidence_ids": [
+        "build-0001"
+      ],
+      "source_ids": [
+        "file:28",
+        "build:build-0001"
+      ]
+    },
+    {
+      "requirement_id": "R031",
+      "criterion_index": 2,
+      "verdict": "insufficient",
+      "basis": "static",
+      "rationale": "Event frame ranges cannot be validated against durations because no trace files ship.",
+      "evidence_ids": [],
+      "source_ids": [
+        "project-inventory"
+      ]
+    },
+    {
+      "requirement_id": "R032",
+      "criterion_index": 0,
+      "verdict": "insufficient",
+      "basis": "static",
+      "rationale": "No packaged trace events exist to check for time ordering and 1280x720 coordinates.",
+      "evidence_ids": [],
+      "source_ids": [
+        "project-inventory"
+      ]
+    },
+    {
+      "requirement_id": "R032",
+      "criterion_index": 1,
+      "verdict": "insufficient",
+      "basis": "static",
+      "rationale": "Mouse event shapes and drag sequences cannot be validated without shipped trace files.",
+      "evidence_ids": [],
+      "source_ids": [
+        "project-inventory"
+      ]
+    },
+    {
+      "requirement_id": "R032",
+      "criterion_index": 2,
+      "verdict": "insufficient",
+      "basis": "static",
+      "rationale": "Keycode and wait-event compliance of shipped traces is untestable because no traces ship.",
+      "evidence_ids": [],
+      "source_ids": [
+        "project-inventory"
+      ]
+    },
+    {
+      "requirement_id": "R033",
+      "criterion_index": 0,
+      "verdict": "pass",
+      "basis": "replay",
+      "rationale": "Fresh-launch replays of the scenario trace matched all recorded state and rendered-pixel digests twice, giving same trace / same outcome.",
+      "evidence_ids": [
+        "player-0001-replay-04",
+        "player-0001-replay-05"
+      ],
+      "source_ids": [
+        "comparison:scenario_loop_rewrite_imminent-replay-1",
+        "comparison:scenario_loop_rewrite_imminent-replay-2"
+      ]
+    },
+    {
+      "requirement_id": "R033",
+      "criterion_index": 1,
+      "verdict": "pass",
+      "basis": "static",
+      "rationale": "Inspected scripts contain no RandomNumberGenerator or wall-clock reads in simulation paths; loop logic uses fixed ticks and deterministic sin() tracks.",
+      "evidence_ids": [
+        "build-0001"
+      ],
+      "source_ids": [
+        "file:29",
+        "file:33",
+        "build:build-0001"
+      ]
+    },
+    {
+      "requirement_id": "R033",
+      "criterion_index": 2,
+      "verdict": "pass",
+      "basis": "replay",
+      "rationale": "Scenario setups reproduced identically across capture and two replays (identical snapshot digests at frames 0/20/70/120/300/599).",
+      "evidence_ids": [
+        "player-0001-replay-04"
+      ],
+      "source_ids": [
+        "comparison:scenario_loop_rewrite_imminent-replay-1",
+        "snapshot:scenario_loop_rewrite_imminent-replay-1:120"
+      ]
+    },
+    {
+      "requirement_id": "R034",
+      "criterion_index": 0,
+      "verdict": "pass",
+      "basis": "static",
+      "rationale": "The game consumes only --scenario from user args and ignores other tokens, so screenshot-helper command lines reach it without code changes; build scenario launches confirm the shape.",
+      "evidence_ids": [
+        "build-0001"
+      ],
+      "source_ids": [
+        "file:33",
+        "build:build-0001"
+      ]
+    },
+    {
+      "requirement_id": "R034",
+      "criterion_index": 1,
+      "verdict": "insufficient",
+      "basis": "runtime",
+      "rationale": "No screenshot-helper capture session mapped to R034 was supplied; suitability of title/gameplay/result screens for helper capture rests on Player-harness pixels that are not mapped here.",
+      "evidence_ids": [],
+      "source_ids": [
+        "instruction",
+        "image:player-scenario_result_state-capture-frame_0299-png:v1"
+      ]
+    },
+    {
+      "requirement_id": "R034",
+      "criterion_index": 2,
+      "verdict": "pass",
+      "basis": "static",
+      "rationale": "Launches carrying post-'--' user args (including scenario tokens) exited with returncode 0 and no crash output; unknown helper args have no code path that could crash.",
+      "evidence_ids": [
+        "build-0001"
+      ],
+      "source_ids": [
+        "build:build-0001",
+        "file:33"
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "issue": {
+        "issue_id": "QA-PACKAGE-001",
+        "issue_type": "trace",
+        "severity": "blocker",
+        "description": "demo_outputs/ and all demo traces are missing from the delivered project (inventory has zero *.json traces), failing the ship-1-10-traces requirement and R002 shipped-content. The host must assemble the package from existing Player captures; no model may author synthetic delivery traces.",
+        "suggested_role": "developer",
+        "requirement_ids": [
+          "R002",
+          "R020",
+          "R024",
+          "R026"
+        ],
+        "evidence_ids": [
+          "build-0001"
+        ],
+        "reproduction_steps": [
+          "Inspect project inventory: no demo_outputs entry and no *.json files exist.",
+          "Assemble /workspace/game/demo_outputs with 1-10 traces built from existing Player captures (include one scenario-less title-start trace and scenario traces, each duration_frames <= 600).",
+          "Ask Player to replay the NEW assembled revision from fresh launches and supply replay comparisons."
+        ],
+        "status": "open",
+        "resolution": null
+      },
+      "source_ids": [
+        "project-inventory",
+        "build:build-0001"
+      ],
+      "instruction_excerpt": "Ship **1-10 input-trace files** under `/workspace/game/demo_outputs/`, one per\ndemo, each named `*.json`.",
+      "resolved_criteria": []
+    },
+    {
+      "issue": {
+        "issue_id": "QA-EG-DEMO-TRACES",
+        "issue_type": "evidence_gap",
+        "severity": "major",
+        "description": "All trace-format and trace-behavior criteria (R024 c1-c2, R025 c1-c2, R026 c1-c2, R030 c1-c2, R031 c0/c2, R032 c0-c2) are untestable because no packaged traces exist; once packaged, conformance and replay evidence must be produced.",
+        "suggested_role": "player",
+        "requirement_ids": [
+          "R024",
+          "R025",
+          "R026",
+          "R030",
+          "R031",
+          "R032"
+        ],
+        "evidence_ids": [],
+        "reproduction_steps": [
+          "After QA-PACKAGE-001 lands, statically validate each trace: duration_frames <= 600, time-ordered events, supported mouse/key/wait shapes, coordinates within 1280x720, keycodes from the allowed set.",
+          "Replay each packaged trace twice from fresh launches and record replay_comparison results.",
+          "Map the new capture/replay evidence to R024-R032 so the insufficient criteria can be re-reviewed."
+        ],
+        "status": "open",
+        "resolution": null
+      },
+      "source_ids": [
+        "project-inventory",
+        "instruction"
+      ],
+      "instruction_excerpt": "- `duration_frames` — total frames to record at 30 fps; cap at **600 (20 s)**.",
+      "resolved_criteria": []
+    },
+    {
+      "issue": {
+        "issue_id": "QA-ASSET-LIB",
+        "issue_type": "requirement_gap",
+        "severity": "major",
+        "description": "No Kenney CC0 or OpenGameArt assets were copied into the project; all runtime art is AI-generated normalized frames, failing library sourcing (R018 c0) and chosen-pack reflection (R019 c2). The manifest's claim that mounts were unavailable is untrusted and needs host confirmation before generation can be treated as a permitted fallback.",
+        "suggested_role": "art_producer",
+        "requirement_ids": [
+          "R018",
+          "R019"
+        ],
+        "evidence_ids": [
+          "build-0001"
+        ],
+        "reproduction_steps": [
+          "Re-check /workspace/assets/library and /workspace/assets/library-oga availability in the current environment.",
+          "If available, browse, choose packs, and copy needed sprites/tiles/UI/fonts into /workspace/game/assets, copying each used OGA subdir LICENSE.txt and noting attribution.",
+          "If genuinely unavailable, obtain host confirmation and record the environment limitation instead of silent substitution.",
+          "Re-integrate chosen library frames into runtime paths and re-capture title/gameplay screens."
+        ],
+        "status": "open",
+        "resolution": null
+      },
+      "source_ids": [
+        "art-manifest",
+        "project-inventory"
+      ],
+      "instruction_excerpt": "- `/workspace/assets/library/` — Kenney CC0 packs (sprites, tiles, UI, fonts).\n- `/workspace/assets/library-oga/` — OpenGameArt entries; respect each\n  subdir's `LICENSE.txt`.",
+      "resolved_criteria": []
+    },
+    {
+      "issue": {
+        "issue_id": "QA-EG-OGA",
+        "issue_type": "evidence_gap",
+        "severity": "minor",
+        "description": "OpenGameArt LICENSE.txt compliance (R018 c1) cannot be evaluated because no OGA entries were copied; license evidence must accompany any future copying.",
+        "suggested_role": "art_producer",
+        "requirement_ids": [
+          "R018"
+        ],
+        "evidence_ids": [],
+        "reproduction_steps": [
+          "After copying OGA entries per QA-ASSET-LIB, list each copied subdir LICENSE.txt path and its sha256 in the manifest.",
+          "Provide an attribution note file in the project for each OGA entry used."
+        ],
+        "status": "open",
+        "resolution": null
+      },
+      "source_ids": [
+        "art-manifest"
+      ],
+      "instruction_excerpt": "subdir's `LICENSE.txt`.",
+      "resolved_criteria": []
+    },
+    {
+      "issue": {
+        "issue_id": "QA-DEV-BUTTONS",
+        "issue_type": "requirement_gap",
+        "severity": "major",
+        "description": "The instruction's 'ghost presses buttons' verb is unimplemented: level.gd _build_level never appends to button_nodes, so button_prop art is unused and no ghost can press a button (R013 c0 fail).",
+        "suggested_role": "developer",
+        "requirement_ids": [
+          "R013"
+        ],
+        "evidence_ids": [
+          "build-0001"
+        ],
+        "reproduction_steps": [
+          "Inspect scripts/level.gd: button_nodes is declared and recomputed but never populated by _build_level.",
+          "Run --scenario result_state and observe button_nodes [] in frame 0 snapshot.",
+          "Add a button prop instantiation with a hold rect included in _recompute_props and required-prop accounting, then capture a scenario where a ghost keeps a button held."
+        ],
+        "status": "open",
+        "resolution": null
+      },
+      "source_ids": [
+        "file:29",
+        "snapshot:scenario_result_state-capture:0"
+      ],
+      "instruction_excerpt": "interacts with the world: it presses buttons, holds doors, and blocks lasers.",
+      "resolved_criteria": []
+    },
+    {
+      "issue": {
+        "issue_id": "QA-VIS-FLASH",
+        "issue_type": "visual",
+        "severity": "major",
+        "description": "The rewind flash never decays: level.gd sets flash_timer=0.35 in _rewind but _physics_process never decrements it, so the white overlay persists for the rest of the session (flash_timer still 0.35 at frames 120/300/599) and frame 599 pixels show the entire viewport washed out, hurting readability after every rewind.",
+        "suggested_role": "developer",
+        "requirement_ids": [
+          "R012"
+        ],
+        "evidence_ids": [
+          "player-0001-play-07"
+        ],
+        "reproduction_steps": [
+          "Launch godot --path /workspace/game -- --scenario loop_rewrite_imminent and replay the supplied trace.",
+          "Observe flash_timer == 0.35 at frames 120, 300 and 599 and the washed-out frame 599 screenshot.",
+          "Fix: decrement flash_timer by delta in _physics_process (or decay in main._process) so the flash fades within ~0.35 s, then re-capture frames around the rewind."
+        ],
+        "status": "open",
+        "resolution": null
+      },
+      "source_ids": [
+        "image:player-scenario_loop_rewrite_imminent-capture-frame_0599-png:v1",
+        "snapshot:scenario_loop_rewrite_imminent-capture:599",
+        "file:29"
+      ],
+      "instruction_excerpt": "When the timer hits zero, the screen\nflashes and rewinds — the player restarts at the spawn point, but a translucent\nghost replays exactly what they did in the previous loop.",
+      "resolved_criteria": []
+    },
+    {
+      "issue": {
+        "issue_id": "QA-VIS-HEADER",
+        "issue_type": "visual",
+        "severity": "minor",
+        "description": "Level-select header renders the literal unformatted string 'Chapter %d' (main.gd _show_level_select creates the label without substituting the chapter number), visible in frame 100-239 nodes and frame 239 pixels.",
+        "suggested_role": "developer",
+        "requirement_ids": [
+          "R010"
+        ],
+        "evidence_ids": [
+          "player-0001-play-13"
+        ],
+        "reproduction_steps": [
+          "Launch ordinarily, click Chapter Menu then Chapter 1.",
+          "Observe header label text 'Chapter %d' at rect [440,120,400,60] in frames 100-239.",
+          "Fix main.gd to use ('Chapter %d' % chapter) and re-capture the level-select screen."
+        ],
+        "status": "open",
+        "resolution": null
+      },
+      "source_ids": [
+        "image:player-ordinary_level_select_probe-capture-frame_0239-png:v1",
+        "snapshot:ordinary_level_select_probe-capture:100",
+        "file:33"
+      ],
+      "instruction_excerpt": "A chapter\nmenu reveals four chapters of six levels each.",
+      "resolved_criteria": []
+    },
+    {
+      "issue": {
+        "issue_id": "QA-VIS-UICOMPOSE",
+        "issue_type": "visual",
+        "severity": "minor",
+        "description": "UI composition defects from panel-art transparent margins vs control rects: HUD Time label and timeline bar extend left/right beyond the visible HUD panel art and Reset sits on its right edge (quick-start frame 599); the Level Complete 'Chapter Menu' button renders below the visible panel (result frame 299); the pause dialog's Chapter Menu straddles the panel border (quick-start frame 599).",
+        "suggested_role": "developer",
+        "requirement_ids": [
+          "R014",
+          "R017"
+        ],
+        "evidence_ids": [
+          "player-0001-play-04",
+          "player-0001-play-10"
+        ],
+        "reproduction_steps": [
+          "Capture ordinary Quick Start play and scenario result_state at 1280x720.",
+          "Compare visible panel art bounds against HUD label rects [36,20], timeline [36,58,1204,30], Reset [1130,20,120,48], and level-complete menu button [420,510,200,60].",
+          "Adjust control rects or nine-patch margins so all HUD/dialog controls sit inside the visible panel art, then re-capture."
+        ],
+        "status": "open",
+        "resolution": null
+      },
+      "source_ids": [
+        "image:player-ordinary_quick_start_core_play-capture-frame_0599-png:v1",
+        "image:player-scenario_result_state-capture-frame_0299-png:v1"
+      ],
+      "instruction_excerpt": "A timeline bar at the top shows all\nactive ghosts and their current positions in the 30-second window.",
+      "resolved_criteria": []
+    },
+    {
+      "issue": {
+        "issue_id": "QA-VIS-STRAY",
+        "issue_type": "visual",
+        "severity": "minor",
+        "description": "A clipped stray character sprite sliver renders at the extreme top-left (0,0) in scenario start frames (loop_rewrite and result_state frame 0 pixels) because ghost Sprite2D nodes are added at the origin before the first tick positions them.",
+        "suggested_role": "developer",
+        "requirement_ids": [
+          "R004",
+          "R012"
+        ],
+        "evidence_ids": [
+          "player-0001-play-07",
+          "player-0001-play-10"
+        ],
+        "reproduction_steps": [
+          "Launch --scenario loop_rewrite_imminent or result_state and inspect frame 0 pixels at the top-left corner.",
+          "In _sync_ghost_nodes, set each new ghost sprite visible=false (or position it at its track position) until _update_ghosts assigns a valid tick position.",
+          "Re-capture scenario frame 0 to confirm the sliver is gone."
+        ],
+        "status": "open",
+        "resolution": null
+      },
+      "source_ids": [
+        "image:player-scenario_loop_rewrite_imminent-capture-frame_0000-png:v1",
+        "image:player-scenario_result_state-capture-frame_0000-png:v1",
+        "file:29"
+      ],
+      "instruction_excerpt": "player starts again — but a ghost of the previous loop replays simultaneously,",
+      "resolved_criteria": []
+    },
+    {
+      "issue": {
+        "issue_id": "QA-EG-PLAY-ACTIONS",
+        "issue_type": "evidence_gap",
+        "severity": "major",
+        "description": "Ordinary-play actions remain unverified: airborne jump (no airborne checkpoint frame), ENTER lever interaction (previous press fired out of range at x=330 vs lever x=485), level-select button entry (previous click landed in the gap between Level 1 and Level 2), and the on-screen Reset button click (only the R key was exercised).",
+        "suggested_role": "player",
+        "requirement_ids": [
+          "R011",
+          "R016"
+        ],
+        "evidence_ids": [],
+        "reproduction_steps": [
+          "Record a trace that holds RIGHT, presses SPACE, and checkpoints a frame ~10-15 frames later showing player y < ground (airborne).",
+          "Walk the player to x within ~70 of lever_door (x=485), press ENTER, and checkpoint switch_nodes[0].active == true.",
+          "In level select click Level 1 at its rect center (~460,243) and checkpoint level entry HUD.",
+          "Click the Reset button rect center (~1190,44) during play and checkpoint tracks [] afterwards."
+        ],
+        "status": "open",
+        "resolution": null
+      },
+      "source_ids": [
+        "trace:ordinary_quick_start_core_play-capture",
+        "snapshot:ordinary_quick_start_core_play-capture:280",
+        "trace:ordinary_level_select_probe-capture"
+      ],
+      "instruction_excerpt": "Entering a level starts a 30-second countdown. The player runs, jumps, and\ninteracts with switches and objects.",
+      "resolved_criteria": []
+    },
+    {
+      "issue": {
+        "issue_id": "QA-EG-GHOST-ORDINARY",
+        "issue_type": "evidence_gap",
+        "severity": "minor",
+        "description": "R001 c2 (playable level demonstrates movement, 30 s timer and at least one previous-loop ghost replay) has no mapped ghost evidence: the ghost sessions are mapped only to R003-R005 and cannot be borrowed for R001.",
+        "suggested_role": "player",
+        "requirement_ids": [
+          "R001"
+        ],
+        "evidence_ids": [],
+        "reproduction_steps": [
+          "Either extend the evidence mapping of the existing loop_rewrite_imminent capture/replay pair to include R001, or record an ordinary-play session that spans a rewind so a ghost appears in a session mapped to R001.",
+          "Checkpoint a frame showing live player movement plus a visible replaying ghost and the countdown HUD."
+        ],
+        "status": "open",
+        "resolution": null
+      },
+      "source_ids": [
+        "snapshot:scenario_loop_rewrite_imminent-capture:599"
+      ],
+      "instruction_excerpt": "Each level is a 30-second loop. When the timer expires, time rewinds and the\nplayer starts again — but a ghost of the previous loop replays simultaneously,",
+      "resolved_criteria": []
+    },
+    {
+      "issue": {
+        "issue_id": "QA-EG-DISTRACT",
+        "issue_type": "evidence_gap",
+        "severity": "major",
+        "description": "Ghost enemy-distraction (R005 c1) was never observed: captured sessions either have no enemies (1-1) or record enemy_main distracted false (result_state).",
+        "suggested_role": "player",
+        "requirement_ids": [
+          "R005"
+        ],
+        "evidence_ids": [],
+        "reproduction_steps": [
+          "Launch godot --path /workspace/game -- --scenario laser_block_bridge (chapter 3 level with enemy_main).",
+          "Capture frames where a ghost track position falls within enemy radius 110 of enemy_main pos.",
+          "Checkpoint enemies[0].distracted == true together with the ghost sprite position to prove ghost-caused distraction."
+        ],
+        "status": "open",
+        "resolution": null
+      },
+      "source_ids": [
+        "file:29",
+        "snapshot:scenario_result_state-capture:5"
+      ],
+      "instruction_excerpt": "interacting with the world. The ghost can hold switches, distract enemies, or\nstand on pressure plates while the current player tackles other objectives.",
+      "resolved_criteria": []
+    },
+    {
+      "issue": {
+        "issue_id": "QA-EG-COORD",
+        "issue_type": "evidence_gap",
+        "severity": "major",
+        "description": "Temporal-coordination gating (R007 c0-c1) is unproven: no session shows a timed prior-loop action enabling progress, and no solo no-ghost attempt fails at the crystal to show the prior-loop contribution is necessary.",
+        "suggested_role": "player",
+        "requirement_ids": [
+          "R007"
+        ],
+        "evidence_ids": [],
+        "reproduction_steps": [
+          "Run --scenario multi_ghost_door and checkpoint the door held open by ghost tracks while the live player passes through.",
+          "Run --scenario four_loop_finale and checkpoint completion requiring the four ghost-held plates.",
+          "Run a no-ghost attempt (ordinary level 1-1) walking straight to the exit and checkpoint completed == false with held 0/1 to prove the contribution requirement."
+        ],
+        "status": "open",
+        "resolution": null
+      },
+      "source_ids": [
+        "file:29",
+        "design"
+      ],
+      "instruction_excerpt": "planning what each loop-self needs to do and when, so that all versions\ncooperate across time.",
+      "resolved_criteria": []
+    },
+    {
+      "issue": {
+        "issue_id": "QA-EG-RESET-MAP",
+        "issue_type": "evidence_gap",
+        "severity": "minor",
+        "description": "R007 c2 (reset clears temporal state for a new coordination plan) lacks mapped evidence: the reset observation lives in the Quick Start session mapped to R016 only.",
+        "suggested_role": "player",
+        "requirement_ids": [
+          "R007"
+        ],
+        "evidence_ids": [],
+        "reproduction_steps": [
+          "Either map the existing quick-start frame 330 reset evidence to R007, or record a scenario session with ghost tracks present, press R, and checkpoint tracks [] and ghost_sprites [] afterwards."
+        ],
+        "status": "open",
+        "resolution": null
+      },
+      "source_ids": [
+        "snapshot:ordinary_quick_start_core_play-capture:330"
+      ],
+      "instruction_excerpt": "A reset button clears all ghosts to start fresh.",
+      "resolved_criteria": []
+    },
+    {
+      "issue": {
+        "issue_id": "QA-EG-SCREENSHOTS",
+        "issue_type": "evidence_gap",
+        "severity": "minor",
+        "description": "R034 c1 lacks screenshot-helper evidence: all supplied pixels come from the Player harness, and no session ran /workspace/tools/screenshot.sh against the game with helper args mapped to R034.",
+        "suggested_role": "player",
+        "requirement_ids": [
+          "R034"
+        ],
+        "evidence_ids": [],
+        "reproduction_steps": [
+          "Run /workspace/tools/screenshot.sh --path /workspace/game -- --out /workspace/frame.png --frames 60 for the normal title flow.",
+          "Run the helper again with --scenario result_state and --scenario loop_rewrite_imminent after --.",
+          "Supply the resulting captures mapped to R034 covering UI, gameplay and result screens."
+        ],
+        "status": "open",
+        "resolution": null
+      },
+      "source_ids": [
+        "instruction"
+      ],
+      "instruction_excerpt": "A screenshot helper is available at `/workspace/tools/screenshot.sh`. Use it to actually see what your UI / battlefield /\nresult screens look like.",
+      "resolved_criteria": []
+    },
+    {
+      "issue": {
+        "issue_id": "QA-GAME-PAUSE",
+        "issue_type": "gameplay",
+        "severity": "minor",
+        "description": "Pause is a Designer assumption (not an instruction requirement), but as implemented ESCAPE opens the overlay and a second ESCAPE does not resume; frames 400 and 599 stay paused with frozen loop_time 28.70/sim_tick 39, and the Resume button was never exercised. Decide whether ESC toggles or Resume-only is intended, and make the chosen behavior consistent.",
+        "suggested_role": "developer",
+        "requirement_ids": [],
+        "evidence_ids": [
+          "player-0001-play-04"
+        ],
+        "reproduction_steps": [
+          "In ordinary play press ESCAPE at frame ~340 (overlay opens) and again at ~380.",
+          "Observe paused stays true at frames 400 and 599.",
+          "Either route a second ESCAPE to _resume_pause or document Resume-button-only exit, then capture a resume checkpoint showing loop_time advancing again."
+        ],
+        "status": "open",
+        "resolution": null
+      },
+      "source_ids": [
+        "snapshot:ordinary_quick_start_core_play-capture:400",
+        "trace:ordinary_quick_start_core_play-capture"
+      ],
+      "instruction_excerpt": "",
+      "resolved_criteria": []
+    },
+    {
+      "issue": {
+        "issue_id": "QA-LAYOUT-001",
+        "issue_type": "requirement_gap",
+        "severity": "minor",
+        "description": "The required project layout is incomplete: the inventory contains no scenes/ directory (and demo_outputs is covered by QA-PACKAGE-001), so R020 c2 fails on layout alone.",
+        "suggested_role": "developer",
+        "requirement_ids": [
+          "R020"
+        ],
+        "evidence_ids": [
+          "build-0001"
+        ],
+        "reproduction_steps": [
+          "Inspect project inventory: scripts/ and assets/ exist but scenes/ does not.",
+          "Add a scenes/ directory (move or add at least the level/menu scene resources or a documented placeholder scene) without breaking Main.tscn.",
+          "Re-run the headless build to confirm the layout still launches cleanly."
+        ],
+        "status": "open",
+        "resolution": null
+      },
+      "source_ids": [
+        "project-inventory",
+        "build:build-0001"
+      ],
+      "instruction_excerpt": "  scripts/  scenes/  assets/",
+      "resolved_criteria": []
+    }
+  ],
+  "ready": false,
+  "readiness_rationale": "Not ready: host gate packaged_traces_replayed is false and the project ships zero demo_outputs traces (blocker QA-PACKAGE-001); library asset sourcing is absent (QA-ASSET-LIB); the ghost button-press verb is unimplemented (QA-DEV-BUTTONS); a major visual defect leaves the screen washed out after every rewind (QA-VIS-FLASH); and multiple core behaviors (jump, interact, enemy distraction, coordination gating, level-button entry) remain untested. Current build passes and core loop/ghost/replay mechanics are genuinely evidenced, but delivery readiness requires all requirements verified, packaged traces with fresh replays, final art, and no open major/blocker issues.",
+  "limitations": [
+    "Visual review was limited to the eight supplied screenshot pixels; unseen frames and scenes are not visually verified.",
+    "The 600-frame (20 s) capture cap prevents observing a full ordinary 30 s loop expiry or four player-stacked loops without named scenarios.",
+    "result_state and loop_rewrite_imminent are prepared scenarios; they demonstrate rules and transitions but not ordinary player-earned completion.",
+    "Player interpretations and Developer MCP diagnostics were treated as leads only, never as acceptance evidence.",
+    "Static passes rely on inspected current source files plus build-0001 provenance; they do not establish runtime behavior beyond the cited sessions.",
+    "Mount availability for /workspace/assets/library and library-oga could not be independently confirmed from this payload."
+  ]
+}

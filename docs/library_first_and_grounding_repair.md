@@ -1,5 +1,7 @@
 # 素材库优先、引用修正与模拟时钟验证
 
+后续修复见 [library-first-001 诊断](fixed_loop_library_first_001_diagnosis.md)。正式规范化模式下，回退生图的每条引用搜索须声明包含该素材的 `asset_ids`（最多四个相关变体），避免门/开关检索代替人物检索。一轮可批量发出最多十二条独立查询，每条仍计入公共工具预算，搜索轮数限制不变。
+
 本次针对 `fixed-loop-developer-opt-001` 的问题修改共享角色和公共工具，Fixed Loop 与 Scheduler 使用相同实现。模型配置与 `.env` 未更换；没有调用在线 chat 或生图服务。
 
 ## 1. 先选库素材，生成只补缺口
@@ -79,22 +81,33 @@ sin(float(tick_index) / float(PHYSICS_HZ) * 5.0)
 
 新增 `examples/replay_clock_repair.py`，使用原运行中最新 Player 的实际输入轨迹和同一个 Docker Player 驱动。每条轨迹在修复前/后分别做采集、两次全新进程重放；仍逐帧比较状态和像素摘要，并核对真实截图和状态快照。冻结本地镜像 ID、关闭容器网络、只读挂载工程、使用新的用户数据，禁止宿主执行回退和自动拉取镜像。所有请求、日志、截图、差异与源码补丁保存到新目录，不写入原共享状态或伪造新 QA 结论。
 
-**本机真实重放尚未完成。** Docker 客户端存在，但尝试启动已安装 Docker Desktop 后，Linux 守护进程仍无法连接。当前 `summary.json` 明确是 `runtime_unavailable`、`real_replay_verified=false`；静态检查通过不能替代重放通过。
+**2026-10-25：用户服务器真实重放已通过。** `clock-server-replay` 中修复前为 2/10，通过模拟 tick 修复后为 10/10。离线复核重新读取了 30 次会话、6,300 帧及 132 张检查点截图；修复后的 2,100 对帧状态/像素摘要全部一致。前后工程只有水晶计时表达式变化，各条采集轨迹的状态摘要未变。详见[服务器重放审阅](../runs/fixed-loop-developer-opt-001/diagnosis/clock-server-replay/analysis/review.md)。此前本机 Docker 不可用的记录属于上次开发阶段，不能再作为本次结果的结论。
 
-在已有 Player 镜像和可用 Docker 的执行服务器运行，不需要模型 API：
+本次仅确认这 5 条轨迹在记录的镜像、渲染环境中确定性通过，不能据此宣布所有关卡、美术、玩法或跨平台一致性都已验收。旧游戏的标题图尺寸问题仍可见；原始角色状态和 QA 结论没有改写。
+
+现有结果无需重复启动引擎。增加的 `--verify-only` 可以在复制回来的结果上复核完整性，不启动 Docker、Godot 或模型，不跟随服务器日志中的绝对路径。新的分析目录不能已存在：
 
 ```powershell
 $env:PYTHONPATH='src'
-python examples/replay_clock_repair.py --output runs/fixed-loop-developer-opt-001/diagnosis/clock-server-replay
+python examples/replay_clock_repair.py --verify-only --output runs/fixed-loop-developer-opt-001/diagnosis/clock-server-replay --audit-output runs/fixed-loop-developer-opt-001/diagnosis/clock-server-replay/analysis/recheck-001
 ```
 
-Linux 使用 `PYTHONPATH=src python examples/replay_clock_repair.py --output runs/fixed-loop-developer-opt-001/diagnosis/clock-server-replay`。默认来源为 opt-001、镜像为 `gamecraft-player:4.5.1`，可用 `--player-image` 指定已有镜像。先跑单条可加 `--trace near_rewind_reset`，但只能证明这条轨迹。默认复跑全部已采集轨迹。`--prepare-only` 只准备副本，绝不标记为真实重放通过。
+该入口重新核对工程/原始请求、全部会话、事件、帧摘要、实际截图及汇总。缺失重放、改变输入种子、改变已测工程或错误的成功汇总都会被拒绝。隔离声明必须是布尔值，每帧必须有合法摘要。保存 `verification.json`，并保持原始服务器文件不变。
+
+需要重新执行实际引擎时，在已有 Player 镜像和可用 Docker 的服务器使用新的输出目录，不需要模型 API：
+
+```powershell
+$env:PYTHONPATH='src'
+python examples/replay_clock_repair.py --output runs/fixed-loop-developer-opt-001/diagnosis/clock-server-replay-002
+```
+
+Linux 使用 `PYTHONPATH=src python examples/replay_clock_repair.py --output runs/fixed-loop-developer-opt-001/diagnosis/clock-server-replay-002`。默认来源为 opt-001、镜像为 `gamecraft-player:4.5.1`，可用 `--player-image` 指定已有镜像。先跑单条可加 `--trace near_rewind_reset`，但只能证明这条轨迹。默认复跑全部已采集轨迹。`--prepare-only` 只准备副本，绝不标记为真实重放通过。
 
 请查看输出目录的 `summary.json`：只有修复后全部比较通过，`real_replay_verified` 才为 true。若仍失败，保留该目录便于继续定位其他确定性问题。
 
 ## 5. 审阅与下一次完整运行
 
-[本次审阅入口](../runs/fixed-loop-developer-opt-001/diagnosis/library-grounding-replay/review.md) 保存真实 R025 的归一化前后完整数据、原有真实 Kenney 素材的导入和切图验证、两种控制器与角色的完整离线 I/O、质量修复的失败/成功图片、原始文件完整性和测试记录。文本/图片回复为离线夹具的材料均明确标记，不当作在线效果或性能结果。
+上次离线审阅保存在 `runs/fixed-loop-developer-opt-001/diagnosis/library-grounding-replay/`，包括 R025、真实 Kenney 导入与两种控制器的完整离线 I/O。本次用户提供的运行副本未包含该历史目录，未重建或冒充原有证据。当前可查看的[服务器重放审阅](../runs/fixed-loop-developer-opt-001/diagnosis/clock-server-replay/analysis/review.md) 保存本次重新核验的数据、来源摘要与回归结果。文本/图片回复为离线夹具的历史材料不能当作在线效果或性能结果。
 
 完整运行继续由用户执行，实际 `.env` 模型与 DashScope 图片接口保持原样：
 

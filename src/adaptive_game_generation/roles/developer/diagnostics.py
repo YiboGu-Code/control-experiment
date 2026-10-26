@@ -130,6 +130,19 @@ def source_findings(files):
                             "Serialize Object(InputEventKey, ...) or register real InputEventKey instances through InputMap in code.")
         elif path.endswith(".gd"):
             _render_findings(path, text, add)
+            masked = _gd_code(text)
+            for match in re.finditer(r"\b(flash_timer|fade_timer|flash_remaining)\s*=\s*(0\.\d+|[1-9]\d*(?:\.\d+)?)", masked):
+                name = match[1]
+                if not re.search(r"\b" + name + r"\s*(?:-=|=\s*(?:maxf?|clampf?)\s*\()", masked):
+                    add(path, masked.count("\n", 0, match.start()) + 1, "effect_timer_without_decay",
+                        f"{name} is activated but this script has no obvious countdown update. Check later frames: "
+                        "a brief effect may remain permanently visible. Decay on simulation ticks and reset on restart; "
+                        "verify an external timer owner before changing code.", "advisory")
+            if "extends CharacterBody2D" in masked and "Sprite2D.new" in masked and not re.search(
+                    r"AnimatedSprite2D|AnimationPlayer|\.frame\s*=|sprite_frames|\.rotation\s*=", masked):
+                add(path, 1, "actor_motion_unproven", "This moving actor has a Sprite2D but no obvious pose playback. "
+                    "Check the motion contract and actual runtime frames; movement/flip alone is not a body animation. "
+                    "Animation may be owned by another script, so verify before making changes.", "advisory")
             changed_scene = False
             for number, line in enumerate(text.splitlines(), 1):
                 code = line.strip()
@@ -163,6 +176,11 @@ def _diagnostics(attempt):
                 diagnostics.append({"step": step["name"], "message": line.strip()[:600], "locations": locations[:4]})
         if step.get("status") != "passed" and step.get("reason"):
             diagnostics.append({"step": step["name"], "message": step["reason"][:600], "locations": []})
+        if step.get("returncode") in (137, -9):
+            diagnostics.append({"step": step["name"], "code": "engine_process_killed",
+                "message": "Engine received SIGKILL (137/-9). This is not a GDScript syntax diagnosis. "
+                "Check container/host memory and resource limits; OOM is possible but not proven. "
+                "Do not repeatedly rewrite unrelated game code or destructively resize artwork to mask it.", "locations": []})
     return diagnostics
 
 

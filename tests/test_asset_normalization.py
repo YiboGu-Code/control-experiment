@@ -297,7 +297,9 @@ def test_qa_vetoes_unresolved_real_library_art(tmp_path):
     libraries,_=library_pair(tmp_path/"libraries")
     executor,adapters,workers,_=chain(tmp_path/"run")
     workers[Role.ART_PRODUCER].replies=[search_turn(),proposal(asset(source="kenney",source_path="pack/player.png",
-        generation_prompt=None,layout={"kind":"source_atlas","mode":"unresolved"}))]
+        generation_prompt=None,layout={"kind":"source_atlas","mode":"unresolved"})),
+        {"action":"submit", "status":"blocked", "summary":"No reliable atlas regions are available in this offline fixture",
+         "blockers":[{"description":"Obtain actual atlas metadata before publishing display frames"}]}]
     from types import MappingProxyType
     executor.services_by_role=MappingProxyType({**executor.services_by_role,
         Role.ART_PRODUCER:replace(executor.services_by_role[Role.ART_PRODUCER],libraries=libraries)})
@@ -305,6 +307,8 @@ def test_qa_vetoes_unresolved_real_library_art(tmp_path):
     adapters[Role.DEVELOPER]=Developer(DeveloperConfig(prompt_version="developer.v3",require_normalized_assets=True))
     state=asyncio.run(FixedLoop(executor,adapters,FixedLoopConfig(max_cycles=1)).run())
     assert state.game_revisions
+    assert state.assets and not any(r.payload.result.error for r in state.ledger.events
+        if getattr(r.payload, "kind", None) == "role_call_finished")
     qa=chain_report(executor,"qa-report",QAReport)
     assert not qa.gates["final_art"]
 

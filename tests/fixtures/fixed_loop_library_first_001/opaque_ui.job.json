@@ -1,0 +1,23 @@
+{
+  "protocol": "art-image.v1",
+  "prompt": "ASSET TO DRAW (the sole subject of this image):\nSingle rounded rectangular HUD button, muted indigo fill with thin cyan border, flat vector UI art, isolated centered on transparent background, no text, no labels, no icons, no captions, no panel group, no frame card, no unrelated props.\n\nSTYLE CONTEXT (palette and rendering only, not additional subjects):\nPalette: muted indigo, slate, violet, cyan, teal-green, amber-red, and soft near-white. Rendering: flat, low-detail vector-like 2D shapes with readable silhouettes, subtle glow, and clean transparent backgrounds for actors, objects, and controls. Use linear filtering for smooth painted artwork. Ghost visuals should reuse player or enemy shapes with cyan modulation and reduced alpha. Avoid text, captions, labels, panels, ground bands, framed example scenes, or unrelated props inside isolated sprite requests.\n\nDraw only the requested asset. Do not turn style references to other game objects into scenery, UI panels, ground, text or backgrounds inside an isolated sprite. Follow the asset request above.",
+  "width": 180,
+  "height": 64,
+  "transparent_background": true,
+  "columns": 1,
+  "rows": 1,
+  "frame_names": [
+    "reset_button"
+  ],
+  "layout": {
+    "kind": "ui",
+    "mode": "whole",
+    "cell_width": null,
+    "cell_height": null,
+    "margin_x": 0,
+    "margin_y": 0,
+    "spacing_x": 0,
+    "spacing_y": 0,
+    "regions": []
+  }
+}

@@ -90,7 +90,7 @@ def normalize_pixels(data, layout, columns, rows, names, *, check_quality=False,
     with Image.open(io.BytesIO(data)) as original:
         source = original.convert("RGBA")
         findings = upstream_findings(original) if regions and check_quality and not is_mock else []
-    actor = layout.kind in ("sprite", "sprite_sheet")
+    checked = layout.kind in ("sprite", "sprite_sheet", "tile", "tile_set", "prop")
     operations = []
     frames = []
     # Fixed-size cells preserve aspect ratio and show alpha against a checkerboard.
@@ -99,10 +99,13 @@ def normalize_pixels(data, layout, columns, rows, names, *, check_quality=False,
     draw.text((8, 7), "Candidate frames - structural checks only; semantic review pending", fill="white")
     for i, r in enumerate(regions):
         crop = source.crop((r.x, r.y, r.x + r.width, r.y + r.height))
-        if check_quality and not is_mock and actor:
-            crop, operation = remove_matte(crop, mode="auto")
+        if check_quality and not is_mock and checked:
+            # Opaque terrain fills its cell deliberately. A magenta tile may be
+            # legitimate terrain color, not a matte. Explicit generated mattes
+            # have already been processed by the provider with audited findings.
+            crop, operation = remove_matte(crop, mode="preserve" if layout.kind in ("tile", "tile_set") else "auto")
             operations.append({"frame": r.name, **operation})
-            findings.extend(sprite_findings(crop, r.name, check_matte=operation["operation"] == "chroma_key"))
+            findings.extend(sprite_findings(crop, r.name, check_matte=operation["operation"] == "chroma_key", kind=layout.kind))
         hist = crop.getchannel("A").histogram()
         frames.append({"region": r, "data": png(crop), "transparent_pixels": hist[0],
                        "visible_pixels": r.width * r.height - hist[0]})
@@ -121,7 +124,7 @@ def normalize_pixels(data, layout, columns, rows, names, *, check_quality=False,
     if check_quality:
         unique = {(f["frame"], f["code"]): f for f in findings}
         info["quality"] = {"pipeline": PIPELINE_VERSION,
-            "status": "rejected" if unique else "mock_not_reviewed" if is_mock else "checks_passed" if actor else "not_applicable",
+            "status": "rejected" if unique else "mock_not_reviewed" if is_mock else "checks_passed" if checked else "not_applicable",
             "findings": list(unique.values()), "operations": operations, "semantic_review": "not_performed"}
         if unique:
             draw.rectangle((0, 0, preview.width, 27), fill="#6b1320")

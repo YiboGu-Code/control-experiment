@@ -65,6 +65,18 @@ def snapshot_implementation(output):
                 shutil.copyfile(source, target)
 
 
+async def library_preflight(libraries, values):
+    policy = str(values.get("ART_LIBRARY_POLICY", "any")).lower()
+    if policy not in ("any", "both", "optional"):
+        raise ValueError("ART_LIBRARY_POLICY must be any, both or optional")
+    mounts = libraries.mount_diagnostics()
+    available = sum(m["available"] for m in mounts)
+    return {"policy": policy, "mounts": mounts,
+        "passed": policy == "optional" or available >= (2 if policy == "both" else 1),
+        "warnings": [] if available == 2 else ["One or both host library roots are absent. Container paths in instruction.md do not mount host directories automatically."],
+        "inventory_verified": False}
+
+
 def engine_settings(values):
     settings = {}
     engines = [
@@ -80,11 +92,15 @@ def engine_settings(values):
         image_id = result.stdout.strip()
         if result.returncode or not re.fullmatch(r"sha256:[a-f0-9]{64}", image_id):
             raise RuntimeError(f"Preloaded {role} Docker image is unavailable; see docs/fixed_loop.md")
+        prefix = {"developer": "DEVELOPER", "player": "PLAYER", "godot_mcp": "GODOT_MCP"}[role]
         settings[role] = {"requested_image": selected, "image_id": image_id,
-            "cpus": 2.0 if role == "player" else 1.0, "memory_mb": 1536 if role == "player" else 1024,
-            "tmpfs_mb": 512 if role == "player" else 256, "pids": 128}
+            "cpus": float(values.get(prefix + "_SANDBOX_CPUS", "2")),
+            "memory_mb": int(values.get(prefix + "_SANDBOX_MEMORY_MB", "3072")),
+            "tmpfs_mb": int(values.get(prefix + "_SANDBOX_TMPFS_MB", "512")), "pids": 128}
+        if min(settings[role][k] for k in ("cpus", "memory_mb", "tmpfs_mb")) <= 0:
+            raise ValueError("Sandbox CPU, memory and tmpfs limits must be positive")
         if role == "godot_mcp":
-            settings[role].update(cpus=2.0, memory_mb=2048, tmpfs_mb=1024, server_package=MCP_PACKAGE)
+            settings[role].update(server_package=MCP_PACKAGE)
             expected = {name: digest_path(ROOT / "configs/godot_mcp" / name)
                         for name in ("mcp_driver.py", "godot_wrapper.py")}
             actual = subprocess.run(["docker", "run", "--rm", "--network=none", "--read-only",
@@ -121,7 +137,7 @@ def role_setup(gateways, image_timeout=0.0, *, godot_mcp=False, visual_tokens=81
     configs = {
         Role.DESIGNER: DesignerConfig(max_grounding_repairs=1, max_output_tokens=gateways[Role.DESIGNER].max_output_tokens),
         Role.ART_PRODUCER: ArtProducerConfig(max_model_turns=8, max_search_turns=3, normalize_assets=True,
-                                           library_first=True, max_quality_repair_rounds=2,
+                                           library_first=True, max_quality_repair_rounds=2, require_actor_motion=True, progressive_skills=True,
                                            max_output_tokens=gateways[Role.ART_PRODUCER].max_output_tokens),
         Role.DEVELOPER: DeveloperConfig(prompt_version="developer.v3", max_model_turns=5, require_normalized_assets=True,
                                        max_output_tokens=gateways[Role.DEVELOPER].max_output_tokens),
@@ -261,6 +277,12 @@ async def run_live(output, *, task_dir=DEFAULT_TASK, env_file=ROOT / ".env", max
         raw = workspace.read_public("input/instruction.md").read_bytes()
         (output / "instruction.md").write_bytes(raw)
         libraries = MountedAssetLibraries.from_env(env_file, forbidden_roots=(task_dir.parent, output))
+        library_check = await library_preflight(libraries, values)
+        write_json(output / "library_preflight.json", library_check)
+        if not library_check["passed"]:
+            raise RuntimeError("Asset libraries are unavailable under ART_LIBRARY_POLICY=" + library_check["policy"] +
+                "; inspect library_preflight.json and configure ART_KENNEY_ROOT / ART_OGA_ROOT. "
+                "Use ART_LIBRARY_POLICY=optional only for an intentional generation-only experiment.")
         configs, roles, limits = role_setup(gateways, image_timeout, godot_mcp=godot_mcp,
             visual_tokens=visual_gateway.max_output_tokens if visual_gateway else 8192, values=values)
         budget = ResourceLimits(max_model_calls=max_model_calls,
@@ -277,7 +299,8 @@ async def run_live(output, *, task_dir=DEFAULT_TASK, env_file=ROOT / ".env", max
             "roles": {r.value: c.model_dump(mode="json") for r, c in configs.items()},
             "role_limits": {r.value: limit.model_dump(mode="json") for r, limit in limits.items()},
             "total_budget": budget.model_dump(mode="json"), "engines": sandbox,
-            "libraries": {"configuration_id": libraries.configuration_id, "availability": await libraries.availability()},
+            "libraries": {"configuration_id": libraries.configuration_id, "availability": await libraries.availability(),
+                          "preflight": library_check},
             "images": image_info.model_dump(mode="json"),
             "image_configuration": image_config.public_settings() if image_config else {"adapter": "mock-image.v1"},
             "image_configuration_id": image_info.provider_id,
@@ -321,15 +344,17 @@ async def run_live(output, *, task_dir=DEFAULT_TASK, env_file=ROOT / ".env", max
                 capture_directory=output / "model_calls/developer_visual")) if visual_gateway else None
             scheduler_provider = await stack.enter_async_context(OpenAICompatibleTextProvider(scheduler_gateway,
                 capture_directory=output / "model_calls/scheduler")) if adaptive else None
-            mcp_service = DockerGodotMCP(DockerSandbox(sandbox["godot_mcp"]["image_id"], cpus=2.0,
-                memory_mb=2048, tmpfs_mb=1024)) if godot_mcp else None
+            def backend(role):
+                spec = sandbox[role]
+                return DockerSandbox(image=spec["image_id"], **{k: spec[k] for k in ("cpus", "memory_mb", "tmpfs_mb", "pids")})
+            mcp_service = DockerGodotMCP(backend("godot_mcp")) if godot_mcp else None
             services = {r: Services(text=p) for r, p in providers.items()}
             services[Role.ART_PRODUCER] = Services(text=providers[Role.ART_PRODUCER], image=image_service,
                 image_info=image_service.info, libraries=libraries)
             services[Role.DEVELOPER] = Services(text=providers[Role.DEVELOPER],
-                sandbox=DockerSandbox(image=sandbox["developer"]["image_id"]), godot_mcp=mcp_service, vision=visual_provider)
+                sandbox=backend("developer"), godot_mcp=mcp_service, vision=visual_provider)
             services[Role.PLAYER] = Services(text=providers[Role.PLAYER],
-                sandbox=DockerSandbox(image=sandbox["player"]["image_id"], cpus=2.0, memory_mb=1536, tmpfs_mb=512))
+                sandbox=backend("player"))
             runtime_options = {"scheduler_limits": scheduler_limits} if adaptive else {}
             scheduler_timeout = scheduler_limits.max_wall_seconds if adaptive else 0.0
             executor = Executor.create(workspace, task, run_id=controller.replace("_", "-"), controller=controller, budget=budget,

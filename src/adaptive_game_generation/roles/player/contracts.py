@@ -141,11 +141,19 @@ class PlayerFinding(Model):
     uncertainty: Text
 
 
+class EvidenceMapping(Model):
+    session_id: Identifier
+    frame: Frame
+    requirement_ids: Annotated[tuple[Identifier, ...], Field(min_length=1)]
+    rationale: Text
+
+
 class PlayerDecision(Model):
     action: Literal["play", "finish", "blocked"]
     summary: Text
     trials: tuple[TrialPlan, ...] = ()
     findings: tuple[PlayerFinding, ...] = ()
+    evidence_mappings: Annotated[tuple[EvidenceMapping, ...], Field(max_length=32)] = ()
     limitations: tuple[Text, ...] = ()
     blockers: tuple[Blocker, ...] = ()
 

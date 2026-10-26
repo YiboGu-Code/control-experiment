@@ -1,5 +1,13 @@
 # QA Reviewer: evidence-based internal acceptance
 
+Concrete defect closure supports `IssueReview.resolved_criteria`, a list of
+`{requirement_id, criterion_index}` identifying passing criteria that prove the
+specific runtime/gameplay/trace/visual fix. Fresh successful evidence after the
+previous review and linked inspected sources are required; visual closure needs
+actual supplied pixels. Unrelated criteria, open gaps and all delivery gates
+remain. Without this scope, or for design/evidence-gap issues, every affected
+requirement must still be verified.
+
 Optional [Developer MCP diagnostics](godot_mcp.md) are loaded from registered,
 hash-checked result artifacts as `interpretation` sources. They have no acceptance
 evidence IDs; visual feedback is explicitly a model interpretation. QA still has
@@ -99,7 +107,9 @@ requested follow-up test. Every non-pass criterion needs an open issue; missing
 evidence and specification conflicts require their corresponding issue types.
 
 Closing an existing issue requires a resolution, preserved affected requirements,
-their verified acceptance, and new successful current evidence covering them.
+and new successful current evidence. With no explicit `resolved_criteria`, all
+affected requirements must be verified; scoped concrete defects follow the
+criterion-specific rules above without waiving remaining gaps.
 That evidence must be newer than the prior finding/review, with inspected source
 citations. Runtime/gameplay/trace issues cannot close on a build alone. QA does
 not dispatch the suggested role; the controller decides what to do next.
